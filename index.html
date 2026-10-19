@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   Wärmepumpen Visual – Plattform für Energieflüsse und Systemvergleich von Heizungsanlagen (EFH/MFH)
-  Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+  Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
   Diese Vorlage wird von build.py befüllt: Bibliotheken (CDN), Stile, Markup der Reiter und die
   eingebetteten Module engine.js, i18n.js, view3d.js, room.js, xlsx_export.js, app.js.
 -->
@@ -577,13 +577,13 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     </div>
   </section>
 </main>
-<footer class="foot"><span data-i18n="msg.footer"></span> · <b>© 2026 Alirio Jiménez Franco</b> · v1.2 · Schema v<span id="schemaV"></span></footer>
+<footer class="foot"><span data-i18n="msg.footer"></span> · <b>© 2026 Alirio Jiménez Franco</b> · v1.3 · Schema v<span id="schemaV"></span></footer>
 <div id="toast" class="toast"></div>
 <!-- Eingebettete Module (Platzhalter werden von build.py ersetzt) -->
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Rechenkern (engine)
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Reine Funktionen, keine UI-Logik. Läuft im Browser (window.WPV.engine)
  * und in Node (module.exports) für Unit-Tests.
  *
@@ -1943,7 +1943,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Übersetzungen [de, en, es]
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Aufbau: D = { schlüssel: [Deutsch, English, Español] }; makeT(lang) liefert t(key, …args).
  * Platzhalter {0}, {1} … werden durch Argumente ersetzt. Neue Texte: Zeile in D ergänzen.
  * ===================================================================== */
@@ -2965,6 +2965,54 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     'fun.wallbox': ["Ein E-Auto mit sechzig Kilowattstunden Akku speichert so viel Energie, wie eine Wärmepumpe an einem kalten Tag in einem gut gedämmten Haus verbraucht.", "An EV with a sixty kilowatt-hour battery stores about as much energy as a heat pump uses on a cold day in a well-insulated house.", "Un coche eléctrico con batería de sesenta kilovatios hora almacena tanta energía como la que gasta una bomba de calor un día frío en una casa bien aislada."],
     'brief.station': ["Die Wetterstation zeigt die Himmelsrichtungen des Modells: Die rote Spitze der Rose zeigt nach Norden, die Gartenseite mit Balkonen und PV liegt im Süden. Die Windfahne dreht ihre rote Spitze in den Wind, also zur Richtung, aus der er kommt; das Schalenkreuz dreht sich mit der Windgeschwindigkeit. Wind erhöht Infiltration und Wärmeverlust und verstärkt den Luftaustausch beim Lüften.", "The weather station shows the model's compass directions: the red tip of the rose points north, the garden side with balconies and PV faces south. The wind vane turns its red tip into the wind, i.e. toward where it comes from; the cup anemometer spins with wind speed. Wind increases infiltration and heat loss and boosts air exchange when ventilating.", "La estación meteorológica muestra las orientaciones del modelo: la punta roja de la rosa apunta al norte; el lado del jardín con balcones y FV mira al sur. La veleta orienta su punta roja hacia el viento, es decir, hacia donde viene; el anemómetro de cazoletas gira con la velocidad. El viento aumenta la infiltración y la pérdida de calor y refuerza el intercambio de aire al ventilar."],
     'fun.station': ["Merke: Windrichtungen gibt man immer als Herkunft an – Westwind kommt aus Westen und weht nach Osten.", "Remember: wind directions always name the origin – a westerly comes from the west and blows east.", "Recuerda: el viento se nombra por su origen; el viento del oeste viene del oeste y sopla hacia el este."],
+
+    /* ---- v1.3: Namen der Messobjekte, neue Beschriftungen und Erklärtexte (Vorlesen) ---- */
+    'l3.k.hpIntG': ["Kessel: interne Anschlussleitung", "Boiler: internal connection pipe", "Caldera: tubería interna de conexión"],
+    'l3.k.hpIntR': ["Innengerät: Kältemittelanschluss (Split)", "Indoor unit: refrigerant connection (split)", "Unidad interior: conexión de refrigerante (split)"],
+    'l3.k.hpIntB': ["Wärmepumpe: interne Soleleitung", "Heat pump: internal brine pipe", "Bomba de calor: tubería interna de salmuera"],
+    'l3.k.hpIntD': ["Übergabestation: Primärleitung (Netzwasser)", "Substation: primary pipe (network water)", "Subestación: tubería primaria (agua de red)"],
+    'l3.k.dhHX': ["Plattenwärmeübertrager Fernwärme", "District heating plate heat exchanger", "Intercambiador de placas de red de calor"],
+    'l3.k.coldShower': ["Kaltwasser zur Dusche", "Cold water to shower", "Agua fría a la ducha"],
+    'l3.ev': ["Elektroauto", "Electric car", "Coche eléctrico"], 'l3.evCharging': ["lädt an der Wallbox", "charging at the wallbox", "cargando en la wallbox"], 'l3.evParked': ["geparkt, nicht gesteckt", "parked, not plugged in", "aparcado, sin enchufar"],
+    'l3.airDuct': ["Luftkanäle & Lichtschächte", "Air ducts & light wells", "Conductos de aire y patios inglés"],
+    'l3.cooling': ["Kühlfunktion", "Cooling function", "Función de refrigeración"],
+    'l3.ri.dormer': ["Schleppgaube · PV-Abstand 20 cm", "shed dormer · PV clearance 20 cm", "buhardilla · distancia FV 20 cm"],
+    'l3.ri.window': ["Dachflächenfenster", "roof window in the roof plane", "ventana en el plano del tejado"],
+    'l3.ri.chimney': ["Schornstein · Verschattung", "chimney · shading", "chimenea · sombra"],
+    'l3.ri.antenna': ["Antenne/SAT · Blitzschutz beachten", "antenna/satellite · mind lightning protection", "antena/satélite · ojo con el pararrayos"],
+    'l3.ri.vent': ["Strangentlüftung (Abwasser)", "soil stack vent (waste water)", "ventilación de bajante (aguas residuales)"],
+    'brief.outdoorSplit': ["Beim Split-Gerät steht nur der Kältekreis-Teil draußen: Verdichter, Verdampfer und Expansionsventil. Zum Innengerät führen zwei gedämmte Kupferleitungen – die dicke Heißgasleitung bringt das verdichtete Kältemittel hinein, die dünne Flüssigkeitsleitung führt es kondensiert zurück. Erst im Innengerät gibt das Kältemittel seine Wärme an das Heizwasser ab. Vorteil: kein Heizwasser im Freien, also kein Frostrisiko. Nachteil: Arbeiten am Kältekreis brauchen einen zertifizierten Kälteinstallateur.",
+      "With a split unit only the refrigerant part stands outside: compressor, evaporator and expansion valve. Two insulated copper lines lead to the indoor unit – the thick hot-gas line carries the compressed refrigerant in, the thin liquid line returns it condensed. Only in the indoor unit does the refrigerant release its heat to the heating water. Advantage: no heating water outdoors, so no frost risk. Drawback: work on the refrigerant circuit requires a certified refrigeration technician.",
+      "En el equipo split solo la parte del circuito frigorífico está fuera: compresor, evaporador y válvula de expansión. Dos tubos de cobre aislados van a la unidad interior: el grueso de gas caliente lleva el refrigerante comprimido y el fino de líquido lo devuelve condensado. Solo en la unidad interior el refrigerante cede su calor al agua de calefacción. Ventaja: no hay agua de calefacción en el exterior, así que no hay riesgo de helada. Inconveniente: trabajar en el circuito frigorífico exige un frigorista certificado."],
+    'fun.outdoorSplit': ["Die Heißgasleitung ist dicker, weil Gas bei gleichem Massenstrom ein Vielfaches an Volumen braucht.", "The hot-gas line is thicker because gas needs many times the volume for the same mass flow.", "El tubo de gas es más grueso porque el gas necesita muchas veces más volumen para el mismo caudal másico."],
+    'brief.ev': ["Das Elektroauto ist für das Haus vor allem ein großer, verschiebbarer Verbraucher. Mit elf Kilowatt Ladeleistung zieht es mehr als die Wärmepumpe. Wird es mittags mit Solarstrom geladen, steigt der Eigenverbrauch der PV-Anlage deutlich; abends belastet es dagegen den Netzanschluss. Nach Paragraf vierzehn a des Energiewirtschaftsgesetzes darf der Netzbetreiber die Ladeleistung bei Engpässen vorübergehend drosseln – dafür gibt es ein reduziertes Netzentgelt.",
+      "For the house the electric car is above all a large, shiftable load. Charging at eleven kilowatts it draws more than the heat pump. Charged at midday with solar power, the PV self-consumption rises considerably; in the evening it loads the grid connection instead. Under section fourteen a of the German Energy Industry Act the grid operator may temporarily reduce the charging power during bottlenecks – in return grid fees are reduced.",
+      "Para la casa, el coche eléctrico es sobre todo un consumidor grande y desplazable. Cargando a once kilovatios consume más que la bomba de calor. Si se carga a mediodía con energía solar, el autoconsumo fotovoltaico sube claramente; por la tarde, en cambio, carga la acometida. Según el párrafo catorce a de la ley alemana de energía, el operador de red puede reducir temporalmente la potencia de carga en caso de congestión; a cambio se reducen las tarifas de red."],
+    'fun.ev': ["Eine Batterie mit 60 kWh speichert so viel Energie wie die Wärmepumpe eines sanierten Einfamilienhauses an einem kalten Wintertag braucht.", "A 60 kWh battery stores as much energy as the heat pump of a renovated single-family house needs on a cold winter day.", "Una batería de 60 kWh guarda tanta energía como la que necesita la bomba de calor de una vivienda unifamiliar rehabilitada en un día frío de invierno."],
+    'brief.airDuct': ["Der Unitower steht im Keller und holt sich die Außenluft über zwei gedämmte Kanäle: Durch den einen strömt Außenluft zum Verdampfer, durch den anderen geht die abgekühlte Fortluft hinaus. Beide münden in Lichtschächte vor der Kellerwand, mit Abstand zueinander, damit die kalte Fortluft nicht gleich wieder angesaugt wird. Die Kanäle müssen dampfdicht gedämmt sein, sonst kondensiert an der kalten Oberfläche Wasser.",
+      "The Unitower stands in the basement and takes outdoor air through two insulated ducts: one brings outdoor air to the evaporator, the other carries the cooled exhaust air out. Both open into light wells in front of the basement wall, spaced apart so that the cold exhaust air is not drawn in again right away. The ducts must be vapour-tight insulated, otherwise water condenses on the cold surface.",
+      "El Unitower está en el sótano y toma el aire exterior por dos conductos aislados: por uno entra aire exterior al evaporador y por el otro sale el aire enfriado. Ambos desembocan en patios inglés delante del muro del sótano, separados entre sí para que el aire frío expulsado no se vuelva a aspirar enseguida. Los conductos deben llevar aislamiento estanco al vapor; si no, se condensa agua en la superficie fría."],
+    'fun.airDuct': ["Für zehn Kilowatt Heizleistung bewegt eine Luft-Wärmepumpe rund drei- bis viertausend Kubikmeter Luft pro Stunde – das Volumen von etwa zehn Einfamilienhäusern.", "For ten kilowatts of heating output an air-source heat pump moves about three to four thousand cubic metres of air per hour – the volume of roughly ten family homes.", "Para diez kilovatios de calefacción una bomba de calor de aire mueve unos tres a cuatro mil metros cúbicos de aire por hora: el volumen de unas diez viviendas."],
+    'brief.cooling': ["Im Sommer kann dieselbe Anlage kühlen. Passiv, also mit natural cooling, bleibt der Verdichter aus: Die kühle Sole aus der Erdsonde nimmt über einen Wärmeübertrager Wärme aus dem Heizwasser auf. Aktiv kehrt ein Vierwegeventil den Kältekreis um. In beiden Fällen gilt: Die Vorlauftemperatur muss mindestens zwei Kelvin über dem Taupunkt der Raumluft bleiben, sonst bildet sich Kondenswasser am Boden oder an den Rohren.",
+      "In summer the same system can cool. Passively, with natural cooling, the compressor stays off: cool brine from the borehole takes up heat from the heating water through a heat exchanger. Actively, a four-way valve reverses the refrigerant circuit. In both cases the supply temperature must stay at least two kelvin above the dew point of the room air, otherwise condensation forms on the floor or on the pipes.",
+      "En verano la misma instalación puede refrigerar. De forma pasiva, con natural cooling, el compresor está apagado: la salmuera fría de la sonda absorbe calor del agua de calefacción a través de un intercambiador. De forma activa, una válvula de cuatro vías invierte el circuito frigorífico. En ambos casos la impulsión debe quedar al menos dos kelvin por encima del punto de rocío del aire; si no, se forma condensación en el suelo o en las tuberías."],
+    'fun.cooling': ["Natural cooling braucht nur Strom für die Pumpen – die Kälteleistung pro Kilowattstunde Strom liegt oft über zwanzig.", "Natural cooling only needs electricity for the pumps – the cooling output per kilowatt-hour of electricity is often above twenty.", "El natural cooling solo necesita electricidad para las bombas: la potencia frigorífica por kilovatio hora eléctrico suele superar veinte."],
+    'brief.roof_dormer': ["Die Gaube schafft Stehhöhe und Licht im Dachgeschoss. Für die Photovoltaik ist sie ein Hindernis: Module brauchen Abstand zu Kanten und Aufbauten – hier zwanzig Zentimeter –, und die Gaube wirft je nach Sonnenstand Schatten auf die Modulreihen darunter.",
+      "The dormer adds headroom and light to the attic. For photovoltaics it is an obstacle: modules need clearance from edges and roof structures – here twenty centimetres – and depending on the sun position the dormer casts shade on the module rows below.",
+      "La buhardilla da altura y luz a la planta bajo cubierta. Para la fotovoltaica es un obstáculo: los módulos necesitan distancia a bordes y elementos, aquí veinte centímetros, y según la posición del sol la buhardilla proyecta sombra sobre las filas inferiores."],
+    'brief.roof_window': ["Das Dachflächenfenster liegt in der Dachebene und belichtet das Dachgeschoss. Auf der Dachfläche ist es eine Sperrfläche für die PV-Belegung. Wärmetechnisch ist es eine Schwachstelle: Sein U-Wert ist meist mehrfach höher als der des gedämmten Daches.",
+      "The roof window sits in the roof plane and lights the attic. On the roof it is a no-go area for the PV layout. Thermally it is a weak spot: its U-value is usually several times higher than that of the insulated roof.",
+      "La ventana de tejado está en el plano de la cubierta e ilumina la planta bajo cubierta. En el tejado es una zona excluida para la fotovoltaica. Térmicamente es un punto débil: su valor U suele ser varias veces mayor que el del tejado aislado."],
+    'brief.roof_chimney': ["Der Schornstein führt die Abgase eines Kessels oder Kaminofens über Dach. Er beschattet Teile der Dachfläche und braucht Abstand zur PV. Wird die Gasheizung durch eine Wärmepumpe ersetzt, kann er stillgelegt oder als Schacht für Leitungen weitergenutzt werden.",
+      "The chimney takes the flue gases of a boiler or stove above the roof. It shades parts of the roof and needs clearance from the PV. When the gas boiler is replaced by a heat pump it can be decommissioned or reused as a shaft for pipes and cables.",
+      "La chimenea evacua los humos de una caldera o estufa por encima del tejado. Sombrea parte de la cubierta y necesita distancia a la fotovoltaica. Si la caldera de gas se sustituye por una bomba de calor, puede clausurarse o reutilizarse como patinillo para tuberías y cables."],
+    'brief.roof_antenna': ["Antenne oder Satellitenschüssel brauchen einen festen Platz auf dem Dach und werfen kleine, aber wandernde Schatten. Wichtig: Metallteile auf dem Dach müssen in den Blitzschutz einbezogen oder mit Trennungsabstand montiert werden.",
+      "An antenna or satellite dish needs a fixed spot on the roof and casts small but moving shadows. Important: metal parts on the roof must be included in the lightning protection or mounted with a separation distance.",
+      "La antena o la parabólica necesitan un sitio fijo en el tejado y proyectan sombras pequeñas pero móviles. Importante: las piezas metálicas del tejado deben integrarse en el pararrayos o montarse con distancia de separación."],
+    'brief.roof_vent': ["Das Abluftrohr ist die Lüftung der Abwasser-Fallleitung über Dach. Es sorgt für Druckausgleich, damit die Geruchsverschlüsse in Waschbecken und Duschen nicht leergesaugt werden. Für die PV-Belegung ist es ein kleines, aber festes Hindernis.",
+      "The vent pipe is the roof ventilation of the waste-water stack. It equalises pressure so that the traps in basins and showers are not sucked empty. For the PV layout it is a small but fixed obstacle.",
+      "El tubo de ventilación airea la bajante de aguas residuales por encima del tejado. Iguala la presión para que los sifones de lavabos y duchas no se vacíen por succión. Para la fotovoltaica es un obstáculo pequeño pero fijo."],
+    'fun.roof_dormer': ["Schon ein schmaler Schatten über eine Modulreihe kann deren Ertrag stark senken – deshalb plant man um Aufbauten herum.", "Even a narrow shadow across a module string can cut its yield sharply – that is why layouts are planned around roof structures.", "Incluso una sombra estrecha sobre una fila de módulos puede reducir mucho su producción; por eso se planifica alrededor de los elementos del tejado."],
     'lang.name': ['Deutsch', 'English', 'Español']
   };
 
@@ -3006,7 +3054,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – 3D-Thermografie-Ansicht (three.js r128)
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * - Gebäude parametrisch aus WPV.engine.buildingGeometry (Typologie NRW)
  * - Wandaufbau in Schichten (Putz / Dämmung / Mauerwerk), Fenster, Dach, Keller
  * - Hydraulik: Erzeuger, Puffer (Schichtung), TWW-Speicher mit Wendel,
@@ -3510,6 +3558,25 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         });
       });
     }
+    /** Anschlüsse nach der Kollisionsauflösung schließen: Wurde ein Strang seitlich versetzt (Parallelführung), endet ein Abzweig
+     *  (Ring, Verteiler-Anbindung, Heizkörper-Stich, TWW-/KW-Abgang) sonst einige Zentimeter neben ihm. Das Ende wird auf den
+     *  nächstgelegenen Punkt des Zielstrangs gezogen (verkürzt oder um ein kurzes Stück verlängert). */
+    const SNAP = { toManifold: /^riserS$/, fromManifold: /^riserR$/, ringS: /^riserS$/, ringR: /^riserR$/, stubS: /^ringS$/, stubR: /^ringR$/,
+      dhwBasin: /^dhwRiser$/, dhwBranch: /^dhwRiser$/, coldBranch: /^coldRiser$/, coldShower: /^coldRiser$/ };
+    function snapEnds(Q) {
+      const proj = (p, a, b) => { const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, p.clone().sub(a).dot(ab) / (ab.lengthSq() || 1))); return a.clone().addScaledVector(ab, t); };
+      Q.forEach(P => {
+        const re = SNAP[P.info]; if (!re || P.pts.length < 2) return;
+        const tg = Q.filter(T0 => T0 !== P && re.test(T0.info || ''));
+        [0, P.pts.length - 1].forEach(ei => {
+          const e = P.pts[ei], nb = P.pts[ei === 0 ? 1 : ei - 1]; let best = null, bd = 0.15;
+          tg.forEach(T0 => { for (let k = 1; k < T0.pts.length; k++) { const q = proj(e, T0.pts[k - 1], T0.pts[k]), d = q.distanceTo(e); if (d < bd) { bd = d; best = q; } } });
+          if (!best || bd < 0.004) return;
+          const overshoot = best.clone().sub(e).dot(e.clone().sub(nb)) < 0 && best.distanceTo(nb) > 1e-3;
+          if (overshoot) P.pts[ei] = best; else if (ei === 0) P.pts.unshift(best); else P.pts.push(best);
+        });
+      });
+    }
     /** Baut einen Rohrzug sofort (ohne Kollisionsauflösung), z. B. für Erdsonden. */
     function pipeNow(pts, r, mat, fnU, grp, info) {
       const tb = tube(pts, r); if (!tb) return null;
@@ -3725,7 +3792,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       buildElectric(ctxB, tech);
       buildCompass(ctxB);
       buildDims(ctxB);
-      const Q = pipeQueue; pipeQueue = null; for (let it = 0; it < 3; it++) resolvePipes(Q); Q.forEach(P => pipeNow(P.pts, P.r, P.mat, P.fnU, P.grp, P.info));
+      const Q = pipeQueue; pipeQueue = null; for (let it = 0; it < 3; it++) resolvePipes(Q); snapEnds(Q); Q.forEach(P => pipeNow(P.pts, P.r, P.mat, P.fnU, P.grp, P.info));
       decorateHydraulics(ctxB);
       buildTees(); buildArrows(); buildParticles();
       capFreeEnds(); markPipes();
@@ -3741,7 +3808,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     /** Rohrkennzeichnung nach DIN 2403 (Farbband + Fließrichtung): Heizungs-VL rot, RL blau, Trinkwasser warm rot/grün, kalt grün, Sole violett, Kältemittel gelb/braun. */
     function markPipes() {
       const bands = { red: [], blue: [], green: [], violet: [], yellow: [] };
-      const colOf = info => /^(dhw|circ)/.test(info) ? 'red' : /^cold/.test(info) ? 'green' : /^(probe|brine)/.test(info) ? 'violet' : /^(refr|hpInt)/.test(info) ? 'yellow'
+      const colOf = info => /^(dhw|circ)/.test(info) ? 'red' : /^cold/.test(info) ? 'green' : /^(probe|brine|hpIntB)/.test(info) ? 'violet' : /^(refr|hpIntR)/.test(info) ? 'yellow' : /^hpInt/.test(info) ? null
         : /(S|Down|ToBuffer|ToBoiler)$|^toManifold|^charge$/.test(info) ? 'red' : /(R|Up|ToGen)$|^fromManifold|^chargeR$/.test(info) ? 'blue' : null;
       pipesReg.forEach(P => {
         if (!P.path || P.len < 1.2 || /^(ufh|wallLoop|flue|probe)/.test(P.info || '')) return; const col = colOf(P.info || ''); if (!col) return;
@@ -3990,15 +4057,15 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const { L, zf } = c, zS = zf + 3.5, xo = -L / 2 - 1.25, yo = -1.05, yR = yo - 0.36, zV = zS + 0.35, zR = zS + 0.75, X1 = -38, X2 = 38;
       const on = SC.type === 'dh';
       const tS = () => on ? S.dhPS : (S.te < 15 ? lerp(70, 95, clamp01((15 - S.te) / 27)) : 70), tR = () => on ? S.dhPR : 50;
-      const jacket = std('#2d3136', { opacity: 0.42, p: { roughness: 0.6 } });
+      const jacket = std('#3a4047', { opacity: 0.16, p: { roughness: 0.6 } }); // KMR-Mantel durchscheinend: Fluidpartikel im Mediumrohr sichtbar
       [[zV, yo, TM.heatS, tS, 'dhPrimS'], [zR, yR, TM.heatR, tR, 'dhPrimR']].forEach(([z, y, tm, fn, key]) => {
-        pipeNow([V(X1, y, z), V(X2, y, z)], 0.06, tm, () => fn(), groups.sys, key);
+        pipeNow(key === 'dhPrimS' ? [V(X1, y, z), V(X2, y, z)] : [V(X2, y, z), V(X1, y, z)], 0.06, tm, () => fn(), groups.sys, key); // VL vom Heizwerk weg, RL zurück
         mesh(cy(0.1, X2 - X1, 0, y, z, 20, 0, Math.PI / 2), jacket, groups.cas);
       });
       // Hausanschluss (Szenario Fernwärme): Abzweige von der Grundstücksgrenze auf die Netzleitungen; sonst verschlossene Anschlussstutzen
       const hc = lastTech && lastTech.dhConn;
       if (on && hc) {
-        pipeNow([V(hc.xV, hc.yV, hc.zS), V(hc.xV, hc.yV, zV - 0.08), V(hc.xV, yo, zV)], 0.03, TM.heatS, () => S.dhPS, groups.sys, 'dhPrimS');
+        pipeNow([V(hc.xV, yo, zV), V(hc.xV, hc.yV, zV - 0.08), V(hc.xV, hc.yV, hc.zS)], 0.03, TM.heatS, () => S.dhPS, groups.sys, 'dhPrimS'); // Abzweig Netz-VL → Hausanschluss
         pipeNow([V(hc.xR, hc.yR, hc.zS), V(hc.xR, yR, hc.zS + 0.25), V(hc.xR, yR, zR)], 0.03, TM.heatR, () => S.dhPR, groups.sys, 'dhPrimR');
         mesh(merge([cy(0.075, 0.22, hc.xV, yo, zV - 0.1, 16, Math.PI / 2), cy(0.075, 0.22, hc.xR, yR, zR - 0.1, 16, Math.PI / 2)]), jacket, groups.cas); // T-Abzweige (Muffen)
       } else {
@@ -4445,8 +4512,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           if (ground) {
             const eX = cx - w * 0.22, eB = yb + h * 0.095, eT = yb + h * 0.545, kx = cx, kT = yb + h * 0.38, zz = cz + d * 0.05;
             const zBO = bufFirst && !mfh ? cz - 0.04 : zb + 0.12, zBI = bufFirst && !mfh ? cz + 0.05 : zb + 0.22; tech.brineZ = [zBO, zBI]; // Solestutzen oben: Lage ohne darüberlaufende Längstrasse
-            pipeNow([V(xr + 0.08, top, zBO), V(xr + 0.08, eT, zBO)], 0.016, TM.brine, () => S.hpRun ? S.brineOut : S.soil, groups.sys, 'hpInt');
-            pipeNow([V(xo - 0.08, top, zBI), V(xo - 0.08, yb + h * 0.6, zBI), V(eX + w * 0.1, yb + h * 0.6, zBI), V(eX + w * 0.1, eT, zBI)], 0.016, TM.brine, () => S.hpRun ? S.brineIn : S.soil, groups.sys, 'hpInt');
+            pipeNow([V(xr + 0.08, eT, zBO), V(xr + 0.08, top, zBO)], 0.016, TM.brine, () => S.hpRun ? S.brineOut : S.soil, groups.sys, 'hpIntB'); // Sole-Austritt Verdampfer → Stutzen (→ Erdsonde)
+            pipeNow([V(xo - 0.08, top, zBI), V(xo - 0.08, yb + h * 0.6, zBI), V(eX + w * 0.1, yb + h * 0.6, zBI), V(eX + w * 0.1, eT, zBI)], 0.016, TM.brine, () => S.hpRun ? S.brineIn : S.soil, groups.sys, 'hpIntB');
             // Kältemittel: Verdichter → Heißgas → Verflüssiger → Flüssigkeit → Expansionsventil → Verdampfer → Sauggas → Verdichter
             pipeNow([V(kx, kT, zz), V(kx, cT - 0.02, zz), V(xc0 - w * 0.1, cT - 0.02, zI)], 0.009, TM.solid, () => S.hpRun ? S.compHot : S.cellar, groups.sys, 'refrHot');
             pipeNow([V(xc0 - w * 0.1, cB + 0.03, zI), V(cx - w * 0.02, cB + 0.03, zI), V(cx - w * 0.02, eB + 0.04, zI), V(eX + w * 0.1, eB + 0.04, zI)], 0.008, TM.solid, () => S.hpRun ? (S.hpRet + 2) : S.cellar, groups.sys, 'refrLiq');
@@ -4458,10 +4525,12 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           }
         }
         tech.items.hp = { out: V(cx + w * 0.3, yb + h, cz), ret: V(cx - w * 0.3, yb + h, cz), top: yb + h, cx, cz, w, h, d, yb };
+        if (SC.cooling && SC.cooling !== 'off') label(V(cx - w * 0.15, yb + h + 0.55, cz + 0.25), () => [tr('l3.cooling'), S.cool ? tr('l3.coolMode') + ' · θd ' + degC(S.td) + ' · VL ' + degC(S.flow) : tr('cool.' + SC.cooling)], groups.lab, { prio: 0, key: 'cooling' });
         // Anschlüsse der Außeneinheit (Primärkreis Luft/Wasser) oben hinten am Hydraulikmodul – getrennt von den Heizungsstutzen
         if (!ground) { const pz = cz - d * 0.25; tech.items.hp.pS = V(cx + w * 0.08, yb + h, pz); tech.items.hp.pR = V(cx - w * 0.08, yb + h, pz);
-          pipeNow([V(cx + w * 0.08, yb + h, pz), V(cx + w * 0.08, yb + h * 0.7, pz)], 0.015, TM.heatS, () => S.hpRun ? S.hpOut : S.cellar, groups.sys, 'hpInt');
-          pipeNow([V(cx - w * 0.08, yb + h, pz), V(cx - w * 0.08, yb + h * 0.3, pz)], 0.015, TM.heatR, () => S.hpRun ? S.hpRet : S.cellar, groups.sys, 'hpInt');
+          const kI = SC.hpConfig === 'split' ? 'hpIntR' : 'hpInt'; // Split: Kältemittel im Innengerät, sonst Heizwasser
+          pipeNow([V(cx + w * 0.08, yb + h, pz), V(cx + w * 0.08, yb + h * 0.7, pz)], 0.015, TM.heatS, () => S.hpRun ? S.hpOut : S.cellar, groups.sys, kI);   // Eintritt von der Außeneinheit
+          pipeNow([V(cx - w * 0.08, yb + h * 0.3, pz), V(cx - w * 0.08, yb + h, pz)], 0.015, TM.heatR, () => S.hpRun ? S.hpRet : S.cellar, groups.sys, kI);   // Austritt zur Außeneinheit
           mesh(merge([cy(0.032, 0.04, cx + w * 0.08, yb + h + 0.02, pz, 12), cy(0.032, 0.04, cx - w * 0.08, yb + h + 0.02, pz, 12)]), M.brass, groups.fit); }
         addObstacle('hp', cx - w / 2, cx + w / 2, yb, yb + h, cz - d / 2, cz + d / 2, 'z+');
         mesh(bx(w * 0.34, Math.min(0.1, h * 0.1), 0.006, cx, yb + h * 0.82, cz + d / 2 + 0.004), M.lcd, groups.fit);
@@ -4496,8 +4565,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           const hxg = helixGeo(rad, hh, 5, Math.min(0.02, w * 0.035), y0, cx, cz, ph);
           tmesh(hxg.geo, TM.loop, hxg.u, 1, u => S.gasRun ? lerp(S.boilerOut, S.boilerRet + 1, u) : S.cellar, groups.sys, 'boilerHX');
           const zF = cz + rad + 0.035, xo = cx + w * 0.25, xr = cx - rad;
-          pipeNow([V(xr, yb, cz), V(xr, y0, cz)], 0.016, TM.heatR, () => S.gasRun ? S.boilerRet : S.cellar, groups.sys, 'hpInt');
-          pipeNow([V(xr, y0 + hh, cz), V(xr, y0 + hh + 0.05, cz), V(xr, y0 + hh + 0.05, zF), V(xo, y0 + hh + 0.05, zF), V(xo, yb + 0.06, zF), V(xo, yb + 0.06, cz), V(xo, yb, cz)], 0.016, TM.heatS, () => S.gasRun ? S.boilerOut : S.cellar, groups.sys, 'hpInt');
+          pipeNow([V(xr, yb, cz), V(xr, y0, cz)], 0.016, TM.heatR, () => S.gasRun ? S.boilerRet : S.cellar, groups.sys, 'hpIntG');
+          pipeNow([V(xr, y0 + hh, cz), V(xr, y0 + hh + 0.05, cz), V(xr, y0 + hh + 0.05, zF), V(xo, y0 + hh + 0.05, zF), V(xo, yb + 0.06, zF), V(xo, yb + 0.06, cz), V(xo, yb, cz)], 0.016, TM.heatS, () => S.gasRun ? S.boilerOut : S.cellar, groups.sys, 'hpIntG');
           tpos(cy(rad * 0.55, hh * 0.9, cx, y0 + hh * 0.5, cz, 16), TM.solid, (px, py) => S.gasRun ? lerp(S.flue + 30, S.flue + 140, py) : S.cellar, groups.sys, 'combustion');
           mesh(merge([cy(rad * 1.25, 0.02, cx, y0 + hh + 0.08, cz, 18), cy(0.04, 0.08, cx, y0 + hh + 0.13, cz, 12)]), M.metal, groups.fit); }
         tconst(cy(w * 0.12, 0.04, cx, yb + h * 0.82, cz, 18), TM.solid, () => S.gasRun ? 950 : S.cellar, groups.sys, 'burner');
@@ -4535,8 +4604,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         mesh(merge([bx(w * 0.26, 0.02, d * 0.5, cx, yb + h * 0.78, cz), bx(w * 0.26, 0.02, d * 0.5, cx, yb + h * 0.22, cz)]), M.metal, groups.fit); // Spannplatten
         const xP = cx - w * 0.32, xQ = cx - w * 0.18, ySp = yb + h * 0.72, yRp = yb + h * 0.32;
         // Primärleitungen innen: Wand → Absperrung → Schmutzfänger → HX (VL oben), HX → Regelventil/Δp-Regler → WMZ → Wand (RL unten)
-        pipeNow([V(cx - w / 2, ySp, cz), V(xP, ySp, cz), V(xP, yb + h * 0.66, cz), V(cx - w * 0.11, yb + h * 0.66, cz)], 0.018, TM.heatS, () => S.dhPS, groups.sys, 'hpInt');
-        pipeNow([V(cx - w * 0.11, yb + h * 0.3, cz), V(xQ, yb + h * 0.3, cz), V(xQ, yRp, cz), V(cx - w / 2, yRp, cz)], 0.018, TM.heatR, () => S.dhPR, groups.sys, 'hpInt');
+        pipeNow([V(cx - w / 2, ySp, cz), V(xP, ySp, cz), V(xP, yb + h * 0.66, cz), V(cx - w * 0.11, yb + h * 0.66, cz)], 0.018, TM.heatS, () => S.dhPS, groups.sys, 'hpIntD');
+        pipeNow([V(cx - w * 0.11, yb + h * 0.3, cz), V(xQ, yb + h * 0.3, cz), V(xQ, yRp, cz), V(cx - w / 2, yRp, cz)], 0.018, TM.heatR, () => S.dhPR, groups.sys, 'hpIntD');
         mesh(merge([cy(0.03, 0.06, xP, ySp, cz + 0.02, 12, Math.PI / 2), bx(0.07, 0.05, 0.05, xQ, yRp + 0.08, cz + 0.03), cy(0.035, 0.05, xQ, yRp + 0.17, cz, 12)]), M.brass, groups.fit); // Kugelhahn, Regelventil, Δp-Regler
         mesh(merge([bx(0.11, 0.09, 0.07, xQ, yb + h * 0.12, cz + 0.05), bx(0.06, 0.03, 0.004, xQ, yb + h * 0.13, cz + 0.087)]), M.dark, groups.fit);  // WMZ Versorger
         mesh(bx(0.18, 0.12, 0.04, cx + w * 0.28, yb + h * 0.86, cz + d / 2 - 0.03), M.dark, groups.fit);                         // Regler
@@ -4554,7 +4623,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         const yRt = yo - 0.11, dR = yRp < yRt ? -0.22 : 0.22;
         tech.dhConn = { xV: xo, xR: xo + dR, yV: yo, yR: yRt, zS };
         [[ySp, yo, TM.heatS, () => S.dhPS, 'dhPrimS', 0], [yRp, yRt, TM.heatR, () => S.dhPR, 'dhPrimR', dR]].forEach(([yy, yt, tm, fn, key, dz]) => {
-          pipe(dd([V(cx - w / 2, yy, cz), V(xW - 0.2, yy, cz), V(xo + dz, yy, cz), V(xo + dz, yt, cz), V(xo + dz, yt, zS)]), 0.03, tm, fn, groups.sys, key);
+          const pts = dd([V(cx - w / 2, yy, cz), V(xW - 0.2, yy, cz), V(xo + dz, yy, cz), V(xo + dz, yt, cz), V(xo + dz, yt, zS)]);
+          pipe(key === 'dhPrimS' ? pts.reverse() : pts, 0.03, tm, fn, groups.sys, key); // VL: Netz → Station, RL: Station → Netz
           mesh(cy(0.09, tW + 0.12, xW + tW / 2 - 0.05, yy, cz, 18, 0, Math.PI / 2), M.insJacket, groups.cas);               // Mauerdurchführung
         });
         label3(V(cx, yb + h + 0.3, cz + 0.25), () => [tr('l3.dhStation'), degC(S.dhPS) + ' → ' + degC(S.boilerOut) + ' · ' + tr('l3.dhPrimRet') + ' ' + degC(S.dhPR)]);
@@ -4685,7 +4755,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
             // VL-Sammler auf bxr (y 0,15), RL-Sammler auf bxs tiefer (y 0,03) → Stichleitungen kreuzen sich nicht; Anschluss jeweils am Vorgänger-Gerät
             const uzP = uz + 1.7, cS = [pin, V(bxr, 0.15, pin.z), V(bxr, 0.15, uzP - 0.18)], cR = [rin, V(bxs, 0.15, rin.z), V(bxs, 0.03, rin.z), V(bxs, 0.03, uzP + 0.18)];
             pipe(cS, split ? rS : 0.026, TM.heatS, fS, groups.sys, kS);
-            pipe(cR, split ? rR : 0.026, TM.heatR, fR, groups.sys, kR);
+            pipe(cR.slice().reverse(), split ? rR : 0.026, TM.heatR, fR, groups.sys, kR); // RL-Abzweig aus dem Sammler zum Gerät
             mesh(bx(0.34, 0.2, Math.abs(uz0 - uz) + 0.5, (bxs + bxr) / 2, 0.1, (uz + uz0) / 2), std('#9aa1a8', { opacity: 0.5 }), groups.cas);
           }
         }
@@ -4866,7 +4936,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     let arrows = null;
     const ARROW_KIND = { priS: 'main', priR: 'main', secS: 'main', secR: 'main', riserS: 'riser', riserR: 'riser', grpS: 'riser', grpR: 'riser', genToBuffer: 'gen', bufferToGen: 'gen', hpToBoiler: 'gen',
       hpLineS: 'od', hpLineR: 'od', ringS: 'ring', ringR: 'ring', stubS: 'stub', stubR: 'stub', ufh: 'ufh', toManifold: 'ring', fromManifold: 'ring', wallLoop: 'ufh',
-      charge: 'chg', chargeR: 'chg', brineDown: 'brine', brineUp: 'brine', probe: 'probe', circ: 'circ', solarS: 'sol', solarR: 'sol', hpCascade: 'gen' };
+      charge: 'chg', chargeR: 'chg', brineDown: 'brine', brineUp: 'brine', probe: 'probe', circ: 'circ', solarS: 'sol', solarR: 'sol', hpCascade: 'gen', bypass: 'stub' };
     const DI = { main: 0.026, riser: 0.026, gen: 0.026, od: 0.026, ring: 0.02, stub: 0.013, ufh: 0.012, chg: 0.02, brine: 0.0326, probe: 0.026, circ: 0.016, sol: 0.016 };
     /** Fließrichtungspfeile auf den Rohren. */
     function buildArrows() {
@@ -4897,8 +4967,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
      *  v = V̇/A (logarithmisch gestaucht, damit langsame und schnelle Kreise sichtbar bleiben), Strömungsprofil zur Rohrmitte schneller,
      *  Farbe = Temperatur (aktive Palette), Form = Fluidart (Heizwasser ●, Trinkwasser warm/kalt •, Sole ◆, Kältemittel ▲/Gasblasen, Abgas ○). ---------- */
     let parts = null;
-    const FLUID_OF = info => /^(probe|brine)/.test(info) ? 'brine' : /^(refr|hpInt)/.test(info) ? 'refr' : /^(dhw|circ)/.test(info) ? 'dhw' : /^cold/.test(info) ? 'cold' : /^flue/.test(info) ? 'flue' : /^solar/.test(info) ? 'brine' : 'water';
-    const PART_KIND = info => ARROW_KIND[info] || (/^(dhw|circ)/.test(info) ? 'dhwF' : /^cold/.test(info) ? 'coldF' : /^(refr|hpInt)/.test(info) ? 'refr' : /^dhPrim/.test(info) ? 'dh' : /^coil/.test(info) ? 'chg' : /^flue/.test(info) ? 'flue' : null);
+    const FLUID_OF = info => /^(probe|brine|hpIntB)/.test(info) ? 'brine' : /^(refr|hpIntR)/.test(info) ? 'refr' : /^(dhw|circ)/.test(info) ? 'dhw' : /^cold/.test(info) ? 'cold' : /^flue/.test(info) ? 'flue' : /^solar/.test(info) ? 'brine' : 'water';
+    const PART_KIND = info => ARROW_KIND[info] || (/^(dhw|circ)/.test(info) ? 'dhwF' : /^cold/.test(info) ? 'coldF' : /^(refr|hpIntR)/.test(info) ? 'refr' : /^hpIntB/.test(info) ? 'brine' : /^(dhPrim|hpIntD)/.test(info) ? 'dh' : /^hpInt/.test(info) ? 'gen' : /^coil/.test(info) ? 'chg' : /^solarCoil/.test(info) ? 'sol' : /^flue/.test(info) ? 'flue' : null);
     let palLUT = null, palLUTname = '';
     function tempColor(t, out) {
       if (!palLUT || palLUTname !== opts.palette) { palLUT = paletteBytes(opts.palette); palLUTname = opts.palette; }
@@ -4915,7 +4985,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         const fl = FLUID_OF(P.info || ''), n = Math.max(2, Math.round(want[i] * f));
         if (!P.samp) { const m = Math.min(1500, Math.max(8, Math.ceil(P.len / 0.02))), pts = P.path.getSpacedPoints(m); P.samp = new Float32Array((m + 1) * 3); pts.forEach((q, k) => { P.samp[k * 3] = q.x; P.samp[k * 3 + 1] = q.y; P.samp[k * 3 + 2] = q.z; }); }
         const arr = per[fl] || (per[fl] = []);
-        for (let k = 0; k < n; k++) { const rr = Math.sqrt(Math.random()) * 0.55, ang = Math.random() * Math.PI * 2; arr.push({ P, s0: P.len * (k + Math.random() * 0.8) / n, rr, ang, prof: 1.18 - 0.55 * rr * rr / 0.3025, gas: fl === 'refr' && /Hot|Suc|Gas|Two/.test(P.info || '') }); }
+        for (let k = 0; k < n; k++) { const rr = Math.sqrt(Math.random()) * 0.55, ang = Math.random() * Math.PI * 2; arr.push({ P, s0: P.len * (k + Math.random() * 0.8) / n, rr, ang, prof: 1.18 - 0.55 * rr * rr / 0.3025, gas: fl === 'refr' && /Hot|Suc|Gas|Two|^refrG$/.test(P.info || '') }); }
       });
       const meshes = [];
       Object.keys(per).forEach(fl => {
@@ -5209,6 +5279,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         { const z0 = cz0 + 2.8, z1 = c.zf + 2.5, zm = (z0 + z1) / 2; mesh(bx(2.6, 0.03, z1 - z0, cx0 + 0.1, 0.016, zm), std('#b3ada3', { p: { roughness: 0.9, map: TEX.paver } }), groups.site);
           [-1, 1].forEach(sd => mesh(bx(0.12, 0.08, z1 - z0, cx0 + 0.1 + sd * 1.36, 0.02, zm), std('#9c9a94', { p: { roughness: 0.8 } }), groups.site)); }
         label(V(xo - 0.25, 1.85, zwb), () => [tr('l3.wallbox'), '11 kW · ' + tr('l3.wbSub')], groups.lab, { prio: 0 });
+        label(V(cx0 + 0.1, 1.95, cz0 + 0.6), () => [tr('l3.ev'), tr(opts.evPlug ? 'l3.evCharging' : 'l3.evParked')], groups.lab, { prio: -1, key: 'ev' });
       }
     }
     /** Wallbox (11 kW, Typ 2): abgerundetes Gehäuse, dunkle Glasfront, LED-Statusring, Kabelhalter, Wandkonsole */
@@ -5345,6 +5416,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           s0.vel[j * 3] = into ? -0.15 : 0.5; s0.vel[j * 3 + 1] = into ? -0.6 : 0.7; s0.vel[j * 3 + 2] = (Math.random() - 0.5) * 0.1; s0.life[j] = 1.4 + Math.random() * 0.5; },
           (j, s0, dt) => { for (let q = 0; q < 3; q++) s0.pos[j * 3 + q] += s0.vel[j * 3 + q] * dt; }, f => kind === 'in' ? S.te : lerp(S.airOut, S.te, f), 0.09).kind = 'air';
       });
+      label(V(L / 2 + 0.4, 0.45, tz), () => [tr('l3.airDuct'), S.hpRun ? '↓ ' + degC(S.te) + ' · ↑ ' + degC(S.airOut) : tr('l3.off')], groups.lab, { prio: 0, key: 'airDuct' });
       // Heizwasser von oben zur Hydraulik (Deckenband) bzw. zum Pufferanschluss
       if (hp && Pn) {
         const pS = hp.pS || hp.out, pR = hp.pR || hp.ret, yHS = Pn.yHi, yHR = Pn.yMid;
@@ -5445,14 +5517,14 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
               return pts; };
             gas.push(...route(0.03)); liq.push(...route(-0.03));
             pipe(gas, 0.011, TM.solid, () => S.hpRun ? S.aaGas : S.ti, groups.sys, 'refrG');
-            pipe(liq, 0.008, TM.solid, () => S.hpRun ? S.aaLiq : S.ti, groups.sys, 'refrL');
+            pipe(liq.slice().reverse(), 0.008, TM.solid, () => S.hpRun ? S.aaLiq : S.ti, groups.sys, 'refrL'); // Flüssigkeit: Innengerät → Außengerät (Heizbetrieb)
             jacket(gas, 0.022);
             if (!firstUnit) firstUnit = u;
           });
         });
         // Leitungen vom Außengerät zum Fassadenkanal
         const vG = [uP, V(uP.x, 0.4, zDuct), V(xD, 0.4, zDuct), V(xD, topY, zDuct)], vL = vG.map(q => q.clone().add(V(0, 0, 0.035)));
-        pipe(vG, 0.011, TM.solid, () => S.hpRun ? S.aaGas : S.te, groups.sys, 'refrG'); pipe(vL, 0.008, TM.solid, () => S.hpRun ? S.aaLiq : S.te, groups.sys, 'refrL');
+        pipe(vG, 0.011, TM.solid, () => S.hpRun ? S.aaGas : S.te, groups.sys, 'refrG'); pipe(vL.slice().reverse(), 0.008, TM.solid, () => S.hpRun ? S.aaLiq : S.te, groups.sys, 'refrL');
         if (si === 0) label(V(xD + sg * 0.25, 1.6, zDuct + 0.1), () => [tr('l3.refrigerant'), S.hpRun ? degC(S.aaGas) + ' / ' + degC(S.aaLiq) : tr('l3.off')], groups.lab, { prio: 1 });
       });
       if (firstUnit) {
@@ -5765,7 +5837,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const zRank = []; zones.map((z, i) => [Math.abs(z.rx - grp[i].xS), i]).sort((a, b) => a[0] - b[0]).forEach(([, i], k) => { zRank[i] = k; });
       zones.forEach((z, zi) => {
         const rzS = zb + ringS, rzR = zb + ringR, g = grp[zi];
-        const yTop = yF(c.heatedTop) + 0.06;
+        // Strangende im obersten Geschoss: Ringleitung auf Fußbodenhöhe bzw. FBH-Verteiler (VL-Balken 0,70 m, RL-Balken 0,40 m über FFB)
+        const yTop = em === 'floor' ? yF(c.heatedTop) + 0.7 : yF(c.heatedTop) + 0.06, yTopR = em === 'floor' ? yF(c.heatedTop) + 0.4 : yTop;
         // Mehrere Heizkreise: nächstgelegener Strang bekommt die obersten Trassen; fernere laufen darunter durch (keine Kreuzung mit
         // den Steigleitungen der näheren Stränge). VL-/RL-Steigleitung mit Achsabstand ≥ 2·r + 2 cm (rzR).
         const multi = zones.length > 1, rank = multi ? zRank[zi] : 0;
@@ -5774,7 +5847,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         const ySz = multi ? (sHi ? hi : lo) : yMain + 0.11 * zi, yRz = multi ? (sHi ? lo : hi) : yMainR - 0.11 * zi;
         const rxR = z.rx;
         const vl = [V(g.xS, yGtop + 0.12, g.zg), V(g.xS, ySz, g.zg), V(g.xS, ySz, rzS), V(z.rx, ySz, rzS), V(z.rx, yTop, rzS)];
-        const rl = [V(rxR, yTop, rzR), V(rxR, yRz, rzR), V(g.xR, yRz, rzR), V(g.xR, yRz, g.zg), V(g.xR, yGtop + 0.12, g.zg)];
+        const rl = [V(rxR, yTopR, rzR), V(rxR, yRz, rzR), V(g.xR, yRz, rzR), V(g.xR, yRz, g.zg), V(g.xR, yGtop + 0.12, g.zg)];
         pipe(vl, mainR, TM.heatS, u => S.on ? S.flow - 0.8 * u : S.ti + 0.5, groups.sys, 'riserS');
         pipe(rl, mainR, TM.heatR, u => S.on ? S.ret + 0.3 * (1 - u) : S.ti + 0.3, groups.sys, 'riserR');
         jacket(vl.slice(1, 4), mainR + 0.022); jacket(rl.slice(1, 4), mainR + 0.022);
@@ -5792,7 +5865,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const { zb, zf } = c;
       const far = z.s < 0 ? z.x0 + d : z.x1 - d, near = z.s < 0 ? z.x1 - d : z.x0 + d;
       const pts = [V(z.rx, y, zb + d), V(far, y, zb + d), V(far, y, zf - d), V(near, y, zf - d), V(near, y, zb + d)];
-      if (Math.abs(near - z.rx) > 0.9) pts.push(V(z.rx + (near > z.rx ? 0.45 : -0.45), y, zb + d));
+      if (Math.abs(near - z.rx) > 0.9) pts.push(V(z.rx + (near > z.rx ? 0.25 : -0.25), y, zb + d));
       return pts;
     }
     /** Heizflächen einer Zone an der Ringleitung platzieren. */
@@ -5800,7 +5873,11 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const { yF, zb, zf, xl, xr } = c;
       const d1 = 0.05, d2 = 0.12;
       const sp = ringPath(c, z, y, d1), rp = ringPath(c, z, y + 0.02, d2);
-      if (rzOff() !== d2) rp.unshift(V(z.rx, y + 0.02, zb + rzOff())); // Anschluss an den (weiter abstehenden) RL-Strang
+      // Tichelmann (gleiche Umlaufrichtung): der RL-Ring beginnt als verschlossenes Ende am ersten Heizkörper, läuft mit dem VL um
+      // und endet am RL-Strang → Strömung im RL-Ring zum Strang hin, gleiche Rohrlänge VL + RL für jeden Heizkörper
+      { const dirF = Math.sign(rp[1].x - rp[0].x) || 1; rp[0] = V(z.rx + dirF * 0.2, y + 0.02, zb + d2);
+        const last = rp[rp.length - 1]; if (Math.abs(last.x - z.rx) > 1e-3) rp.push(V(z.rx, y + 0.02, zb + d2));
+        if (rzOff() !== d2) rp.push(V(z.rx, y + 0.02, zb + rzOff())); } // Anschluss an den (weiter abstehenden) RL-Strang
       // Tichelmann: Vor- und Rücklauf gleiche Umlaufrichtung
       pipe(sp, 0.022, TM.heatS, u => S.on ? S.flow - 0.8 - 1.2 * u : S.ti + 0.4, groups.sys, 'ringS');
       pipe(rp, 0.022, TM.heatR, u => S.on ? S.ret + 0.15 + 0.2 * u : S.ti + 0.3, groups.sys, 'ringR');
@@ -5811,11 +5888,41 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         if (o.f !== f || o.kind !== 'win') return;
         if ((id === 'front' || id === 'back') && (o.a < z.x0 + 0.5 || o.a > z.x1 - 0.5)) return;
         if (id === 'left' && z.x0 > xl + 0.01) return; if (id === 'right' && z.x1 < xr - 0.01) return;
-        wins.push({ id, a: o.a, w: o.w });
+        wins.push({ id, a: o.a, w: o.w, tall: !!o.tall });
       }));
       if (top) [['left', z.x0 <= xl + 0.01], ['right', z.x1 >= xr - 0.01]].forEach(([id, ok]) => { if (ok) wins.push({ id, a: 0, w: 1.0 }); });
-      wins.forEach(wd => {
-        const spec = emitterSpec(em, wd.w);
+      // Heizkörper-Platzierung mit Kollisionsprüfung je Wand: nicht vor Türen/bodentiefen Fenstern, nicht unter Waschtisch oder
+      // Dusche, nicht vor Heizungs-/TWW-Strängen und nicht an der Treppe. Bevorzugt mittig unter dem Fenster; sonst seitlich
+      // verschoben bzw. gekürzt (≥ 0,5 m), notfalls entfällt der Heizkörper an dieser Stelle.
+      const blk = { front: [], back: [], left: [], right: [] }, placed = { front: [], back: [], left: [], right: [] };
+      ['front', 'back', 'left', 'right'].forEach(id => (fac.openings[id] || []).forEach(o => {
+        if (o.f !== f) return;
+        if (o.kind === 'door' || o.kind === 'stairwin' || o.tall) blk[id].push([o.a - o.w / 2 - 0.08, o.a + o.w / 2 + 0.08]);
+      }));
+      if (z.bath) { const [xb, xs] = z.bath; blk.back.push([xb - 0.36, xb + 0.36], [xs - 0.5, xs + 0.5]); }
+      blk.back.push([z.rx - 0.32, z.rx + 0.32]); // Strang + Ringende/-anfang if (z.dhwX != null) blk.back.push([z.dhwX - 0.3, z.dhwX + 0.3]);
+      const sr = stairRect; if (sr && G.type !== 'MFH') { blk.front.push([sr.x0 - 0.1, sr.x1 + 0.1]); if (sr.x0 < xl + 0.3) blk.left.push([sr.z0 - 0.1, sr.z1 + 0.15]); }
+      const lim = id => id === 'front' || id === 'back' ? [z.x0 + 0.15, z.x1 - 0.15] : [zb + 0.2, zf - 0.2];
+      /** freie Lage (Mitte, Länge) für einen Heizkörper der Länge l nahe a an Wand id; Anschlussarmaturen je Seite ≈ 0,12 m */
+      const fitEmitter = (id, a, l0, wW) => {
+        const [lo, hi] = lim(id), occ = blk[id].concat(placed[id]), maxShift = (wW || 1.2) / 2 + 1.6;
+        for (const l of [l0, l0 * 0.8, l0 * 0.6, 0.5].filter((v, i, arr) => v >= 0.5 && arr.indexOf(v) === i)) {
+          for (let k = 0; k <= Math.ceil(maxShift / 0.05); k++) for (const sg of k ? [1, -1] : [1]) {
+            const c0 = a + sg * k * 0.05, x0 = c0 - l / 2 - 0.12, x1 = c0 + l / 2 + 0.12;
+            if (x0 < lo || x1 > hi) continue;
+            if (occ.some(([p, q]) => x0 < q && x1 > p)) continue;
+            return { a: c0, l };
+          }
+        }
+        return null;
+      };
+      wins.forEach(wd0 => {
+        let wd = wd0, spec = emitterSpec(em, wd0.w);
+        if (em !== 'wall') {
+          const fit = fitEmitter(wd0.id, wd0.a, spec.l, wd0.w); if (!fit) return;
+          placed[wd0.id].push([fit.a - fit.l / 2 - 0.12, fit.a + fit.l / 2 + 0.12]);
+          wd = Object.assign({}, wd0, { a: fit.a }); spec = Object.assign({}, spec, { l: fit.l });
+        }
         let px, pz, rot;
         if (wd.id === 'front') { px = wd.a; pz = zf - 0.05 - spec.d / 2; rot = 0; }
         else if (wd.id === 'back') { px = wd.a; pz = zb + 0.05 + spec.d / 2; rot = 0; }
@@ -6197,8 +6304,11 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         const pr = G.pitch * Math.PI / 180, cs = Math.cos(pr), sn = Math.sin(pr), slope = (c.D / 2 + 0.5) / cs, IT = WPV.engine.ROOF_ITEM;
         const surf = (x, u, side) => V(x, G.ridge + ROOF_UP + ROOF_TH * cs - u * sn, side * (u * cs + ROOF_TH * sn));
         const glass = std('#9fc3dc', { opacity: 0.55, p: { roughness: 0.05, metalness: 0.2 } }), frame = std('#3b3f44', { p: { roughness: 0.5 } }), wall = std('#efe9de', { p: { roughness: 0.8 } });
+        const labeled = {};
         WPV.engine.roofItems(ST).forEach(it => {
           const side = it.side || 1, d = IT[it.type] || IT.vent, x = (it.xr || 0) * c.L, u = 0.15 + (it.ur == null ? 0.5 : it.ur) * (slope - 0.3), p0 = surf(x, u, side);
+          if (!labeled[it.type] && ['dormer', 'window', 'chimney', 'antenna', 'vent'].includes(it.type)) { labeled[it.type] = 1; const ty = it.type;
+            label(V(p0.x, p0.y + (ty === 'dormer' ? 1.9 : ty === 'antenna' ? 2.4 : ty === 'chimney' ? 1.4 : 0.8), p0.z), () => [tr('ri.' + ty), tr('l3.ri.' + ty)], groups.lab, { prio: -1, key: 'roof_' + ty }); }
           if (it.type === 'vent') { mesh(cy(0.06, 0.7, p0.x, p0.y + 0.2, p0.z, 14), mat, groups.envR); mesh(cy(0.085, 0.05, p0.x, p0.y + 0.56, p0.z, 14), dark, groups.envR); roofObs.push({ p: p0, r: 0.3 }); }
           else if (it.type === 'antenna') { mesh(merge([cy(0.025, 2.2, p0.x, p0.y + 1.0, p0.z, 10), bx(0.6, 0.02, 0.02, p0.x, p0.y + 1.9, p0.z), cy(0.2, 0.04, p0.x, p0.y + 1.4, p0.z - side * 0.15, 20, Math.PI / 2.4)]), mat, groups.envR); roofObs.push({ p: p0, r: 0.4 }); }
           else if (it.type === 'chimney') { const top = Math.max(G.ridge + ROOF_UP + 0.5, p0.y + 1.0), y0 = p0.y - 0.4; mesh(merge([bx(0.5, top - y0, 0.5, p0.x, (top + y0) / 2, p0.z), bx(0.6, 0.06, 0.6, p0.x, top + 0.03, p0.z)]), std('#9c4a32', { p: { roughness: 0.9 } }), groups.envR); roofObs.push({ p: p0, r: 0.45 }); }
@@ -6491,7 +6601,15 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       groups.lab.visible = opts.labels; groups.dim.visible = opts.dims; groups.fx.visible = opts.fx;
       casingMats.forEach(mm => { mm.opacity = m === 'real' ? (mm.userData.baseOp || (mm.userData.baseOp = mm.opacity)) : 0.08; mm.transparent = true; mm.depthWrite = false; });
       const eoE = opts._iso ? Math.min(opts.envOpacity, 0.05) : opts._wall ? 0.96 : opts.envOpacity;
-      envRealMats.forEach(mm => { const op = mm === M.base ? Math.min(1, eoE + 0.15) : (mm === M.frame || mm === M.door) ? Math.min(1, eoE + (opts._iso ? 0.05 : 0.3)) : eoE; mm.opacity = op; mm.transparent = op < 0.999; mm.depthWrite = op >= 0.999; mm.needsUpdate = true; });
+      // Wandschichten (Innenputz, Dämmung, Mauerwerk, Außenputz) liegen hintereinander: jede Fläche erhält die Teil-Deckkraft,
+      // die übereinander gelegt (≈ 7 Flächen) die gewählte Gesamt-Deckkraft ergibt – sonst wirkt die Wand auch bei 30 % fast opak
+      // und der Regler zeigt mit Schnittansicht keine Wirkung.
+      const stackOp = (o, n) => o >= 0.999 ? 1 : 1 - Math.pow(1 - Math.max(0, o), 1 / n);
+      const LAYERS = new Map([[M.plaster, 7], [M.ins, 7], [M.mass, 7], [M.sockel, 3], [M.base, 2], [M.roof, 2]]);
+      envRealMats.forEach(mm => {
+        let op = mm === M.base ? Math.min(1, eoE + 0.15) : (mm === M.frame || mm === M.door) ? Math.min(1, eoE + (opts._iso ? 0.05 : 0.3)) : eoE;
+        if (LAYERS.has(mm)) op = Math.max(opts._iso ? 0.004 : 0.03, stackOp(op, LAYERS.get(mm)));
+        mm.opacity = op; mm.transparent = op < 0.999; mm.depthWrite = op >= 0.999; mm.needsUpdate = true; });
       TM.env.uniforms.opacity.value = opts._iso ? 0.06 : Math.max(0.25, Math.min(1, opts.envOpacity + 0.35)); TM.envGlass.uniforms.opacity.value = opts._iso ? 0.08 : 0.75;
       M.slab.opacity = opts._iso ? 0.18 : 0.5; M.part.opacity = opts._iso ? 0.05 : 0.16;
       [groups.site, groups.siteT, groups.envR, groups.envT, groups.lab].forEach(gg => gg.children.forEach(ch => { if (ch.userData.cutOnly) ch.visible = opts.cut; if (ch.userData.noCut) ch.visible = !opts.cut; }));
@@ -6770,7 +6888,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           return { val, isQ, text: isQ ? 'q = ' + fmt(val, 0) + ' W/m²' : fmt(val, 1) + ' °C', name: tr('l3.k.' + (isQ ? info.slice(2) : info)) };
         }
       },
-      _scene: scene, _renderer: renderer, _dbg: () => ({ pipesReg, arrows, cam, ctl, obstacles, ctx: lastCtx, tech: lastTech, stairRect, freeEnds }),
+      _scene: scene, _renderer: renderer, _dbg: () => ({ parts, pipesReg, arrows, cam, ctl, obstacles, ctx: lastCtx, tech: lastTech, stairRect, freeEnds }),
     };
     // Abgasfahne nach build: kleine Erweiterung über Hook
     const _build = build;
@@ -6796,7 +6914,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Raumklima einer Etage (vereinfachte CFD)
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Zwei-Schichten-Modell (Aufenthaltszone 0–1,25 m / Deckenzone 1,25–2,5 m),
  * je Schicht 2D-Strömung (Stam „Stable Fluids“: semi-Lagrange-Advektion, Druckprojektion),
  * vertikaler Austausch über Heizkörper-Auftrieb und Kaltluftabfall an Fenstern/Außenwänden,
@@ -7322,7 +7440,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Excel-Export
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Vorlage (openpyxl, mit Formeln und Diagrammen) wird im Browser mit JSZip
  * geöffnet; nur die blauen Eingabezellen werden mit den aktuellen Werten
  * überschrieben. Excel/LibreOffice berechnen alle Formeln beim Öffnen neu.
@@ -7536,7 +7654,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – VR-Rundgang (WebXR, Meta Quest) mit Roboterführer „Kelvin“
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Desktop: geführter Rundgang (HTML-Panel mit Formelsatz und Diagramm).
  * Headset: Teleport, Gehen mit Treppenfolge, Drehen, Messen, Türen/Fenster öffnen, Variablen-Menü, Modellansicht,
  * projizierte Diagramme und neuronale Sprachausgabe (Piper/ONNX im Browser), da der Quest-Browser keine hörbaren Systemstimmen hat.
@@ -7650,6 +7768,17 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           `Wärme fließt nicht von selbst vom Kalten zum Warmen – dafür braucht es Arbeit. Die Wärmepumpe verdampft ihr Kältemittel bei niedriger Temperatur und nimmt dabei Umweltwärme auf, verdichtet es und gibt die Wärme beim Kondensieren auf hohem Niveau wieder ab. Zwischen ${c.f(c.tSrc, 0)} °C an der Quelle und ${c.f(fl, 0)} °C im Vorlauf erlaubt die Physik höchstens eine Leistungszahl von ${c.f(cc, 1)}.${real ? ` Diese Anlage erreicht gerade ${c.f(c.cop, 2)}, also rund ${c.f(100 * c.cop / cc, 0)} Prozent des Carnot-Ideals.` : ' Reale Geräte schaffen davon etwa 35 bis 50 Prozent.'} Die Kurven zeigen, warum jedes Kelvin Vorlauf zählt: Pro Kelvin weniger steigt die Leistungszahl um grob zwei bis drei Prozent.`,
           `Heat does not flow spontaneously from cold to warm – that takes work. The heat pump evaporates its refrigerant at low temperature, absorbing ambient heat, compresses it and releases the heat at a high level as it condenses. Between ${c.f(c.tSrc, 0)} °C at the source and ${c.f(fl, 0)} °C in the flow, physics allows a coefficient of performance of at most ${c.f(cc, 1)}.${real ? ` This unit is reaching ${c.f(c.cop, 2)} right now – about ${c.f(100 * c.cop / cc, 0)} percent of the Carnot ideal.` : ' Real units achieve roughly 35 to 50 percent of that.'} The curves show why every kelvin of flow temperature counts: each kelvin less raises the COP by roughly two to three percent.`,
           `El calor no fluye espontáneamente de lo frío a lo caliente: hace falta trabajo. La bomba de calor evapora su refrigerante a baja temperatura absorbiendo calor ambiental, lo comprime y cede el calor a alto nivel al condensar. Entre ${c.f(c.tSrc, 0)} °C en la fuente y ${c.f(fl, 0)} °C en la impulsión, la física permite como máximo un coeficiente de rendimiento de ${c.f(cc, 1)}.${real ? ` Este equipo alcanza ahora ${c.f(c.cop, 2)}, es decir, cerca del ${c.f(100 * c.cop / cc, 0)} por ciento del ideal de Carnot.` : ' Los equipos reales logran aproximadamente entre el 35 y el 50 por ciento.'} Las curvas muestran por qué cuenta cada kelvin de impulsión: cada kelvin menos aumenta el COP en torno a un dos o tres por ciento.`]; } },
+    { id: 'airair', at: ['emitter', 'outdoor'], mode: 'thermal', opts: { air: true }, chart: 'cop', only: sc => sc.type === 'aahp',
+      title: ['Luft/Luft – Wärme direkt in die Raumluft', 'Air-to-air – heat straight into the room air', 'Aire-aire – calor directo al aire de la estancia'],
+      fx: '\\dot{Q} = \\dot{V} · ρ · c_{p} · (θ_{aus} − θ_{ein})',
+      legend: [['\\dot{Q}', 'Heizleistung des Innengeräts [W]', 'heating output of the indoor unit [W]', 'potencia de la unidad interior [W]'], ['\\dot{V}', 'Luftvolumenstrom [m³/s]', 'air volume flow [m³/s]', 'caudal de aire [m³/s]'],
+        ['ρ · c_{p}', '≈ 1200 J/(m³·K) für Luft', '≈ 1200 J/(m³·K) for air', '≈ 1200 J/(m³·K) para el aire'], ['θ_{aus}, θ_{ein}', 'Ausblas- und Ansaugtemperatur [°C]', 'outlet and intake temperature [°C]', 'temperatura de impulsión y de aspiración [°C]']],
+      key: ['Ohne Wasserkreis entfällt ein Wärmeübergang – die Verflüssigung kann bei 35 bis 40 °C bleiben. Warmwasser braucht aber ein eigenes Gerät.', 'Without a water loop one heat transfer step disappears – condensing can stay at 35 to 40 °C. Hot water, however, needs its own device.', 'Sin circuito de agua desaparece un paso de transferencia: la condensación puede quedarse en 35 a 40 °C. El agua caliente, en cambio, necesita su propio equipo.'],
+      text: c => { const cop = c.cop > 0 ? c.f(c.cop, 1) : '–', q = c.f(c.qsh, 1);
+        return [
+          `Diese Wärmepumpe heizt ohne Heizwasser. Das Außengerät verdampft das Kältemittel mit der Außenluft von ${c.f(c.te, 0)} °C, verdichtet es und schickt das heiße Gas durch die dicke Kupferleitung zu den Wand-Inneneinheiten. Dort kondensiert es; ein Lüfter bläst die Raumluft über den Wärmeübertrager. Gerade liefert die Anlage ${q} Kilowatt bei einer Leistungszahl von ${cop}. Weil die Wärme über Luft verteilt wird, heizt jedes Gerät vor allem seinen Raum – offene Grundrisse eignen sich deshalb besonders. Für Warmwasser sorgt hier eine eigene Warmwasser-Wärmepumpe.`,
+          `This heat pump heats without heating water. The outdoor unit evaporates the refrigerant with outdoor air at ${c.f(c.te, 0)} °C, compresses it and sends the hot gas through the thick copper line to the wall-mounted indoor units. There it condenses; a fan blows room air across the heat exchanger. Right now the system delivers ${q} kilowatts at a coefficient of performance of ${cop}. Because the heat is distributed by air, each unit mainly heats its own room – open floor plans are therefore particularly suitable. Hot water is provided here by a separate hot-water heat pump.`,
+          `Esta bomba de calor calienta sin agua de calefacción. La unidad exterior evapora el refrigerante con el aire exterior a ${c.f(c.te, 0)} °C, lo comprime y envía el gas caliente por el tubo grueso de cobre a las unidades interiores de pared. Allí condensa; un ventilador hace pasar el aire de la estancia por el intercambiador. Ahora la instalación entrega ${q} kilovatios con un coeficiente de rendimiento de ${cop}. Como el calor se reparte por aire, cada equipo calienta sobre todo su estancia; por eso convienen las plantas abiertas. El agua caliente la aporta aquí una bomba de calor de ACS independiente.`]; } },
     { id: 'exergy', at: ['tech'], mode: 'thermal', chart: 'exergy',
       title: ['Exergie – die Qualität der Energie', 'Exergy – the quality of energy', 'Exergía – la calidad de la energía'],
       fx: 'Ex = Q · \\left(1 − \\frac{T_{0}}{T}\\right)',
@@ -8105,7 +8234,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     }
     function stations() {
       const keys = Object.keys(X.anchors());
-      return STATIONS.map(s => Object.assign({}, s, { key: s.key, anchor: s.at.find(k => keys.includes(k)) })).filter(s => s.anchor);
+      const sc = X.SC() || {};
+      return STATIONS.map(s => Object.assign({}, s, { key: s.key, anchor: s.at.find(k => keys.includes(k)) })).filter(s => s.anchor && (!s.only || s.only(sc)));
     }
     function content(st) { const c = ctx(); return { c, title: L(st.title), fx: st.fx, text: L(st.text(c)), chart: st.chart, key: st.key ? L(st.key) : '', legend: (st.legend || []).map(r => [r[0], r[1 + li()] || r[1]]), id: st.id }; }
     const noTarget = st => st.at[0] === 'overview';
@@ -8275,11 +8405,15 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     const VP = canvasPlane(1024, 1120, 1.12); VP.mesh.name = 'kelvinPanel'; scene.add(VP.mesh);
     const BTN = [{ k: 'prev', x: 30, w: 100 }, { k: 'next', x: 142, w: 190 }, { k: 'sound', x: 344, w: 170 }, { k: 'topics', x: 526, w: 150 }, { k: 'menu', x: 688, w: 130 }, { k: 'free', x: 830, w: 164 }];
     const BY = 1036, BH = 62, CAT_Y = 130, CAT_H = 60; let hover = { panel: null, btn: null, src: -1 };
-    const C_NAVY = '#0b4a8b', C_LIME = '#a2c617', C_BG = 'rgba(7,22,44,0.94)';
+    const C_NAVY = '#0b4a8b', C_LIME = '#a2c617';
+    /** Paneelhintergrund leicht durchscheinend (Modell 1:15 stärker), damit Umgebung/Modell hinter dem Text erkennbar bleibt */
+    const bgCol = () => state.model > 1 ? 'rgba(7,22,44,0.66)' : 'rgba(7,22,44,0.8)';
+    /** Modell 1:15: Paneele, Kelvin und Messanzeige kleiner und näher (pk = Größe, pdk = Abstand), damit das Modell sichtbar bleibt */
+    const pk = () => state.model > 1 ? 0.55 : 1, pdk = () => state.model > 1 ? 0.75 : 1;
     function drawVP() {
       const list = stations(), st = list[state.idx]; if (!st) return;
       const ct = content(st), g = VP.g, W = VP.W, H = VP.H;
-      g.clearRect(0, 0, W, H); rr(g, 4, 4, W - 8, H - 8, 28); g.fillStyle = C_BG; g.fill(); g.lineWidth = 4; g.strokeStyle = C_LIME; g.stroke();
+      g.clearRect(0, 0, W, H); rr(g, 4, 4, W - 8, H - 8, 28); g.fillStyle = bgCol(); g.fill(); g.lineWidth = 4; g.strokeStyle = C_LIME; g.stroke();
       rr(g, 4, 4, W - 8, 112, 28); g.fillStyle = C_NAVY; g.fill(); g.fillStyle = C_LIME; g.fillRect(4, 112, W - 8, 5);
       g.textBaseline = 'top'; g.fillStyle = C_LIME; g.font = '700 24px system-ui, sans-serif'; g.fillText(`KELVIN · ${L(UI.station).toUpperCase()} ${state.idx + 1}/${list.length}`, 36, 22);
       g.fillStyle = 'rgba(255,255,255,0.6)'; g.font = '500 19px system-ui, sans-serif'; g.textAlign = 'right'; g.fillText('© ' + L(UI.author), W - 36, 24); g.textAlign = 'left';
@@ -8338,7 +8472,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     }
     function drawMP() {
       const g = MP.g, W = MP.W, H = MP.H; g.clearRect(0, 0, W, H);
-      rr(g, 4, 4, W - 8, H - 8, 28); g.fillStyle = C_BG; g.fill(); g.lineWidth = 4; g.strokeStyle = C_LIME; g.stroke();
+      rr(g, 4, 4, W - 8, H - 8, 28); g.fillStyle = bgCol(); g.fill(); g.lineWidth = 4; g.strokeStyle = C_LIME; g.stroke();
       g.textBaseline = 'middle'; g.fillStyle = C_LIME; g.font = '800 38px system-ui, sans-serif'; g.fillText('☰ ' + L(UI.menu), 36, 52); g.fillStyle = 'rgba(255,255,255,0.45)'; g.font = '500 18px system-ui'; g.fillText(L(UI.grabHint), 260, 54);
       rr(g, W - 170, 24, 140, 56, 12); g.fillStyle = hover.panel === 'mp' && hover.btn === 'close' ? '#5eead4' : 'rgba(226,232,240,0.12)'; g.fill(); g.fillStyle = hover.panel === 'mp' && hover.btn === 'close' ? '#0b1220' : '#f8fafc'; g.font = '700 24px system-ui'; g.textAlign = 'center'; g.fillText(L(UI.close), W - 100, 53); g.textAlign = 'left';
       MENU.forEach((it, i) => {
@@ -8380,8 +8514,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function showMenu(on) {
       state.menu = on; MP.mesh.visible = on;
       if (on) { const s = rig.scale.x, hw = headWorld(), f = headFwdFlat(), r = new T.Vector3().crossVectors(f, UP).normalize();
-        if (!state.pin.mp || MP.mesh.position.distanceTo(hw) > 4 * s) { const p = hw.clone().addScaledVector(f, 0.9 * s).addScaledVector(r, -0.32 * s).addScaledVector(UP, -0.2 * s);
-          MP.mesh.position.copy(p); MP.mesh.scale.setScalar(s); MP.mesh.lookAt(hw); state.pin.mp = false; }
+        if (!state.pin.mp || MP.mesh.position.distanceTo(hw) > 4 * s) { const p = hw.clone().addScaledVector(f, 0.9 * s * pdk()).addScaledVector(r, -0.32 * s * pk()).addScaledVector(UP, -0.2 * s * pk());
+          MP.mesh.position.copy(p); MP.mesh.scale.setScalar(s * pk()); MP.mesh.lookAt(hw); state.pin.mp = false; }
         drawMP(); if (!state.pin.vp) { VP.mesh.visible = false; CP.mesh.visible = false; } }
       else if (state.active && !state.free) showVRPanel(rob.target);
     }
@@ -8474,23 +8608,24 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function showVRPanel(target) {
       if (!state.active) return;
       const s = rig.scale.x, hw = headWorld(), f = headFwdFlat(), r = new T.Vector3().crossVectors(f, UP).normalize();
-      const pp = hw.clone().addScaledVector(f, 1.45 * s).addScaledVector(r, -0.5 * s).addScaledVector(UP, -0.12 * s);
-      if (!state.pin.vp) { VP.mesh.position.copy(pp); VP.mesh.scale.setScalar(s); VP.mesh.lookAt(hw.x, pp.y, hw.z); } VP.mesh.visible = !state.menu || state.pin.vp;
-      const pc = hw.clone().addScaledVector(f, 1.5 * s).addScaledVector(r, 0.55 * s).addScaledVector(UP, 0.2 * s);
-      if (!state.pin.cp) { CP.mesh.position.copy(pc); CP.mesh.scale.setScalar(s); CP.mesh.lookAt(hw.x, pc.y, hw.z); } CP.mesh.visible = VP.mesh.visible; CP.mesh.updateMatrixWorld(true);
-      rob.scale = s; rob.goal.copy(hw.clone().addScaledVector(f, 1.3 * s).addScaledVector(r, 0.5 * s).addScaledVector(UP, -0.45 * s)); rob.look.copy(hw);
+      const k = pk(), kd = pdk();
+      const pp = hw.clone().addScaledVector(f, 1.45 * s * kd).addScaledVector(r, -0.5 * s * k).addScaledVector(UP, -0.12 * s * k);
+      if (!state.pin.vp) { VP.mesh.position.copy(pp); VP.mesh.scale.setScalar(s * k); VP.mesh.lookAt(hw.x, pp.y, hw.z); } VP.mesh.visible = !state.menu || state.pin.vp;
+      const pc = hw.clone().addScaledVector(f, 1.5 * s * kd).addScaledVector(r, 0.55 * s * k).addScaledVector(UP, 0.2 * s * k);
+      if (!state.pin.cp) { CP.mesh.position.copy(pc); CP.mesh.scale.setScalar(s * k); CP.mesh.lookAt(hw.x, pc.y, hw.z); } CP.mesh.visible = VP.mesh.visible; CP.mesh.updateMatrixWorld(true);
+      rob.scale = s * k; rob.goal.copy(hw.clone().addScaledVector(f, 1.3 * s * kd).addScaledVector(r, 0.5 * s * k).addScaledVector(UP, -0.45 * s * k)); rob.look.copy(hw);
       rob.target = target ? target.clone() : null; R.visible = true; drawVP();
     }
     function followRobot(jump) {
       const s = rig.scale.x, hw = headWorld(), f = headFwdFlat(), r = new T.Vector3().crossVectors(f, UP).normalize();
-      rob.scale = s; rob.goal.copy(hw.clone().addScaledVector(f, 0.9 * s).addScaledVector(r, 0.55 * s).addScaledVector(UP, -0.2 * s)); rob.look.copy(hw);
+      rob.scale = s * pk(); rob.goal.copy(hw.clone().addScaledVector(f, 0.9 * s * pdk()).addScaledVector(r, 0.55 * s * pk()).addScaledVector(UP, -0.2 * s * pk())); rob.look.copy(hw);
       if (jump) rob.placed = false;
     }
     function setFree() { state.free = true; VP.mesh.visible = false; CP.mesh.visible = false; rob.target = null; hush(); followRobot(); }
     function toggleModel() {
       if (state.model === 1) { state.model = 15; rig.scale.setScalar(15); const C = X.bCenter(), G = X.G() || { B: 10 }; C.y = 2.5; placeEye(V(C.x, 0.8 * 15, C.z + G.B / 2 + 0.95 * 15), C); }
       else { state.model = 1; rig.scale.setScalar(1); const G = X.G() || { B: 10 }; placeEye(V(0, 1.65, G.B / 2 + 7), V(0, 3, 0)); }
-      layFloor(); wristKey = ''; if (state.menu) showMenu(true); else if (state.active && !state.free) showVRPanel(rob.target); else if (state.active) followRobot(true);
+      layFloor(); wristKey = ''; if (IP.mesh.visible && ipCur) drawIP(); if (state.menu) showMenu(true); else if (state.active && !state.free) showVRPanel(rob.target); else if (state.active) followRobot(true);
     }
     function cycleMode() { const M = ['real', 'thermal', 'xray'], m = M[(M.indexOf(X.opts.mode) + 1) % 3]; if (cfg.setMode) cfg.setMode(m); wristKey = ''; }
 
@@ -8583,10 +8718,10 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       HUD.tx.needsUpdate = true;
     }
     /* ---- Info-Schilder an den Bauteilen (Beschriftungen in VR): zeigen + Trigger → Erklärpanel mit Schnittbild und Stimme ---- */
-    const infoG = new T.Group(); infoG.name = 'xrInfo'; scene.add(infoG); let infoSig = '', infoSprites = [];
+    const infoG = new T.Group(); infoG.name = 'xrInfo'; scene.add(infoG); let infoSig = '', infoSprites = [], hoverSign = null, lastHoverSign = null, hoverSignT = 0;
     function infoTex(title) {
       const c = document.createElement('canvas'); c.width = 512; c.height = 96; const g = c.getContext('2d');
-      rr(g, 3, 3, 506, 90, 18); g.fillStyle = 'rgba(11,74,139,0.9)'; g.fill(); g.strokeStyle = C_LIME; g.lineWidth = 4; g.stroke();
+      rr(g, 3, 3, 506, 90, 18); g.fillStyle = 'rgba(11,74,139,0.74)'; g.fill(); g.strokeStyle = C_LIME; g.lineWidth = 4; g.stroke();
       g.fillStyle = C_LIME; g.beginPath(); g.arc(48, 48, 28, 0, 7); g.fill(); g.fillStyle = '#0b2a52'; g.font = '800 40px Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('i', 48, 50);
       g.textAlign = 'left'; g.fillStyle = '#fff'; g.font = '600 34px system-ui'; let t = title; while (g.measureText(t).width > 420 && t.length > 4) t = t.slice(0, -2); if (t !== title) t += '…'; g.fillText(t, 90, 50);
       const tx = new T.CanvasTexture(c); tx.minFilter = T.LinearFilter; return tx;
@@ -8606,7 +8741,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     const IP_CLOSE = { x: 1024 - 170, y: 24, w: 140, h: 56 }, IP_PLAY = { x: 40, y: 1020, w: 300, h: 60 };
     function drawIP() {
       if (!ipCur) return; const g = IP.g, W = IP.W, H = IP.H, tt = cfg.t || (k => k), has = k => { const v = tt(k); return v && v !== k; };
-      g.clearRect(0, 0, W, H); rr(g, 4, 4, W - 8, H - 8, 26); g.fillStyle = C_BG; g.fill(); g.lineWidth = 4; g.strokeStyle = C_LIME; g.stroke();
+      g.clearRect(0, 0, W, H); rr(g, 4, 4, W - 8, H - 8, 26); g.fillStyle = bgCol(); g.fill(); g.lineWidth = 4; g.strokeStyle = C_LIME; g.stroke();
       rr(g, 4, 4, W - 8, 100, 26); g.fillStyle = C_NAVY; g.fill(); g.fillStyle = C_LIME; g.fillRect(4, 100, W - 8, 5);
       g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.font = '800 38px system-ui'; let t = ipCur.title; while (g.measureText(t).width > W - 260 && t.length > 4) t = t.slice(0, -2); g.fillText(t, 36, 54);
       const hc = hover.panel === 'ip' && hover.btn === 'close'; rr(g, IP_CLOSE.x, IP_CLOSE.y, IP_CLOSE.w, IP_CLOSE.h, 12); g.fillStyle = hc ? C_LIME : 'rgba(226,232,240,0.14)'; g.fill(); g.fillStyle = hc ? '#0b1220' : '#fff'; g.font = '700 24px system-ui'; g.textAlign = 'center'; g.fillText(L(UI.close), IP_CLOSE.x + IP_CLOSE.w / 2, IP_CLOSE.y + IP_CLOSE.h / 2); g.textAlign = 'left';
@@ -8634,8 +8769,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       ipCur = { sp, key: C.key, title: ln[0] || sp.userData.title, value: ln[1] || '', img: null, parts: F && F.has(C.key) ? F.parts(C.key, li0).join(' · ') : '', link: F ? F.link(C.key, li0) : null };
       if (F && F.has(C.key)) { const im = new Image(); im.onload = () => { if (ipCur && ipCur.img === im) drawIP(); }; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(F.svg(C.key)); ipCur.img = im; }
       if (!state.pin.ip || !IP.mesh.visible) { const s = rig.scale.x, hw = headWorld(), to = sp.position.clone().sub(hw); to.y = 0; const f = to.lengthSq() > 1e-4 ? to.normalize() : headFwdFlat(), r = new T.Vector3().crossVectors(f, UP).normalize();
-        const d = Math.min(1.3 * s, Math.max(0.8 * s, sp.position.distanceTo(hw) - 0.3)); const p = hw.clone().addScaledVector(f, d).addScaledVector(r, 0.25 * s).addScaledVector(UP, -0.1 * s);
-        IP.mesh.position.copy(p); IP.mesh.scale.setScalar(s); IP.mesh.lookAt(hw.x, p.y, hw.z); state.pin.ip = false; }
+        const d = Math.min(1.3 * s, Math.max(0.8 * s, sp.position.distanceTo(hw) - 0.3)) * pdk(); const p = hw.clone().addScaledVector(f, d).addScaledVector(r, 0.25 * s * pk()).addScaledVector(UP, -0.1 * s * pk());
+        IP.mesh.position.copy(p); IP.mesh.scale.setScalar(s * pk()); IP.mesh.lookAt(hw.x, p.y, hw.z); state.pin.ip = false; }
       IP.mesh.visible = true; drawIP(); if (state.sound) speakInfo();
     }
     function closeInfo() { IP.mesh.visible = false; ipCur = null; TTS.stop(); rob.speak = false; }
@@ -8706,20 +8841,20 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (h) { const dy = h.point.y - feet; if (Math.abs(dy) > 0.004) rig.position.y += dy * Math.min(1, dt * 2 * 10); }
     }
     function pollInput(dt) {
-      const s = rig.scale.x; let anyHover = false;
+      const s = rig.scale.x; let anyHover = false; hoverSign = null;
       ctrls.forEach(C => {
         if (!C.src) { C.line.visible = false; return; }
         const gp = C.src.gamepad, isR = C.hand === 'right', isL = C.hand === 'left';
         let len = 2 * s, col = 0xffffff;
         let u = uiHit(C);
         if (!u && IP.mesh.visible) { const h = ray.intersectObject(IP.mesh, false)[0]; if (h && h.uv) u = { panel: 'ip', h, btn: ipHitBtn(h.uv.x * IP.W, (1 - h.uv.y) * IP.H), row: null }; }
-        if (!u && !C.sel) { const ih = infoHit(C); if (ih) { len = ih.distance; col = 0xa2c617; } }
+        if (!u && !C.sel) { const ih = infoHit(C); if (ih) { len = ih.distance; col = 0xa2c617; hoverSign = ih.object; } }
         if (C.grab) { grabTick(C); len = 0.3 * s; col = 0xa2c617; }
         else if (u) { len = u.h.distance; col = 0xa2c617; anyHover = true;
           const hb = u.btn || null, hr = u.row != null ? u.row : null;
           if (hover.panel !== u.panel || hover.btn !== hb || hover.row !== hr) { hover = { panel: u.panel, btn: hb, row: hr, src: C.i }; if (u.panel === 'vp') drawVP(); if (u.panel === 'mp') drawMP(); if (u.panel === 'ip') drawIP(); } }
         else if (C.sel && isR) { C.tp = teleTarget(C); if (C.tp) { len = C.tp.d; col = C.tp.ok ? 0x34d399 : 0xef4444; tpMark.visible = true; tpMark.position.copy(C.tp.p); tpMark.position.y += 0.02; tpMark.scale.setScalar(s); tpRing.material.color.set(col); } else tpMark.visible = false; }
-        else if (C.sel && isL) { const m = measure(C); if (m) { len = m.h.distance; col = 0xfde68a; drawMeasure(m.r); const hw = headWorld(); MS.sp.position.copy(m.h.point).lerp(hw, 0.08); const sc = rig.scale.x, dd = m.h.point.distanceTo(hw) / sc, k = Math.min(2.2, Math.max(0.35, dd / 1.6)) * sc * (sc > 1 ? 0.6 : 1); MS.sp.scale.set(0.44 * k, 0.13 * k, 1); MS.sp.visible = true; } else MS.sp.visible = false; }
+        else if (C.sel && isL) { const m = measure(C); if (m) { len = m.h.distance; col = 0xfde68a; drawMeasure(m.r); const hw = headWorld(); MS.sp.position.copy(m.h.point).lerp(hw, 0.08); const sc = rig.scale.x, dd = m.h.point.distanceTo(hw) / sc, k = Math.min(2.2, Math.max(0.35, dd / 1.6)) * sc * (sc > 1 ? 0.36 : 1); MS.sp.scale.set(0.44 * k, 0.13 * k, 1); MS.sp.visible = true; } else MS.sp.visible = false; }
         C.line.scale.z = Math.max(0.05, len / s); C.line.material.color.set(col); C.line.visible = true;
         if (!gp) return;
         if (C.grab && !(gp.buttons[1] && gp.buttons[1].pressed)) C.grab = null;
@@ -8745,7 +8880,17 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       infoG.visible = state.xr && !!X.opts.labels && X.opts.mode !== 'xray';
       if (infoG.visible) { // Info-Schilder: konstante Winkelgröße in wahrgenommenen Metern; im Modell 1:15 deutlich kleiner, damit das Modell sichtbar bleibt
         const sc = rig.scale.x, hw = headWorld();
-        infoSprites.forEach(sp => { const d = sp.position.distanceTo(hw) / sc; let h = Math.min(0.075, Math.max(0.016, d * 0.021)); if (sc > 1) h = Math.min(h, 0.026); sp.scale.set(h * sc * 5.33, h * sc, 1); });
+        infoSprites.forEach(sp => { const d = sp.position.distanceTo(hw) / sc; let h = Math.min(0.075, Math.max(0.016, d * 0.021));
+          // Modell 1:15: höchstens ≈ 1 cm hohe Schilder (Winkelgröße wie ein Etikett am Modell), Nebenschilder (Priorität < 0) und
+          // Schilder unmittelbar vor dem Kopf ausgeblendet, damit die Maquette frei bleibt
+          // Modell 1:15: Schild als kleines „i“-Symbol (≈ 0,5° Sehwinkel); erst beim Zeigen mit dem Controller klappt es zum lesbaren
+          // Titel auf. Schilder unmittelbar vor dem Kopf (< 0,22 m wahrgenommen) bleiben aus, damit die Maquette frei bleibt.
+          const mp = sp.material.map; let full = true;
+          if (sc > 1) { const hov = sp === hoverSign || sp === lastHoverSign; full = hov; h = hov ? Math.min(0.022, Math.max(0.011, d * 0.016)) : Math.min(0.012, Math.max(0.005, d * 0.0085)); sp.visible = d > 0.22; }
+          else sp.visible = true;
+          if (mp) { const rx = full ? 1 : 86 / 512; if (mp.repeat.x !== rx) { mp.repeat.set(rx, 1); mp.needsUpdate = true; } }
+          sp.scale.set(h * sc * (full ? 5.33 : 0.9), h * sc, 1); });
+        if (hoverSign) { lastHoverSign = hoverSign; hoverSignT = 0.6; } else if ((hoverSignT -= dt) <= 0) lastHoverSign = null;
       }
       if (fadeT >= 0) { fadeT += dt; const a = fadeT < 0.12 ? fadeT / 0.12 : Math.max(0, 1 - (fadeT - 0.12) / 0.35); fade.material.opacity = 0.85 * a; if (fadeT > 0.5) { fadeT = -1; fade.visible = false; } }
       followFloor(dt);
@@ -8816,7 +8961,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       start, stop, next: () => go(state.idx + 1), prev: () => go(state.idx - 1), go, refresh, enterVR, exitVR,
       get active() { return state.active; }, get inXR() { return state.xr; }, get supported() { return xrSupported; },
       stations: () => stations().map(s => s.id), _ms: MS, _vp: VP, _cp: CP, _mp: MP, _wp: WP, _state: state, _tts: TTS,
-      _dbg: { teleTarget, measure, uiHit, ray, solidMeshes, setFree, showMenu, menuAct, moverHit, followFloor, grabHit, grabStart, grabTick, syncInfo, infoSprites: () => infoSprites, openInfo, drawHUD, HUD, IP, pressUI },
+      _dbg: { toggleModel, stations, state, teleTarget, measure, uiHit, ray, solidMeshes, setFree, showMenu, menuAct, moverHit, followFloor, grabHit, grabStart, grabTick, syncInfo, infoSprites: () => infoSprites, openInfo, drawHUD, HUD, IP, pressUI },
       _rig: rig, _robot: R, _ctrls: ctrls, _content: () => content(stations()[state.idx])
     };
   }
@@ -8829,7 +8974,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – UI-Schicht (keine Physik; ruft nur WPV.engine)
- * Autor: Alirio Jiménez Franco · Version 1.2 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * ===================================================================== */
 (function () {
   'use strict';
@@ -9524,7 +9669,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       onXR: on => { if (on) { xrSaved = { isolate: v3Opts.isolate, dims: v3Opts.dims }; v3Opts.isolate = false; v3Opts.dims = false; } else if (xrSaved) { Object.assign(v3Opts, xrSaved); xrSaved = null; if (V3) V3.setOptions(v3Opts); } syncTools(); },
       onSupport: ok => { const b = $('#v3Tools [data-fs=vr]'); if (b) b.classList.toggle('xrok', ok); }
     });
-    WPV._kv = KV;
+    WPV._kv = KV; WPV._app = { state: () => state, scn: () => v3Scenario(), build3D, apply3DOp };
   }
   /** Fernwärme-Vorschau für die 3D-Ansicht, wenn kein Fernwärme-Szenario angelegt ist (v3Scn = −1) */
   let dhPrev = null;
@@ -10425,7 +10570,7 @@ document.getElementById('schemaV').textContent = WPV.engine.SCHEMA_VERSION;
 #wpvVer a{color:#d4f56a;text-decoration:none}#wpvVer a:hover{text-decoration:underline}#wpvVer .arc{background:#a2c617;color:#0b2a52;border-radius:3px;padding:1px 5px}
 @media print{#wpvVer{display:none}}</style>
 <script>(function(){
-  var VER='v1.2', m=location.pathname.match(/\/(v\d+\.\d+)\/(index\.html)?$/), inFolder=!!m, latest='v1.2';
+  var VER='v1.3', m=location.pathname.match(/\/(v\d+\.\d+)\/(index\.html)?$/), inFolder=!!m, latest='v1.3';
   var base=inFolder?'../':'', L={de:['Versionen','Archiv','aktuelle Version'],en:['Versions','archive','latest version'],es:['Versiones','archivo','versión actual']};
   var el=document.createElement('div'); el.id='wpvVer';
   function draw(){var l=(document.documentElement.lang||'de').slice(0,2), t=L[l]||L.de, old=VER!==latest;
@@ -10433,5 +10578,6 @@ document.getElementById('schemaV').textContent = WPV.engine.SCHEMA_VERSION;
   function add(){draw();document.body.appendChild(el);setInterval(draw,1500);}
   if(document.body)add();else document.addEventListener('DOMContentLoaded',add);
 })();</script>
+
 </body>
 </html>
