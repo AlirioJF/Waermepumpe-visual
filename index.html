@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   Wärmepumpen Visual – Plattform für Energieflüsse und Systemvergleich von Heizungsanlagen (EFH/MFH)
-  Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+  Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
   Diese Vorlage wird von build.py befüllt: Bibliotheken (CDN), Stile, Markup der Reiter und die
   eingebetteten Module engine.js, i18n.js, view3d.js, room.js, xlsx_export.js, app.js.
 -->
@@ -428,7 +428,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
         <p class="note" data-i18n="v.hint"></p>
       </div>
       <aside class="card v3side">
-        <div class="seg" id="v3Mode" data-tip="v.mode"><button data-mode="real" data-i18n="v.mode.real"></button><button data-mode="thermal" data-i18n="v.mode.thermal"></button><button data-mode="xray" data-i18n="v.mode.xray"></button></div>
+        <div class="seg" id="v3Mode" data-tip="v.mode"><button data-mode="real" data-i18n="v.mode.real"></button><button data-mode="natural" data-i18n="v.mode.natural"></button><button data-mode="thermal" data-i18n="v.mode.thermal"></button><button data-mode="xray" data-i18n="v.mode.xray"></button></div>
         <label class="fld"><span data-i18n="c.scenario"></span><select id="v3Scn"></select></label>
         <label class="fld" data-tip="v.emitter"><span data-i18n="v.emitter"></span><select id="v3Emit"></select></label>
         <label class="fld" data-tip="b.renoStd"><span data-i18n="b.renoStd"></span><select id="v3Std"></select></label>
@@ -577,13 +577,13 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     </div>
   </section>
 </main>
-<footer class="foot"><span data-i18n="msg.footer"></span> · <b>© 2026 Alirio Jiménez Franco</b> · v1.3 · Schema v<span id="schemaV"></span></footer>
+<footer class="foot"><span data-i18n="msg.footer"></span> · <b>© 2026 Alirio Jiménez Franco</b> · v1.4 · Schema v<span id="schemaV"></span></footer>
 <div id="toast" class="toast"></div>
 <!-- Eingebettete Module (Platzhalter werden von build.py ersetzt) -->
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Rechenkern (engine)
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Reine Funktionen, keine UI-Logik. Läuft im Browser (window.WPV.engine)
  * und in Node (module.exports) für Unit-Tests.
  *
@@ -1943,7 +1943,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Übersetzungen [de, en, es]
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Aufbau: D = { schlüssel: [Deutsch, English, Español] }; makeT(lang) liefert t(key, …args).
  * Platzhalter {0}, {1} … werden durch Argumente ersetzt. Neue Texte: Zeile in D ergänzen.
  * ===================================================================== */
@@ -3013,6 +3013,27 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
       "The vent pipe is the roof ventilation of the waste-water stack. It equalises pressure so that the traps in basins and showers are not sucked empty. For the PV layout it is a small but fixed obstacle.",
       "El tubo de ventilación airea la bajante de aguas residuales por encima del tejado. Iguala la presión para que los sifones de lavabos y duchas no se vacíen por succión. Para la fotovoltaica es un obstáculo pequeño pero fijo."],
     'fun.roof_dormer': ["Schon ein schmaler Schatten über eine Modulreihe kann deren Ertrag stark senken – deshalb plant man um Aufbauten herum.", "Even a narrow shadow across a module string can cut its yield sharply – that is why layouts are planned around roof structures.", "Incluso una sombra estrecha sobre una fila de módulos puede reducir mucho su producción; por eso se planifica alrededor de los elementos del tejado."],
+
+    /* ---- v1.4 ---- */
+    'v.mode.natural': ["Natürlich", "Natural", "Natural"],
+    'l3.magWater': ["Wasser", "water", "agua"],
+    'l3.v4': ["4-Wege-Umschaltventil", "4-way reversing valve", "Válvula inversora de 4 vías"], 'l3.v4Heat': ["Heizen: Druckgas → Plattenwärmeübertrager", "heating: hot gas → plate heat exchanger", "calefacción: gas caliente → intercambiador de placas"],
+    'l3.v4Cool': ["Kühlen: Druckgas → Lamellenregister (umgeschaltet)", "cooling: hot gas → finned coil (reversed)", "refrigeración: gas caliente → batería de aletas (invertido)"],
+    'l3.monoIn': ["Monoblock innen: Pumpe · Plattenwärmeübertrager", "Monoblock inside: pump · plate heat exchanger", "Monoblock por dentro: bomba · intercambiador de placas"],
+    'l3.k.refrA': ["Kältemittel 4-Wege-Ventil ↔ Plattenwärmeübertrager", "Refrigerant 4-way valve ↔ plate heat exchanger", "Refrigerante válvula 4 vías ↔ intercambiador de placas"],
+    'l3.k.refrB': ["Kältemittel Lamellenregister ↔ 4-Wege-Ventil", "Refrigerant finned coil ↔ 4-way valve", "Refrigerante batería ↔ válvula 4 vías"],
+    'l3.k.accumulator': ["Flüssigkeitsabscheider (Saugseite)", "Suction accumulator", "Separador de líquido (aspiración)"],
+    'l3.k.hpIntOS': ["Monoblock: Heizwasser-Vorlauf (intern)", "Monoblock: heating water supply (internal)", "Monoblock: impulsión de agua (interna)"],
+    'l3.k.hpIntOR': ["Monoblock: Heizwasser-Rücklauf (intern)", "Monoblock: heating water return (internal)", "Monoblock: retorno de agua (interno)"],
+    'l3.k.magWater': ["MAG: Wasservorlage unter der Membran", "Expansion vessel: water below the membrane", "Vaso de expansión: agua bajo la membrana"],
+    'brief.v4': ["Das 4-Wege-Umschaltventil entscheidet, wohin das heiße Druckgas aus dem Verdichter strömt. Im Heizbetrieb geht es in den Plattenwärmeübertrager und erwärmt dort das Heizwasser; das Lamellenregister draußen verdampft das Kältemittel und nimmt Wärme aus der Außenluft auf. Zum Kühlen schaltet ein Magnetventil um: Jetzt wird das Lamellenregister zum Verflüssiger und gibt Wärme an die Außenluft ab, während der Plattenwärmeübertrager das Wasser auf etwa achtzehn Grad abkühlt. Dieselbe Umschaltung nutzt die Anlage auch zum Abtauen.",
+      "The 4-way reversing valve decides where the hot discharge gas from the compressor goes. In heating mode it flows into the plate heat exchanger and warms the heating water; the finned coil outside evaporates the refrigerant and takes heat from the outdoor air. For cooling a solenoid switches the valve: now the finned coil becomes the condenser and releases heat to the outdoor air, while the plate heat exchanger cools the water to about eighteen degrees. The unit uses the same switch-over for defrosting.",
+      "La válvula inversora de cuatro vías decide adónde va el gas caliente que sale del compresor. En calefacción va al intercambiador de placas y calienta el agua; la batería de aletas exterior evapora el refrigerante y toma calor del aire exterior. Para refrigerar, una bobina la conmuta: ahora la batería de aletas es el condensador y cede calor al aire exterior, mientras el intercambiador de placas enfría el agua a unos dieciocho grados. El equipo usa la misma conmutación para desescarchar."],
+    'fun.v4': ["Beim Abtauen läuft der Kreisprozess für ein paar Minuten rückwärts – das Eis auf dem Register schmilzt mit Wärme aus dem Haus.", "During defrosting the cycle runs backwards for a few minutes – the ice on the coil melts with heat taken from the house.", "Al desescarchar el ciclo funciona al revés unos minutos: el hielo de la batería se funde con calor tomado de la casa."],
+    'brief.monoIn': ["Im Monoblock ist der komplette Kältekreis werkseitig dicht verlötet: Verdichter, 4-Wege-Ventil, Expansionsventil, Lamellenregister und der Plattenwärmeübertrager. Das Heizwasser kommt von unten herein, eine Umwälzpumpe drückt es durch den Plattenwärmeübertrager – im Gegenstrom zum Kältemittel: Wasser von unten nach oben, Kältemittel von oben nach unten. Durchflusssensor, Sicherheitsventil und Schnellentlüfter sichern den Wasserkreis. Weil Heizwasser draußen liegt, braucht es Frostschutz – etwa eine Notentleerung oder Frostschutzventile.",
+      "In a monoblock the complete refrigerant circuit is brazed tight at the factory: compressor, 4-way valve, expansion valve, finned coil and the plate heat exchanger. Heating water enters from below and a circulation pump pushes it through the plate heat exchanger – in counterflow to the refrigerant: water bottom to top, refrigerant top to bottom. Flow sensor, safety valve and automatic air vent protect the water circuit. Because heating water sits outdoors, frost protection is needed – for example emergency draining or anti-freeze valves.",
+      "En el monoblock todo el circuito frigorífico viene soldado de fábrica: compresor, válvula de cuatro vías, válvula de expansión, batería de aletas e intercambiador de placas. El agua de calefacción entra por abajo y una bomba la impulsa por el intercambiador de placas, a contracorriente del refrigerante: el agua de abajo arriba y el refrigerante de arriba abajo. Sensor de caudal, válvula de seguridad y purgador automático protegen el circuito de agua. Como hay agua de calefacción en el exterior, hace falta protección antiheladas, por ejemplo vaciado de emergencia o válvulas antihielo."],
+    'fun.monoIn': ["Gegenstrom lohnt sich: Das Wasser kann den Wärmeübertrager wärmer verlassen, als das Kältemittel am Austritt ist.", "Counterflow pays off: the water can leave the heat exchanger warmer than the refrigerant at its outlet.", "La contracorriente compensa: el agua puede salir del intercambiador más caliente que el refrigerante a su salida."],
     'lang.name': ['Deutsch', 'English', 'Español']
   };
 
@@ -3054,7 +3075,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – 3D-Thermografie-Ansicht (three.js r128)
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * - Gebäude parametrisch aus WPV.engine.buildingGeometry (Typologie NRW)
  * - Wandaufbau in Schichten (Putz / Dämmung / Mauerwerk), Fenster, Dach, Keller
  * - Hydraulik: Erzeuger, Puffer (Schichtung), TWW-Speicher mit Wendel,
@@ -3220,7 +3241,19 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function addObstacle(k, x0, x1, y0, y1, z0, z1, acc) { obstacles.push({ k, x0, x1, y0, y1, z0, z1, acc: acc || null }); }
     const planeKeller = new T.Plane(new T.Vector3(0, -1, 0), 0);
     const KELLER_KEYS = ['tech', 'hydraulic', 'storage', 'elec'];
-    let frostMats = [], clickables = [], cabDoor = null;
+    let frostMats = [], clickables = [], cabDoor = null, magState = null, flowPaths = [];
+    /** Ausdehnung des Anlagenwassers n(θ) gegenüber 10 °C [%] (Tabellenwerte DIN EN 12828 / VDI 4708-1, linear interpoliert) */
+    const N_EXP = [[10, 0], [20, 0.18], [30, 0.43], [40, 0.79], [50, 1.21], [60, 1.71], [70, 2.27], [80, 2.9], [90, 3.59]];
+    function nExp(t) { for (let i = 1; i < N_EXP.length; i++) if (t <= N_EXP[i][0]) { const [a, na] = N_EXP[i - 1], [b, nb] = N_EXP[i]; return na + (nb - na) * clamp01((t - a) / (b - a)); } return N_EXP[N_EXP.length - 1][1]; }
+    /** Vordruck p₀ = statische Höhe über dem MAG / 10 + 0,2 bar (Verdampfungs-/Sicherheitszuschlag) */
+    function magP0() { const c = lastCtx; if (!c) return 1.0; const hst = Math.max(1, c.yF(c.heatedTop) + 1.0 - (c.yKF + 1.6)); return Math.max(0.5, hst / 10 + 0.2); }
+    /** MAG-Membran und Wasservorlage nachführen; Strömung in der Ausdehnungsleitung ∝ Volumenänderung */
+    function tickMag(dt) {
+      const m = magState; if (!m || !m.water.parent) return;
+      const prev = m.cur; m.cur += (m.tgt - m.cur) * Math.min(1, dt * 0.7); m.flow = (m.cur - prev) / Math.max(dt, 1e-3);
+      const yM = m.yB + (m.yT - m.yB) * m.cur;
+      m.water.scale.y = Math.max(0.01, yM - m.yB); m.gas.scale.y = Math.max(0.01, m.yT - yM); m.mem.position.y = yM;
+    }
     /** momentane elektrische Last am Hausanschluss [kW] (WP + Wallbox + Haushalt) für die Schrank-Thermografie */
     const elLoadKW = () => (S.ehp || 0) + (opts.wallbox && opts.evPlug ? 11 : 0) + (opts.hhLoad != null ? opts.hhLoad : 0.5);
     let reg = [], pickables = [], labels = [], systems = [], spinners = [], clipMats = [], envRealMats = [], casingMats = [];
@@ -3561,14 +3594,15 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     /** Anschlüsse nach der Kollisionsauflösung schließen: Wurde ein Strang seitlich versetzt (Parallelführung), endet ein Abzweig
      *  (Ring, Verteiler-Anbindung, Heizkörper-Stich, TWW-/KW-Abgang) sonst einige Zentimeter neben ihm. Das Ende wird auf den
      *  nächstgelegenen Punkt des Zielstrangs gezogen (verkürzt oder um ein kurzes Stück verlängert). */
-    const SNAP = { toManifold: /^riserS$/, fromManifold: /^riserR$/, ringS: /^riserS$/, ringR: /^riserR$/, stubS: /^ringS$/, stubR: /^ringR$/,
-      dhwBasin: /^dhwRiser$/, dhwBranch: /^dhwRiser$/, coldBranch: /^coldRiser$/, coldShower: /^coldRiser$/ };
+    // je Familie: Zielstrang und das Anschlussende (s = Anfang, e = Ende) – nur dieses Ende wird nachgezogen, das gerätseitige nie
+    const SNAP = { toManifold: [/^riserS$/, 's'], fromManifold: [/^riserR$/, 'e'], ringS: [/^riserS$/, 's'], ringR: [/^riserR$/, 'e'], stubS: [/^ringS$/, 's'], stubR: [/^ringR$/, 'e'],
+      dhwBasin: [/^dhwRiser$/, 's'], dhwBranch: [/^dhwRiser$/, 's'], coldBranch: [/^coldRiser$/, 's'], coldShower: [/^coldRiser$/, 's'] };
     function snapEnds(Q) {
       const proj = (p, a, b) => { const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, p.clone().sub(a).dot(ab) / (ab.lengthSq() || 1))); return a.clone().addScaledVector(ab, t); };
       Q.forEach(P => {
-        const re = SNAP[P.info]; if (!re || P.pts.length < 2) return;
+        const sn = SNAP[P.info]; if (!sn || P.pts.length < 2) return; const re = sn[0];
         const tg = Q.filter(T0 => T0 !== P && re.test(T0.info || ''));
-        [0, P.pts.length - 1].forEach(ei => {
+        [sn[1] === 's' ? 0 : P.pts.length - 1].forEach(ei => {
           const e = P.pts[ei], nb = P.pts[ei === 0 ? 1 : ei - 1]; let best = null, bd = 0.15;
           tg.forEach(T0 => { for (let k = 1; k < T0.pts.length; k++) { const q = proj(e, T0.pts[k - 1], T0.pts[k]), d = q.distanceTo(e); if (d < bd) { bd = d; best = q; } } });
           if (!best || bd < 0.004) return;
@@ -3577,12 +3611,19 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         });
       });
     }
+    /** Unsichtbarer Strömungsweg IM Bauteil (Heizkörper, Plattenwärmeübertrager, Lamellenregister): nur Fluidpartikel, kein Rohr,
+     *  keine Formteile/Kappen. Sichtbar dort, wo das Gehäuse offen/durchscheinend ist (Schnitt, Röntgen, Wärmebild). */
+    function flowPath(pts, r, fnU, info) {
+      const P = pts.filter((p, i) => i === 0 || p.distanceTo(pts[i - 1]) > 1e-4); if (P.length < 2) return;
+      const path = new T.CurvePath(); for (let i = 1; i < P.length; i++) path.add(new T.LineCurve3(P[i - 1].clone(), P[i].clone()));
+      flowPaths.push({ pts: P, r, fnU, info, path, len: path.getLength() });
+    }
     /** Baut einen Rohrzug sofort (ohne Kollisionsauflösung), z. B. für Erdsonden. */
     function pipeNow(pts, r, mat, fnU, grp, info) {
       const tb = tube(pts, r); if (!tb) return null;
       pipesReg.push({ pts: pts.map(p => p.clone()), r, fnU, info, path: tb.path, len: tb.len });
       const m = tmesh(tb.geo, mat, tb.u, 1, fnU, grp, info);
-      m.userData.len = tb.len; return m;
+      m.userData.len = tb.len; m.userData.r = r; return m;
     }
     /** Wendel-Geometrie (Rohrschlange) für Speicher-Wärmetauscher. */
     function helixGeo(rad, h, turns, r, y0, x, z, phase) {
@@ -3752,7 +3793,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function clear() {
       rootG.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map && !Object.values(ROOF_TEX).includes(o.material.map) && o.material.map !== TEX.pv && o.material.map !== TEX.grass && o.material.map !== TEX.soil) o.material.map.dispose(); });
       while (rootG.children.length) rootG.remove(rootG.children[0]);
-      parts = null; frostMats = []; clickables = []; reg = []; pickables = []; labels = []; systems = []; spinners = []; pipesReg = []; obstacles = []; soilMats = []; airSys = []; windSys = null; station = null; stairRect = null; movers = []; moverMeshes = []; pvPos = []; evCable = null; roofObs = []; pickEV = [];
+      parts = null; magState = null; flowPaths = []; frostMats = []; clickables = []; reg = []; pickables = []; labels = []; systems = []; spinners = []; pipesReg = []; obstacles = []; soilMats = []; airSys = []; windSys = null; station = null; stairRect = null; movers = []; moverMeshes = []; pvPos = []; evCable = null; roofObs = []; pickEV = [];
       callouts.forEach(C => C.el.remove()); callouts = [];
       ['site', 'siteT', 'envR', 'envT', 'envX', 'inR', 'inT', 'sys', 'cas', 'fit', 'fitT', 'air', 'wind', 'flow', 'lab', 'dim', 'fx'].forEach(k => { groups[k] = new T.Group(); groups[k].name = k; rootG.add(groups[k]); });
     }
@@ -3760,7 +3801,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     /** Baut die gesamte Szene aus dem Gebäudekontext neu auf. */
     function build(ctx) {
       const E = ctx.E; ST = ctx.state; SC = E.autoSize(ST, ctx.scn); B = ST.building; G = E.buildingGeometry(ST);
-      clear(); makeRealMats(); makeThermalMats(); pipeQueue = [];
+      clear(); natCache = {}; makeRealMats(); makeThermalMats(); pipeQueue = [];
       const L = G.L, D = G.B, gh = G.gh, tW = G.wallT, sock = G.sockel, nF = G.floors, slab = G.slab;
       const yF = f => sock + f * gh;
       const xl = -(L / 2 - tW), xr = L / 2 - tW, zb = -(D / 2 - tW), zf = D / 2 - tW;
@@ -4083,6 +4124,10 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const al = std('#bfc5ca', { clip: true, p: { metalness: 0.85, roughness: 0.3 } }), r = 0.005, segs = [], rods = [], sup = [];
       const line = pts => { for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], d = b.clone().sub(a), L = d.length(); if (L < 1e-3) continue; const g = new T.CylinderGeometry(r, r, L, 6); g.translate(0, L / 2, 0); g.applyMatrix4(new T.Matrix4().makeRotationFromQuaternion(new T.Quaternion().setFromUnitVectors(V(0, 1, 0), d.normalize()))); g.translate(a.x, a.y, a.z); segs.push(g); } };
       const L2 = c.L / 2, D2 = c.D / 2, xs = c.L > 15 ? [-L2 - 0.08, 0, L2 + 0.08] : [-L2 - 0.08, L2 + 0.08];
+      // Mittlere Ableitung (Abstand ≤ 15 m): in einem geschlossenen Wandpfeiler, nie vor Tür/Fenster (Lage je Fassade)
+      const opsF = WPV.engine.facadeOpenings(G), xMid = {};
+      [-1, 1].forEach(sz => { const ops = opsF[sz > 0 ? 'front' : 'back'] || [], free = x => !ops.some(o => x > o.a - o.w / 2 - 0.25 && x < o.a + o.w / 2 + 0.25);
+        let best = 0; for (let k = 0; k <= 80; k++) { const cand = [k * 0.05, -k * 0.05].find(free); if (cand != null) { best = cand; break; } } xMid[sz] = best; });
       let yTop;
       if (G.roof === 'gable') {
         const yr = G.ridge + 0.32 + 0.1; yTop = yr; line([V(-L2 - 0.25, yr, 0), V(L2 + 0.25, yr, 0)]);
@@ -4097,9 +4142,11 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         roofObs.forEach(o => rods.push(cy(0.008, 1.5, o.p.x + o.r + 0.4, o.p.y + 0.75, o.p.z, 6))); // Fangstangen an Aufbauten (Trennungsabstand s)
         [-1, 1].forEach(sx => [-1, 1].forEach(sz => line([V(sx * (L2 + 0.08), ya, sz * (D2 + 0.08)), V(sx * (L2 + 0.08), 0.5, sz * (D2 + 0.08))])));
       }
-      if (xs.length > 2) [-1, 1].forEach(sz => line([V(0, G.roof === 'gable' ? G.eaves + 0.05 : yTop, sz * (D2 + 0.08)), V(0, 0.5, sz * (D2 + 0.08))]));
+      if (xs.length > 2) [-1, 1].forEach(sz => { const xm = xMid[sz];
+        if (G.roof === 'gable') line([V(xm, G.ridge + 0.42, 0), V(xm, G.eaves + 0.05, sz * (D2 + 0.45)), V(xm, G.eaves - 0.05, sz * (D2 + 0.08)), V(xm, 0.5, sz * (D2 + 0.08))]); // Dachleitung vom First
+        else line([V(xm, yTop, sz * (D2 + 0.08)), V(xm, 0.5, sz * (D2 + 0.08))]); });
       // Trennstellen (Messstellen) und Anschluss an den Ringerder
-      const pts = []; [-1, 1].forEach(sx => [-1, 1].forEach(sz => pts.push([sx * (L2 + 0.08), sz * (D2 + 0.08)]))); if (xs.length > 2) [-1, 1].forEach(sz => pts.push([0, sz * (D2 + 0.08)]));
+      const pts = []; [-1, 1].forEach(sx => [-1, 1].forEach(sz => pts.push([sx * (L2 + 0.08), sz * (D2 + 0.08)]))); if (xs.length > 2) [-1, 1].forEach(sz => pts.push([xMid[sz], sz * (D2 + 0.08)]));
       pts.forEach(([x, z]) => { sup.push(bx(0.09, 0.12, 0.05, x, 0.5, z)); line([V(x, 0.44, z), V(x, -0.5, z), V(x + Math.sign(x || 1) * 0.9, -0.5, z + Math.sign(z) * 0.9)]); });
       line([V(-L2 - 1, -0.5, -D2 - 1), V(L2 + 1, -0.5, -D2 - 1), V(L2 + 1, -0.5, D2 + 1), V(-L2 - 1, -0.5, D2 + 1), V(-L2 - 1, -0.5, -D2 - 1)]); // Ringerder (V4A, 10 mm)
       mesh(merge(segs.concat(rods)), al, groups.envR); if (sup.length) mesh(merge(sup), std('#6b7177', { clip: true, p: { roughness: 0.5 } }), groups.envR);
@@ -4382,7 +4429,19 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function buildInterior(c) {
       const { L, D, gh, tW, nF, slab, yF, xl, xr, zb, zf, yKC, yKF } = c;
       const sl = [];
-      for (let f = 0; f <= nF; f++) sl.push(bx(L - 2 * tW, slab, D - 2 * tW, 0, yF(f) - slab / 2, 0));
+      // Treppenaugen: Deckenöffnung über jedem Treppenlauf (sonst liegt die Decke über der Treppe → in VR nur Aufsteigen möglich)
+      const isM = G.type === 'MFH', swI = G.stairW, holes = {};
+      if (isM) { const nh0 = Math.round(gh / 2 / 0.175), run0 = Math.min(0.27, 3.0 / nh0); for (let f = 0; f <= (G.attic ? nF : nF - 1); f++) holes[f] = [-swI / 2 + 0.02, swI / 2 - 0.02, zb, zb + 1.3 + nh0 * run0]; }
+      else { const n0 = Math.round(gh / 0.18), len0 = n0 * 0.26, z00 = zf - 0.4 - len0, last0 = G.attic ? nF - 1 : nF - 2;
+        for (let f = 0; f <= last0 + 1; f++) holes[f] = [xl + 0.55 - 0.5, xl + 0.55 + 0.5, z00 - 0.05, zf]; }
+      const sx0 = -(L / 2 - tW), sx1 = L / 2 - tW, sz0 = -(D / 2 - tW), sz1 = D / 2 - tW;
+      for (let f = 0; f <= nF; f++) {
+        const y = yF(f) - slab / 2, h = holes[f];
+        if (!h) { sl.push(bx(L - 2 * tW, slab, D - 2 * tW, 0, y, 0)); continue; }
+        const [hx0, hx1, hz0, hz1] = [Math.max(sx0, h[0]), Math.min(sx1, h[1]), Math.max(sz0, h[2]), Math.min(sz1, h[3])];
+        const pb = (x0, x1, z0, z1) => { if (x1 - x0 > 1e-3 && z1 - z0 > 1e-3) sl.push(bx(x1 - x0, slab, z1 - z0, (x0 + x1) / 2, y, (z0 + z1) / 2)); };
+        pb(sx0, hx0, sz0, sz1); pb(hx1, sx1, sz0, sz1); pb(hx0, hx1, sz0, hz0); pb(hx0, hx1, hz1, sz1);
+      }
       const slg = merge(sl);
       mesh(slg, M.slab, groups.inR);
       tconst(slg.clone(), TM.slab, () => S.ti - 1, groups.inT, 'slab');
@@ -4685,16 +4744,33 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         tech.plan = { zPS, zPRmax, zBase, zHP: zBase + 0.2 + (nZ - 1) * 0.3 + 0.18, yHi: yKC - 0.11, yMid: yKC - 0.22, yLo: yKC - 0.41 }; }
       // --- MAG (Ausdehnungsgefäß)
       const magX = x + 0.2;
-      mesh(merge([cy(0.18, 0.4, magX, yKF + 1.6, zb + 0.22, 20), new T.SphereGeometry(0.18, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.4, 1).translate(magX, yKF + 1.8, zb + 0.22), new T.SphereGeometry(0.18, 20, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.4, 1).translate(magX, yKF + 1.4, zb + 0.22)]), M.red, groups.cas);
-      // Details: Spannband mit Wandkonsole, Füllventil (Schrader) oben, Anschlussstutzen ¾″ mit Kappenventil und Typschild
-      mesh(merge([new T.TorusGeometry(0.183, 0.008, 6, 32).rotateX(Math.PI / 2).translate(magX, yKF + 1.66, zb + 0.22), bx(0.05, 0.05, 0.2, magX, yKF + 1.66, zb + 0.06), bx(0.12, 0.16, 0.012, magX, yKF + 1.66, zb + 0.005)]), M.dark, groups.cas);
-      mesh(merge([cy(0.012, 0.05, magX, yKF + 1.88, zb + 0.22, 10), cy(0.016, 0.022, magX, yKF + 1.92, zb + 0.22, 10), cy(0.013, 0.18, magX, yKF + 1.25, zb + 0.22, 10), bx(0.05, 0.05, 0.045, magX, yKF + 1.15, zb + 0.22)]), M.brass, groups.fit);
-      mesh(merge([cy(0.022, 0.03, magX, yKF + 1.15, zb + 0.255, 12, Math.PI / 2)]), std('#1d4ed8', { p: { roughness: 0.45 } }), groups.fit);
-      mesh(bx(0.1, 0.06, 0.004, magX, yKF + 1.58, zb + 0.403), std('#e5e7eb', { p: { roughness: 0.6 } }), groups.fit);
-      label3(V(magX, yKF + 2.1, zb + 0.4), () => [tr('l3.mag')], 1.0);
+      // MAG (DIN EN 12828): wandhängend an Spannbandkonsole, Wasseranschluss UNTEN mit Kappenventil (absperrbar gesichert, mit Entleerung),
+      // Gasfüllventil (Schrader, N₂) OBEN. Schnittmodell: vordere Viertelschale offen → Stickstoffpolster, Membran und Wasservorlage sichtbar.
+      // Die Wasservorlage folgt der Ausdehnung n(θm) des Anlagenwassers; beim Aufheizen strömt Wasser hinein, beim Abkühlen zurück.
+      { const r = 0.18, yc = yKF + 1.6, zv = zb + 0.22, hC = 0.4, yB = yc - hC / 2 - 0.072, yT = yc + hC / 2 + 0.072, sh = std('#c62828', { side: T.DoubleSide, p: { roughness: 0.4 } });
+        mesh(merge([new T.CylinderGeometry(r, r, hC, 28, 1, true, Math.PI / 4, Math.PI * 1.5).translate(magX, yc, zv),
+          new T.SphereGeometry(r, 28, 8, Math.PI * 0.75, Math.PI * 1.5, 0, Math.PI / 2).scale(1, 0.4, 1).translate(magX, yc + hC / 2, zv),
+          new T.SphereGeometry(r, 28, 8, Math.PI * 0.75, Math.PI * 1.5, Math.PI / 2, Math.PI / 2).scale(1, 0.4, 1).translate(magX, yc - hC / 2, zv)]), sh, groups.cas);
+        // Schnittkanten (graue Bänder) an den offenen Rändern
+        mesh(merge([Math.PI / 4, -Math.PI / 4].map(a => bx(0.006, hC + 0.12, 0.012, magX + r * Math.sin(a), yc, zv + r * Math.cos(a)))), M.dark, groups.cas);
+        const water = tconst(new T.CylinderGeometry(r * 0.95, r * 0.95, 1, 24).translate(0, 0.5, 0), TM.tank, () => S.on ? (S.flow + S.ret) / 2 - 2 : S.ret, groups.sys, 'magWater');
+        water.position.set(magX, yB + 0.02, zv);
+        const gas = mesh(new T.CylinderGeometry(r * 0.95, r * 0.95, 1, 24).translate(0, -0.5, 0), std('#dfe7ef', { opacity: 0.35, p: { roughness: 0.2 } }), groups.cas);
+        gas.position.set(magX, yT - 0.02, zv);
+        const mem = mesh(new T.SphereGeometry(r * 0.96, 24, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.18, 1), std('#1b1d20', { side: T.DoubleSide, p: { roughness: 0.7 } }), groups.cas);
+        mem.position.set(magX, yc, zv);
+        magState = { water, gas, mem, yB: yB + 0.02, yT: yT - 0.02, cur: 0.3, tgt: 0.3, flow: 0 };
+      }
+      // Spannband mit Wandkonsole, Füllventil (Schrader) oben, Wasseranschluss ¾″ unten mit Kappenventil (blaue Kappe) und Typschild
+      mesh(merge([new T.TorusGeometry(0.183, 0.008, 6, 32, Math.PI * 1.5).rotateX(Math.PI / 2).rotateY(Math.PI * 0.75).translate(magX, yKF + 1.66, zb + 0.22), bx(0.05, 0.05, 0.2, magX, yKF + 1.66, zb + 0.06), bx(0.12, 0.16, 0.012, magX, yKF + 1.66, zb + 0.005)]), M.dark, groups.cas);
+      mesh(merge([cy(0.012, 0.05, magX, yKF + 1.88, zb + 0.22, 10), cy(0.016, 0.022, magX, yKF + 1.92, zb + 0.22, 10), cy(0.013, 0.08, magX, yKF + 1.29, zb + 0.22, 10), bx(0.05, 0.05, 0.045, magX, yKF + 1.22, zb + 0.22)]), M.brass, groups.fit);
+      mesh(merge([cy(0.022, 0.03, magX, yKF + 1.22, zb + 0.255, 12, Math.PI / 2)]), std('#1d4ed8', { p: { roughness: 0.45 } }), groups.fit);
+      mesh(bx(0.1, 0.06, 0.004, magX - 0.1, yKF + 1.58, zb + 0.378), std('#e5e7eb', { p: { roughness: 0.6 } }), groups.fit);
+      label3(V(magX, yKF + 2.1, zb + 0.4), () => [tr('l3.mag'), 'p₀ ≈ ' + fmt(magP0(), 1) + ' bar · N₂ / ' + tr('l3.magWater') + ' ' + fmt(100 * (magState ? magState.tgt : 0.3), 0) + ' %'], 1.0);
       tech.magX = magX; tech.panelX = magX + 0.5;
-      addObstacle('mag', magX - 0.18, magX + 0.18, yKF + 1.32, yKF + 1.88, zb + 0.04, zb + 0.4, null);
-      pipe([V(magX, yKF + 1.86, zb + 0.22), V(magX, yMainR, zb + 0.22), V(magX, yMainR, zb + 0.2 + 0.12)], 0.012, TM.heatR, () => S.on ? S.ret : S.cellar, groups.sys, 'magLine');
+      addObstacle('mag', magX - 0.18, magX + 0.18, yKF + 1.15, yKF + 1.88, zb + 0.04, zb + 0.4, null);
+      // Ausdehnungsleitung: vom Kappenventil unten seitlich hoch in die RL-Sammeltrasse (Saugseite der Umwälzpumpen)
+      pipe([V(magX, yKF + 1.2, zb + 0.22), V(magX, yKF + 1.06, zb + 0.22), V(magX - 0.26, yKF + 1.06, zb + 0.22), V(magX - 0.26, yMainR, zb + 0.22), V(magX - 0.26, yMainR, zb + 0.32), V(magX, yMainR, zb + 0.32)], 0.012, TM.heatR, () => S.on ? S.ret : S.cellar, groups.sys, 'magLine');
       // --- Hauswasseranschluss (Kaltwasser)
       // Hauseinführung: EFH hinter der Kellertreppe (Treppe liegt an der linken Wand), MFH vorn links
       const zE = stairRect ? zb + 1.5 : zf - 0.8;
@@ -4967,8 +5043,10 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
      *  v = V̇/A (logarithmisch gestaucht, damit langsame und schnelle Kreise sichtbar bleiben), Strömungsprofil zur Rohrmitte schneller,
      *  Farbe = Temperatur (aktive Palette), Form = Fluidart (Heizwasser ●, Trinkwasser warm/kalt •, Sole ◆, Kältemittel ▲/Gasblasen, Abgas ○). ---------- */
     let parts = null;
-    const FLUID_OF = info => /^(probe|brine|hpIntB)/.test(info) ? 'brine' : /^(refr|hpIntR)/.test(info) ? 'refr' : /^(dhw|circ)/.test(info) ? 'dhw' : /^cold/.test(info) ? 'cold' : /^flue/.test(info) ? 'flue' : /^solar/.test(info) ? 'brine' : 'water';
-    const PART_KIND = info => ARROW_KIND[info] || (/^(dhw|circ)/.test(info) ? 'dhwF' : /^cold/.test(info) ? 'coldF' : /^(refr|hpIntR)/.test(info) ? 'refr' : /^hpIntB/.test(info) ? 'brine' : /^(dhPrim|hpIntD)/.test(info) ? 'dh' : /^hpInt/.test(info) ? 'gen' : /^coil/.test(info) ? 'chg' : /^solarCoil/.test(info) ? 'sol' : /^flue/.test(info) ? 'flue' : null);
+    const FLUID_OF = info => /^(probe|brine|hpIntB)/.test(info) ? 'brine' : /^(refr|hpIntR|coilFlow)/.test(info) ? 'refr' : /^(dhw|circ)/.test(info) ? 'dhw' : /^cold/.test(info) ? 'cold' : /^flue/.test(info) ? 'flue' : /^solar/.test(info) ? 'brine' : 'water';
+    /** Leitungen, deren Strömungsrichtung das 4-Wege-Ventil im aktiven Kühlbetrieb umkehrt (Kältekreis Außeneinheit, Split, Luft/Luft) */
+    const REV_FLOW = /^(refrA|refrB|refrLiqInt|refrTwo|refrGas|refrLiq|refrG|refrL|coilFlow|hpIntR)$/;
+    const PART_KIND = info => info === 'magLine' ? 'mag' : info === 'radFlow' ? 'radF' : info === 'hxFlow' ? 'hxF' : info === 'coilFlow' ? 'coilF' : ARROW_KIND[info] || (/^(dhw|circ)/.test(info) ? 'dhwF' : /^cold/.test(info) ? 'coldF' : /^(refr|hpIntR)/.test(info) ? 'refr' : /^hpIntB/.test(info) ? 'brine' : /^(dhPrim|hpIntD)/.test(info) ? 'dh' : /^hpInt/.test(info) ? 'gen' : /^coil/.test(info) ? 'chg' : /^solarCoil/.test(info) ? 'sol' : /^flue/.test(info) ? 'flue' : null);
     let palLUT = null, palLUTname = '';
     function tempColor(t, out) {
       if (!palLUT || palLUTname !== opts.palette) { palLUT = paletteBytes(opts.palette); palLUTname = opts.palette; }
@@ -4976,7 +5054,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       return out.setRGB(palLUT[i] / 255, palLUT[i + 1] / 255, palLUT[i + 2] / 255);
     }
     function buildParticles() {
-      const list = pipesReg.filter(P => P.path && P.len > 0.15 && PART_KIND(P.info || ''));
+      const list = pipesReg.concat(flowPaths).filter(P => P.path && P.len > 0.15 && PART_KIND(P.info || ''));
       const geos = { water: new T.IcosahedronGeometry(1, 0), dhw: new T.IcosahedronGeometry(0.8, 0), cold: new T.IcosahedronGeometry(0.8, 0), brine: new T.OctahedronGeometry(1.1, 0), refr: new T.TetrahedronGeometry(1.25, 0), flue: new T.IcosahedronGeometry(1.4, 0) };
       const per = {}; let total = 0; const CAP = 4200;
       const want = list.map(P => { const sp = Math.max(0.045, P.r * 2.4), n = Math.max(2, Math.min(220, Math.round(P.len / sp))); total += n; return n; });
@@ -5002,20 +5080,22 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function tickFluid(dt) {
       if (!parts) return; parts.t += dt; parts.frame++;
       const sp = {}; Object.keys(DI).forEach(k => { sp[k] = flowSpeed(k); });
-      sp.dhwF = 0.12; sp.coldF = 0.1; sp.refr = S.hpRun ? 0.9 : 0; sp.dh = SC && SC.type === 'dh' ? Math.max(0.15, sp.main || 0) : 0.05; sp.flue = S.gasRun ? 1.6 : 0;
+      sp.mag = magState ? -magState.flow * 6 : 0; // Ausdehnungsleitung: Aufheizen → ins MAG (gegen die Zeichenrichtung), Abkühlen → zurück
+      sp.dhwF = 0.12; sp.coldF = 0.1; sp.refr = S.hpRun ? 0.9 : 0; sp.radF = (sp.stub || 0) * 0.6; sp.hxF = sp.gen || 0; sp.coilF = sp.refr * 0.6; sp.dh = SC && SC.type === 'dh' ? Math.max(0.15, sp.main || 0) : 0.05; sp.flue = S.gasRun ? 1.6 : 0;
       const vis = v => v < 0.003 ? 0 : 0.22 * Math.log2(1 + v / 0.04);       // Darstellung: logarithmisch gestaucht [m/s]
       const doCol = parts.frame % 3 === 1;
       parts.meshes.forEach(M0 => {
         const im = M0.im;
         M0.items.forEach((it, i) => {
-          const P = it.P, v = vis(sp[PART_KIND(P.info)] || 0) * it.prof, L = P.len;
+          const P = it.P, raw = (sp[PART_KIND(P.info)] || 0) * (S.rev && REV_FLOW.test(P.info || '') ? -1 : 1), v = Math.sign(raw) * vis(Math.abs(raw)) * it.prof, L = P.len;
           const s = (((it.s0 + v * parts.t) % L) + L) % L, u = s / L, m = P.samp.length / 3 - 1, fk = u * m, k0 = Math.min(m - 1, Math.floor(fk)), w = fk - k0, q = P.samp, b0 = k0 * 3, b1 = b0 + 3;
           _p.set(q[b0] + (q[b1] - q[b0]) * w, q[b0 + 1] + (q[b1 + 1] - q[b0 + 1]) * w, q[b0 + 2] + (q[b1 + 2] - q[b0 + 2]) * w);
           _tg.set(q[b1] - q[b0], q[b1 + 1] - q[b0 + 1], q[b1 + 2] - q[b0 + 2]).normalize();
           _ax.set(0, 1, 0); if (Math.abs(_tg.y) > 0.9) _ax.set(1, 0, 0); _ax.cross(_tg).normalize(); _bx.crossVectors(_tg, _ax);
           const rad = P.r * it.rr; _p.addScaledVector(_ax, Math.cos(it.ang) * rad).addScaledVector(_bx, Math.sin(it.ang) * rad);
-          const sz = Math.min(0.011, Math.max(0.0035, P.r * 0.3)) * (it.gas ? 1.5 : 1) * (v > 0 ? 1 : 0.7);
-          _q.setFromUnitVectors(_up, _tg); _sc.set(sz, sz * (v > 0.3 ? 1.6 : 1), sz); _m.compose(_p, _q, _sc); im.setMatrixAt(i, _m);
+          const sz = Math.min(0.011, Math.max(0.0035, P.r * 0.3)) * (it.gas ? 1.5 : 1) * (v !== 0 ? 1 : 0.7);
+          if (v < 0) _tg.negate();
+          _q.setFromUnitVectors(_up, _tg); _sc.set(sz, sz * (Math.abs(v) > 0.3 ? 1.6 : 1), sz); _m.compose(_p, _q, _sc); im.setMatrixAt(i, _m);
           if (doCol) { let t = S.ti; try { t = P.fnU ? P.fnU(u) : S.ti; } catch (e) { /* noop */ } tempColor(t, _c); if (it.gas) _c.lerp(new T.Color(1, 1, 1), 0.35); im.setColorAt(i, _c); }
         });
         im.instanceMatrix.needsUpdate = true; if (doCol) im.instanceColor.needsUpdate = true;
@@ -5191,7 +5271,9 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       tech.cabPos = { x: xw, y: yZ, z: zz, w: wZ, h: hZ, d: dZ };
       if (modern) buildCabinetModern(xw, yZ - hZ / 2, zz);
       if (opts.lps) label(V(xF + 0.05, yZ - hZ / 2 + 0.2, zz - 0.12), () => [tr('l3.spd'), tr('l3.spdSub')], groups.lab, { prio: 1 });
-      else {
+      // v1.4: früher hing das „else“ am Blitzschutz statt am Schranktyp → ohne LPS wurde zusätzlich das klassische Gehäuse mit
+      // halbtransparenter 95°-Tür über den modernen Schrank gelegt („Geistertür“).
+      if (!modern) {
       // Gehäuse offen dargestellt (Rückwand, Seiten, Boden/Deckel), Tür 95° geöffnet – Einbauten ohne Z-Fighting sichtbar
       mesh(merge([bx(0.012, hZ, wZ, xw + 0.006, yZ, zz - wZ / 2), bx(dZ, 0.015, wZ, xw + dZ / 2, yZ + hZ / 2, zz - wZ / 2), bx(dZ, 0.015, wZ, xw + dZ / 2, yZ - hZ / 2, zz - wZ / 2),
         bx(dZ, hZ, 0.015, xw + dZ / 2, yZ, zz), bx(dZ, hZ, 0.015, xw + dZ / 2, yZ, zz - wZ)]), std('#eef0ee', { p: { roughness: 0.5 } }), groups.fit);
@@ -5435,8 +5517,9 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       mesh(bx(d, 0.15, w + 0.3, ux, 0.075, uz), M.base, groups.cas);
       mesh(merge([bx(0.06, 0.25, 0.06, ux, 0.27, uz - w / 2 + 0.15), bx(0.06, 0.25, 0.06, ux, 0.27, uz + w / 2 - 0.15)]), M.dark, groups.cas);
       const y0 = 0.4;
-      const cas = mesh(bx(d, h, w, ux, y0 + h / 2, uz), M.casingDark, groups.cas);
-      void cas;
+      // Gehäuse als Blechteile: Deckel, Lüfterseite, Rückwand (−z); Register-Seiten (−dir und +z) nur mit Lamellen → Innenleben sichtbar
+      mesh(merge([bx(d, 0.02, w, ux, y0 + h - 0.01, uz), bx(0.02, h, w, ux + dir * (d / 2 - 0.01), y0 + h / 2, uz), bx(d, h, 0.02, ux, y0 + h / 2, uz - w / 2 + 0.01),
+        bx(0.03, h, 0.03, ux - dir * (d / 2 - 0.015), y0 + h / 2, uz + w / 2 - 0.015), bx(d, 0.03, 0.03, ux, y0 + 0.015, uz + w / 2 - 0.015)]), M.casingDark, groups.cas);
       const fanX = ux + dir * (d / 2 + 0.01), fanY = y0 + h * 0.55, fanZ = uz - w * 0.12, fr = Math.min(0.38, h * 0.38);
       const rings = []; for (let k = 1; k <= 4; k++) rings.push(new T.TorusGeometry(fr * k / 4, 0.008, 6, 36).rotateY(Math.PI / 2).translate(fanX + dir * 0.02, fanY, fanZ));
       for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; rings.push(bx(0.01, 0.012, fr * 2, fanX + dir * 0.02, fanY, fanZ, 0, a)); }
@@ -5449,22 +5532,54 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const fins = [];
       for (let k = 0; k < 34; k++) fins.push(bx(0.06, h * 0.86, 0.004, ux - dir * (d / 2 - 0.05), y0 + h / 2, uz - w / 2 + 0.04 + k * (w - 0.08) / 33));
       for (let k = 0; k < 10; k++) fins.push(bx(0.004, h * 0.86, 0.06, ux - d / 2 + 0.06 + k * (d - 0.12) / 9, y0 + h / 2, uz + w / 2 - 0.05));
-      tpos(merge(fins), TM.solid, (px, py) => S.hpRun ? lerp(S.airOut - 1, S.te - 1, py * 0.4) : S.te, groups.sys, 'evaporator');
+      tpos(merge(fins), TM.solid, (px, py) => S.hpRun ? (S.rev ? lerp(S.te + 14, S.te + 5, py) : lerp(S.airOut - 1, S.te - 1, py * 0.4)) : S.te, groups.sys, 'evaporator');
       tconst(cy(0.11, 0.32, ux - dir * 0.02, y0 + 0.22, uz + w * 0.3, 18), TM.solid, () => S.hpRun ? S.compHot : S.te, groups.sys, 'compressor');
       const split = SC.hpConfig === 'split' && SC.type !== 'aahp';
       if (!split && SC.type !== 'aahp') tpos(bx(0.08, h * 0.35, 0.2, ux - dir * 0.05, y0 + h * 0.3, uz + w * 0.08), TM.solid, (px, py) => S.hpRun ? lerp(S.hpRet, S.hpOut, py) : S.te, groups.sys, 'hpCond');
       // Kältekreis in der Außeneinheit (im Röntgenbild sichtbar): Verdichter → 4-Wege-Ventil → Verflüssiger (Monoblock) bzw. Absperrventile (Split)
       // → elektronisches Expansionsventil → Verdampfer → Saugleitung zurück zum Verdichter
-      { const cX = ux - dir * 0.02, cZ = uz + w * 0.3, vX = ux + dir * 0.06, v4 = V(vX, y0 + 0.62, cZ), eev = V(vX, y0 + 0.62, uz + w * 0.12), evH = V(ux - dir * (d / 2 - 0.08), y0 + h * 0.75, uz - w / 2 + 0.12);
-        const cond = split ? V(ux + dir * (d / 2 - 0.03), y0 + 0.12, uz + w / 2 - 0.08) : V(ux - dir * 0.05, y0 + h * 0.48, uz + w * 0.08);
+      { const vals = split || SC.type === 'aahp', cX = ux - dir * 0.02, cZ = uz + w * 0.3, vX = ux + dir * 0.06, v4 = V(vX, y0 + 0.62, cZ), eev = V(vX, y0 + 0.62, uz + w * 0.12);
+        const xc = ux - dir * (d / 2 - 0.05), evH = V(ux - dir * (d / 2 - 0.08), y0 + h * 0.75, uz - w / 2 + 0.12), evO = V(ux - dir * (d / 2 - 0.08), y0 + h * 0.22, uz + w / 2 - 0.15);
+        const hx = ux - dir * 0.05, hz = uz + w * 0.08, hy0 = y0 + h * 0.125, hy1 = y0 + h * 0.475;
+        const cond = vals ? V(ux + dir * (d / 2 - 0.03), y0 + 0.12, uz + w / 2 - 0.08) : V(hx, y0 + h * 0.48, hz);
+        const R = () => S.rev, T_ = (hot, cold) => () => S.hpRun ? (R() ? cold() : hot()) : S.te;
+        // 4-Wege-Ventil mit 4 Anschlüssen: D (Druckgas vom Verdichter), S (Saugseite → Verdichter), A (Plattenwärmeübertrager bzw. Gasventil), B (Lamellenregister).
+        // Heizen: D→A, B→S. Kühlen (umgeschaltet): D→B, A→S → Register wird Verflüssiger, Plattenwärmeübertrager Verdampfer (Kaltwasser).
         pipe([V(cX, y0 + 0.4, cZ), V(cX, y0 + 0.62, cZ), v4], 0.006, TM.heatS, () => S.hpRun ? S.compHot : S.te, groups.sys, 'refrHot');
-        pipe([v4, V(v4.x, v4.y, cond.z), cond], 0.006, TM.heatS, () => S.hpRun ? S.compHot - 10 : S.te, groups.sys, 'refrHot2');
-        pipe([V(cond.x, y0 + h * 0.12, cond.z), V(eev.x, y0 + h * 0.12, cond.z), V(eev.x, y0 + h * 0.12, eev.z), V(eev.x, eev.y - 0.04, eev.z)], 0.005, TM.heatR, () => S.hpRun ? S.hpRet + 3 : S.te, groups.sys, 'refrLiqInt');
-        pipe([V(eev.x, eev.y + 0.04, eev.z), V(eev.x, evH.y, eev.z), evH], 0.005, TM.heatR, () => S.hpRun ? S.te - 7 : S.te, groups.sys, 'refrTwo');
-        pipe([V(evH.x, y0 + 0.15, evH.z), V(cX, y0 + 0.15, evH.z), V(cX, y0 + 0.15, cZ - 0.12), V(cX, y0 + 0.32, cZ - 0.12)], 0.007, TM.heatR, () => S.hpRun ? S.te - 3 : S.te, groups.sys, 'refrSuc');
-        mesh(merge([bx(0.05, 0.06, 0.13, v4.x, v4.y, v4.z), cy(0.012, 0.05, v4.x, v4.y + 0.05, v4.z, 8)]), M.brass, groups.fit);                       // 4-Wege-Umschaltventil
+        pipe([v4, V(v4.x, v4.y, cond.z), cond], 0.006, TM.heatS, T_(() => S.compHot - 10, () => S.flow - 6), groups.sys, 'refrA');
+        pipe([V(cond.x, y0 + h * 0.12, cond.z), V(eev.x, y0 + h * 0.12, cond.z), V(eev.x, y0 + h * 0.12, eev.z), V(eev.x, eev.y - 0.04, eev.z)], 0.005, TM.heatR, T_(() => S.hpRet + 3, () => S.flow - 8), groups.sys, 'refrLiqInt');
+        pipe([V(eev.x, eev.y + 0.04, eev.z), V(eev.x, evH.y, eev.z), evH], 0.005, TM.heatR, T_(() => S.te - 7, () => S.te + 5), groups.sys, 'refrTwo');
+        // Register-Kältemittelweg (Mehrfach-Durchgang quer über die Lamellen): Einspritzung oben, Sauggas unten (Heizen)
+        { const pts = [evH]; const nP = 6; for (let k = 0; k < nP; k++) { const yy = evH.y - (evH.y - evO.y) * (k + 0.5) / nP, za = k % 2 ? uz + w / 2 - 0.1 : uz - w / 2 + 0.1; pts.push(V(xc, yy, k % 2 ? uz - w / 2 + 0.1 : uz + w / 2 - 0.1), V(xc, yy, za)); }
+          pts.push(evO); flowPath(pts, 0.006, u => S.hpRun ? (R() ? lerp(S.te + 16, S.te + 5, u) : lerp(S.te - 7, S.te - 3, u)) : S.te, 'coilFlow'); }
+        pipe([evO, V(ux + dir * 0.16, evO.y, evO.z), V(ux + dir * 0.16, v4.y - 0.06, evO.z), V(v4.x, v4.y - 0.06, v4.z + 0.05), V(v4.x, v4.y - 0.03, v4.z + 0.05)], 0.007, TM.heatR, T_(() => S.te - 3, () => S.compHot - 10), groups.sys, 'refrB');
+        // Saugleitung: 4-Wege-Ventil (S) → Flüssigkeitsabscheider → Verdichter
+        const aX = ux + dir * 0.17, aZ = cZ - 0.17;
+        pipe([V(v4.x, v4.y, v4.z - 0.065), V(v4.x, v4.y, aZ), V(aX, v4.y, aZ), V(aX, y0 + 0.33, aZ)], 0.007, TM.heatR, () => S.hpRun ? (R() ? S.flow - 6 : S.te - 3) : S.te, groups.sys, 'refrSuc');
+        pipe([V(aX, y0 + 0.08, aZ), V(cX, y0 + 0.08, aZ), V(cX, y0 + 0.12, cZ - 0.1)], 0.007, TM.heatR, () => S.hpRun ? (R() ? S.flow - 6 : S.te - 3) : S.te, groups.sys, 'refrSuc');
+        tconst(cy(0.045, 0.24, aX, y0 + 0.21, aZ, 14), TM.solid, () => S.hpRun ? (R() ? S.flow - 6 : S.te - 3) : S.te, groups.sys, 'accumulator');
+        mesh(merge([bx(0.05, 0.06, 0.13, v4.x, v4.y, v4.z), cy(0.012, 0.05, v4.x, v4.y + 0.05, v4.z, 8), cy(0.018, 0.035, v4.x, v4.y + 0.09, v4.z, 10)]), M.brass, groups.fit); // 4-Wege-Ventil mit Magnetspule
         mesh(merge([cy(0.016, 0.08, eev.x, eev.y, eev.z, 10), cy(0.024, 0.04, eev.x, eev.y + 0.02, eev.z, 12)]), M.dark, groups.fit);             // EEV mit Schrittmotor
-        if (split) mesh(merge([cy(0.02, 0.05, cond.x, y0 + 0.12, cond.z, 8, 0, Math.PI / 2), cy(0.016, 0.05, cond.x, y0 + 0.22, cond.z, 8, 0, Math.PI / 2)]), M.brass, groups.fit); // Absperrventile Split
+        if (vals) mesh(merge([cy(0.02, 0.05, cond.x, y0 + 0.12, cond.z, 8, 0, Math.PI / 2), cy(0.016, 0.05, cond.x, y0 + 0.22, cond.z, 8, 0, Math.PI / 2)]), M.brass, groups.fit); // Absperrventile Split
+        // Lüftermotor (EC) hinter dem Flügelrad, Inverter-Elektronik mit Kühlkörper oben an der Lüfterseite
+        mesh(cy(0.07, 0.1, fanX - dir * 0.13, fanY, fanZ, 16, 0, Math.PI / 2), M.dark, groups.cas);
+        mesh(bx(0.05, 0.26, 0.34, ux + dir * (d / 2 - 0.06), y0 + h * 0.8, uz + w / 2 - 0.3), std('#3d4a3a', { p: { roughness: 0.6 } }), groups.cas);
+        mesh(merge([0, 1, 2, 3, 4, 5].map(k => bx(0.03, 0.2, 0.004, ux + dir * (d / 2 - 0.1), y0 + h * 0.8, uz + w / 2 - 0.44 + k * 0.025))), M.metal, groups.fit);
+        if (withLabel) label(V(v4.x, v4.y + 0.3, v4.z + 0.1), () => [tr('l3.v4'), tr(S.rev ? 'l3.v4Cool' : S.hpRun ? 'l3.v4Heat' : 'l3.off')], groups.lab, { prio: 0, key: 'v4' });
+        // Monoblock: Heizwasser im Gerät – RL von unten → Umwälzpumpe → Plattenwärmeübertrager (Gegenstrom: Wasser ↑, Kältemittel ↓) → VL nach unten
+        if (!vals) {
+          const pin = V(ux - d / 2, 0.15, uz - 0.18), rin = V(ux - d / 2, 0.15, uz + 0.18), xw = ux - d / 2 + 0.1, zP = hz - 0.1, zR = hz + 0.1; // Wasser: Eintritt unten (+z), Austritt oben (−z)
+          pipe([rin, V(xw, 0.15, rin.z), V(xw, hy0 + 0.03, rin.z), V(hx, hy0 + 0.03, rin.z), V(hx, hy0 + 0.03, zR)], 0.013, TM.heatR, () => S.hpRun ? S.hpRet : S.te, groups.sys, 'hpIntOR');
+          pipe([V(hx, hy1 - 0.03, zP), V(hx, hy1 - 0.03, pin.z), V(xw, hy1 - 0.03, pin.z), V(xw, 0.15, pin.z), pin], 0.013, TM.heatS, () => S.hpRun ? S.hpOut : S.te, groups.sys, 'hpIntOS');
+          { const pts = [V(hx, hy0 + 0.03, zR)]; for (let k = 0; k < 4; k++) { const yy = hy0 + 0.03 + (hy1 - hy0 - 0.06) * (k + 0.5) / 4; pts.push(V(hx, yy, k % 2 ? hz - 0.08 : hz + 0.08), V(hx, yy, k % 2 ? hz + 0.08 : hz - 0.08)); }
+            pts.push(V(hx, hy1 - 0.03, zP)); flowPath(pts, 0.008, u => S.hpRun ? lerp(S.hpRet, S.hpOut, u) : S.te, 'hxFlow'); }
+          tconst(cy(0.04, 0.09, xw, y0 + 0.2, rin.z, 14), TM.solid, () => S.hpRun ? S.hpRet : S.te, groups.sys, 'pump');
+          mesh(merge([cy(0.05, 0.06, xw + dir * 0.06, y0 + 0.2, rin.z, 14, 0, Math.PI / 2), bx(0.03, 0.04, 0.05, xw + dir * 0.1, y0 + 0.2, rin.z)]), M.pump, groups.cas);   // EC-Pumpenkopf
+          mesh(merge([cy(0.018, 0.04, xw, y0 + 0.08, rin.z, 10), bx(0.03, 0.02, 0.02, xw + 0.02, y0 + 0.08, rin.z)]), M.dark, groups.fit);                                // Durchflusssensor
+          mesh(merge([cy(0.014, 0.05, xw, hy1 + 0.05, pin.z, 10), cy(0.02, 0.025, xw, hy1 + 0.09, pin.z, 10)]), M.brass, groups.fit);                                      // Schnellentlüfter
+          mesh(merge([cy(0.012, 0.04, hx, hy1 + 0.02, pin.z + 0.06, 10, Math.PI / 2), cy(0.018, 0.03, hx, hy1 + 0.02, pin.z + 0.1, 10, Math.PI / 2)]), M.red, groups.fit); // Sicherheitsventil 3 bar
+          if (withLabel) label(V(hx, hy1 + 0.25, uz + w / 2 + 0.05), () => [tr('l3.monoIn'), S.hpRun ? degC(S.hpRet) + ' → ' + degC(S.hpOut) + (S.rev ? ' · ' + tr('l3.coolMode') : '') : tr('l3.off')], groups.lab, { prio: 0, key: 'monoIn' });
+        }
       }
       // Kondensatwanne mit Wannenheizung, Ablauf ins Kiesbett (Versickerung, frostfrei), Reifansatz bei −7 … +5 °C (Abtauung)
       mesh(bx(d + 0.7, 0.06, w + 0.9, ux, 0.03, uz), std('#a8a49b', { p: { roughness: 1, map: TEX.paver } }), groups.site);
@@ -5987,6 +6102,11 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           // Vorlauf steigt wandnah auf, Bogen in das Thermostatventil OBEN; Rücklauf verlässt den Heizkörper UNTEN auf der Gegenseite (wechselseitig, diagonal durchströmt)
           pipe([toW(xV, yRS, zRS), toW(xV, yV - 0.08, zRS), toW(xV, yV - 0.08, zRS * 0.35), toW(xV, yV - 0.03, 0)], 0.011, TM.heatS, tS, groups.sys, 'stubS');
           pipe([toW(xR, yRl - 0.03, 0), toW(xR, yRl - 0.08, zRR * 0.35), toW(xR, yRR, zRR)], 0.011, TM.heatR, tR, groups.sys, 'stubR');
+          // Strömung IM Heizkörper (wechselseitiger Anschluss): VL oben in den Sammelkanal, durch die senkrechten Wasserkanäle nach unten,
+          // unterer Sammelkanal zum RL – mehrere Wege, damit die Verteilung über die Breite sichtbar wird (Röntgen/Wärmebild)
+          if (em !== 'fancoil') [0.2, 0.5, 0.8].forEach(fk => { const xk = -spec.l / 2 + fk * spec.l;
+            flowPath([toW(xV + 0.02, yV, 0), toW(-spec.l / 2 + 0.02, spec.h - 0.04, 0), toW(xk, spec.h - 0.04, 0), toW(xk, 0.04, 0), toW(spec.l / 2 - 0.02, 0.04, 0), toW(xR - 0.02, yRl, 0)], 0.006,
+              u => S.on ? lerp(S.flow - 1.2, S.ret + 0.2, u) : S.ti + 0.4, 'radFlow'); });
           // Klemmringverschraubungen (Übergang Rohr → Armatur, kein offenes Rohrende)
           P.push([cy(0.015, 0.022, xV, yV - 0.04, 0, 12), 'brass'], [cy(0.015, 0.022, xR, yRl - 0.04, 0, 12), 'brass'], [cy(0.017, 0.012, xV, yV - 0.03, 0, 6), 'brass'], [cy(0.017, 0.012, xR, yRl - 0.03, 0, 6), 'brass']);
         }
@@ -6596,7 +6716,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       groups.envR.visible = m === 'real'; groups.envT.visible = m === 'thermal'; groups.envX.visible = m === 'xray';
       groups.site.visible = m === 'real'; groups.siteT.visible = m !== 'real';
       groups.inR.visible = m === 'real'; groups.inT.visible = m !== 'real';
-      groups.fit.visible = m === 'real'; groups.flow.visible = opts.arrows !== false; applyFlowStyle(); groups.fitT.visible = m !== 'real';
+      groups.fit.visible = m === 'real'; groups.flow.visible = opts.arrows !== false && !(m === 'real' && opts.look === 'natural'); applyFlowStyle(); applyLook(m === 'real' && opts.look === 'natural'); groups.fitT.visible = m !== 'real';
       groups.air.visible = !!opts.air; groups.wind.visible = opts.fx && (opts.wind || 0) > 0.2;
       groups.lab.visible = opts.labels; groups.dim.visible = opts.dims; groups.fx.visible = opts.fx;
       casingMats.forEach(mm => { mm.opacity = m === 'real' ? (mm.userData.baseOp || (mm.userData.baseOp = mm.opacity)) : 0.08; mm.transparent = true; mm.depthWrite = false; });
@@ -6611,6 +6731,9 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         if (LAYERS.has(mm)) op = Math.max(opts._iso ? 0.004 : 0.03, stackOp(op, LAYERS.get(mm)));
         mm.opacity = op; mm.transparent = op < 0.999; mm.depthWrite = op >= 0.999; mm.needsUpdate = true; });
       TM.env.uniforms.opacity.value = opts._iso ? 0.06 : Math.max(0.25, Math.min(1, opts.envOpacity + 0.35)); TM.envGlass.uniforms.opacity.value = opts._iso ? 0.08 : 0.75;
+      // Röntgen: Bauteile (Heizkörper, Wärmeübertrager, Speicher) gläsern → Strömung im Inneren sichtbar
+      { const xr0 = m === 'xray'; TM.solid.uniforms.opacity.value = xr0 ? 0.32 : 1; TM.solid.transparent = xr0; TM.solid.depthWrite = !xr0; TM.solid.needsUpdate = true;
+        TM.tank.uniforms.opacity.value = xr0 ? 0.4 : 0.86; }
       M.slab.opacity = opts._iso ? 0.18 : 0.5; M.part.opacity = opts._iso ? 0.05 : 0.16;
       [groups.site, groups.siteT, groups.envR, groups.envT, groups.lab].forEach(gg => gg.children.forEach(ch => { if (ch.userData.cutOnly) ch.visible = opts.cut; if (ch.userData.noCut) ch.visible = !opts.cut; }));
       const keller = !!opts.isolate && KELLER_KEYS.includes(focusKey);
@@ -6629,6 +6752,45 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       labels.forEach(L => { L.last = ''; drawLabel(L); });
       callouts.forEach(C => { C.w = 0; });
     }
+    /* ---------- Ansicht „Natürlich“: Materialien statt Wärmebild-Shader ---------- */
+    let natCache = {};
+    const NAT_COL = {
+      hide: null, pex: ['#c8462c', 0.45, 0], pe: ['#1f2124', 0.6, 0], arma: ['#1b1c1e', 0.85, 0], cu: ['#b87333', 0.32, 0.85], ins: ['#d9dcdf', 0.75, 0.05],
+      alu: ['#c9ced3', 0.35, 0.65], inox: ['#c4c9ce', 0.3, 0.75], white: ['#f2f2ef', 0.35, 0.02], jacket: ['#eeeeec', 0.5, 0.02], steel: ['#aab1b8', 0.4, 0.6],
+      dark: ['#2b2e31', 0.5, 0.3], cast: ['#3b4148', 0.55, 0.4], brass: ['#b9a36a', 0.35, 0.8], water: ['#7fb4dc', 0.15, 0], kmr: ['#4a4f55', 0.6, 0.2], coll: ['#1d2a44', 0.25, 0.3]
+    };
+    function natKey(info, r) {
+      if (/^(screed|wallPlaster|plume|q:)/.test(info)) return 'hide';
+      if (/^(ufh|wallLoop)/.test(info)) return 'pex';
+      if (/^(probe|brine|hpIntB)/.test(info)) return 'pe';
+      if (/^(refrG|refrGas)$/.test(info)) return 'arma';
+      if (/^(refr|hpIntR|coil|solarCoil|charge)/.test(info)) return 'cu';
+      if (/^(dhw|circ|cold)/.test(info)) return info === 'dhwTank' ? 'jacket' : 'ins';
+      if (/^(solarS|solarR|flue)/.test(info)) return 'inox';
+      if (/^dhPrim/.test(info)) return 'kmr';
+      if (/^(emitter|aaIndoor|dhwHpCond)/.test(info)) return 'white';
+      if (/^(buffer|separator|tank)/.test(info)) return 'jacket';
+      if (/^(hpCond|hpEvap|dhHX|cabShell)/.test(info)) return 'steel';
+      if (/^evaporator/.test(info)) return 'alu';
+      if (/^(compressor|accumulator)/.test(info)) return 'dark';
+      if (/^pump/.test(info)) return 'cast';
+      if (/^(dist|manifold)/.test(info)) return 'brass';
+      if (/^(magWater|shower)/.test(info)) return 'water';
+      if (/^collector/.test(info)) return 'coll';
+      return r != null ? (r >= 0.02 ? 'ins' : 'cu') : 'steel';
+    }
+    function applyLook(nat) {
+      pickables.forEach(mm => {
+        if (!mm.userData.thermal) return;
+        if (!mm.userData.tmat0) mm.userData.tmat0 = mm.material;
+        if (!nat) { mm.material = mm.userData.tmat0; if (mm.userData.natHidden) { mm.visible = true; mm.userData.natHidden = false; } return; }
+        const k = natKey(String(mm.userData.info || ''), mm.userData.r);
+        if (k === 'hide') { if (mm.visible) { mm.visible = false; mm.userData.natHidden = true; } return; }
+        const clip = clipMats.includes(mm.userData.tmat0), ck = k + (clip ? 'c' : '');
+        if (!natCache[ck]) { const [col, ro, me] = NAT_COL[k]; natCache[ck] = std(col, { clip, opacity: k === 'water' ? 0.75 : 1, side: T.DoubleSide, p: { roughness: ro, metalness: me } }); if (clip) natCache[ck].clippingPlanes = opts.cut ? [clipPlane] : []; }
+        mm.material = natCache[ck];
+      });
+    }
     /** Setzt die Wärmebildpalette. */
     function setPalette(name) {
       opts.palette = name; palTex.image.data.set(paletteBytes(name)); palTex.needsUpdate = true;
@@ -6636,6 +6798,8 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     /** Übernimmt Anzeigeoptionen (z. B. PV, Wallbox) und baut ggf. neu. */
     function setOptions(o) {
       const prevPal = opts.palette; Object.assign(opts, o || {});
+      // Ansicht „Natürlich“ = Real-Darstellung der Hülle + Materialaussehen der Anlagenteile (keine Temperaturfarben)
+      if (o && o.mode) { opts.look = o.mode === 'natural' ? 'natural' : 'thermo'; if (o.mode === 'natural') opts.mode = 'real'; }
       if (opts.palette !== prevPal) setPalette(opts.palette);
       if (groups.envR) applyMode(); else updateSun();
       applyEV();
@@ -6683,6 +6847,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         else { S.airOut = op.te + 6; }
         S.compHot = S.hpRun ? 70 : 24;
       }
+      S.rev = S.cool && S.hpRun; // aktive Kühlung: 4-Wege-Ventil umgeschaltet (Kreisprozess rückwärts)
       return S;
     }
     /** Aktualisiert die Temperaturskala (Auto/fest) und Legende. */
@@ -6723,6 +6888,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       TM.brine.uniforms.speed.value = S.hpRun ? 0.6 + 1.5 * S.ratio : 0; TM.flue.uniforms.speed.value = S.gasRun ? 1.4 : 0;
       TM.dhw.uniforms.speed.value = 0.7; TM.solar.uniforms.speed.value = S.stOn ? 0.9 : 0; TM.circ.uniforms.speed.value = 0.7; TM.cold.uniforms.speed.value = 0.35;
       [TM.heatS, TM.heatR, TM.loop].forEach(m => { m.uniforms.pulse.value = S.on ? 0.42 : 0.1; });
+      if (magState) { const tm = S.on ? (S.flow + S.ret) / 2 : S.ret, td = Math.max(40, ((ST.building.flowDesign || 55) + (ST.building.returnDesign || 45)) / 2); magState.tgt = Math.min(0.85, 0.15 + 0.62 * nExp(tm) / Math.max(0.3, nExp(td))); }
       frostMats.forEach(m => { const f = S.hpRun && !S.cool && S.te > -8 && S.te < 5 ? Math.exp(-Math.pow((S.te + 1) / 4, 2)) : 0; m.opacity = 0.75 * f; m.transparent = true; m.visible = f > 0.03; });
       systems.forEach(s => { s.rate = s.kind === 'air' ? (S.hpRun ? 0.6 + 0.8 * S.ratio : 0) : s.kind === 'drip' ? (S.hpRun && !S.cool && S.te < 16 ? 0.5 + 0.5 * clamp01((16 - S.te) / 16) : 0) : (S.gasRun ? 1 : 0); });
       spinners.forEach(o => { o.userData.rate = S.hpRun ? 4 + 18 * S.ratio : 0; });
@@ -6809,6 +6975,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (opts.air && airSys.length) tickAir(dt);
       if (opts.fx && windSys && (opts.wind || 0) > 0.2) tickWind(dt);
       tickStation(dt); if (movers.length) tickMovers(dt);
+      tickMag(dt);
       if (opts.arrows !== false && groups.flow && groups.flow.visible) { if (opts.flowStyle === 'arrows') tickArrows(dt); else tickFluid(dt); }
       if (inXR) tween = null;
       if (tween) {
@@ -6865,7 +7032,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       autoRotate() { return !!(ctl && ctl.autoRotate); },
       _xr: {
         T, scene, renderer, cam, ctl, rootG, groups, opts, S, U, hooks: xrHooks, clipPlane, tr, fmt, visibleDeep, applyMode,
-        anchors: () => anchors, pickables: () => pickables, moverMeshes: () => moverMeshes, toggleOpenHit, movers: () => movers,
+        anchors: () => anchors, labels: () => labels, pickables: () => pickables, moverMeshes: () => moverMeshes, toggleOpenHit, movers: () => movers,
         callouts: () => callouts, frontBearing: () => frontBearing, clickables: () => clickables, pickEV: () => pickEV, applyEV, sunPos, updateSun, envG, G: () => G, SC: () => SC, focusKey: () => focusKey, bCenter: () => bCenter.clone(),
         /** Fokuszustand (Isolieren/Keller-Schnitt/Skala) ohne Kamerafahrt – für den Headset-Rundgang */
         setFocusState(k) {
@@ -6914,7 +7081,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Raumklima einer Etage (vereinfachte CFD)
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Zwei-Schichten-Modell (Aufenthaltszone 0–1,25 m / Deckenzone 1,25–2,5 m),
  * je Schicht 2D-Strömung (Stam „Stable Fluids“: semi-Lagrange-Advektion, Druckprojektion),
  * vertikaler Austausch über Heizkörper-Auftrieb und Kaltluftabfall an Fenstern/Außenwänden,
@@ -7440,7 +7607,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Excel-Export
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Vorlage (openpyxl, mit Formeln und Diagrammen) wird im Browser mit JSZip
  * geöffnet; nur die blauen Eingabezellen werden mit den aktuellen Werten
  * überschrieben. Excel/LibreOffice berechnen alle Formeln beim Öffnen neu.
@@ -7654,7 +7821,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – VR-Rundgang (WebXR, Meta Quest) mit Roboterführer „Kelvin“
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Desktop: geführter Rundgang (HTML-Panel mit Formelsatz und Diagramm).
  * Headset: Teleport, Gehen mit Treppenfolge, Drehen, Messen, Türen/Fenster öffnen, Variablen-Menü, Modellansicht,
  * projizierte Diagramme und neuronale Sprachausgabe (Piper/ONNX im Browser), da der Quest-Browser keine hörbaren Systemstimmen hat.
@@ -7679,7 +7846,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       ['A / B', 'Station ▶ / ◀', 'station ▶ / ◀', 'estación ▶ / ◀'], ['X', 'Real / Wärmebild / Röntgen', 'real / thermal / X-ray', 'real / termografía / rayos X'],
       ['Y', 'Menü (Variablen)', 'menu (variables)', 'menú (variables)'], ['Grip', 'Panel greifen · sonst Kelvin rufen', 'grab panel · else call Kelvin', 'agarrar panel · si no, llamar a Kelvin'],
       ['Stick L', 'gehen (Treppen folgen)', 'walk (follows stairs)', 'caminar (sigue escaleras)'], ['Stick R', 'drehen / schweben', 'turn / hover', 'girar / flotar']],
-    mode: { real: ['Real', 'Real', 'Real'], thermal: ['Wärmebild', 'Thermal', 'Termografía'], xray: ['Röntgen', 'X-ray', 'Rayos X'] },
+    mode: { real: ['Real', 'Real', 'Real'], natural: ['Natürlich', 'Natural', 'Natural'], thermal: ['Wärmebild', 'Thermal', 'Termografía'], xray: ['Röntgen', 'X-ray', 'Rayos X'] },
     scale: ['Skala', 'Scale', 'Escala'], on: ['ein', 'on', 'sí'], off: ['aus', 'off', 'no'],
     model: ['Maßstab', 'Scale', 'Escala'], model1: ['1:1 begehen', '1:1 walk', '1:1 recorrer'], model15: ['Modell 1:15', 'Model 1:15', 'Maqueta 1:15'],
     lang: ['Sprache', 'Language', 'Idioma'], voice: ['Stimme', 'Voice', 'Voz'], exitVR: ['VR verlassen', 'Exit VR', 'Salir de RV'],
@@ -8218,6 +8385,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     const lang = () => (cfg.lang && cfg.lang()) || 'de', li = () => LANGI[lang()] || 0;
     const L = a => Array.isArray(a) ? (a[li()] || a[0]) : (a || '');
     const fmt = cfg.fmt || X.fmt;
+    const MODES = ['real', 'natural', 'thermal', 'xray'], curMode = () => X.opts.mode === 'real' && X.opts.look === 'natural' ? 'natural' : X.opts.mode;
     const state = { active: false, idx: 0, free: false, sound: true, xr: false, model: 1, prevAir: null, menu: false, engine: 'auto', hoverUntil: 0, catalog: false, pin: { vp: false, cp: false, mp: false, ip: false } };
 
     /* ---------- Kontext mit Live-Werten ---------- */
@@ -8464,7 +8632,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (it.sel) { const el = $(it.sel); return { label: lblOf(el), val: el && el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : '–', kind: 'cyc' }; }
       if (it.rng) { const el = $(it.rng), b = el && el.closest('label').querySelector('b'); return { label: lblOf(el), val: b ? b.textContent : el.value, kind: 'cyc' }; }
       if (it.chk) { const el = $(it.chk); return { label: lblOf(el), val: el && el.checked, kind: 'chk' }; }
-      if (it.k === 'mode') return { label: L(['Darstellung', 'Display', 'Visualización']), val: L(UI.mode[X.opts.mode] || UI.mode.real), kind: 'cyc' };
+      if (it.k === 'mode') return { label: L(['Darstellung', 'Display', 'Visualización']), val: L(UI.mode[curMode()] || UI.mode.real), kind: 'cyc' };
       if (it.k === 'model') return { label: L(UI.model), val: state.model > 1 ? L(UI.model15) : L(UI.model1), kind: 'cyc' };
       if (it.k === 'voice') return { label: L(UI.voice), val: L(state.engine === 'neural' ? UI.voiceNeural : state.engine === 'web' ? UI.voiceWeb : UI.voiceAuto), kind: 'cyc' };
       if (it.k === 'lang') return { label: L(UI.lang), val: lang().toUpperCase(), kind: 'cyc' };
@@ -8504,7 +8672,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (it.sel) { const el = $(it.sel); if (!el) return; const n = el.options.length; el.selectedIndex = (el.selectedIndex + d + n) % n; fire(el, ['change']); }
       else if (it.rng) { const el = $(it.rng); if (!el) return; const v = Math.max(+el.min, Math.min(+el.max, +el.value + d * it.step)); el.value = v; fire(el, ['input', 'change']); }
       else if (it.chk) { const el = $(it.chk); if (!el) return; el.checked = !el.checked; fire(el, ['change']); }
-      else if (it.k === 'mode') { const M = ['real', 'thermal', 'xray'], m = M[(M.indexOf(X.opts.mode) + d + 3) % 3]; if (cfg.setMode) cfg.setMode(m); }
+      else if (it.k === 'mode') { const M = MODES, m = M[(M.indexOf(curMode()) + d + M.length) % M.length]; if (cfg.setMode) cfg.setMode(m); }
       else if (it.k === 'model') toggleModel();
       else if (it.k === 'voice') { const E = ['auto', 'neural', 'web']; state.engine = E[(E.indexOf(state.engine) + d + 3) % 3]; }
       else if (it.k === 'lang') { const Ls = ['de', 'en', 'es'], nl = Ls[(Ls.indexOf(lang()) + d + 3) % 3], b = $(`.lang button[data-lang="${nl}"]`); if (b) b.click(); }
@@ -8523,9 +8691,9 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     const WP = canvasPlane(512, 560, 0.17); WP.mesh.renderOrder = 11; WP.mesh.visible = true; WP.mesh.material.side = T.FrontSide;
     let wristKey = '';
     function drawWrist() {
-      const U = X.U, key = [li(), X.opts.mode, U.tMin.value.toFixed(1), U.tMax.value.toFixed(1), state.model].join('|'); if (key === wristKey) return; wristKey = key;
+      const U = X.U, key = [li(), curMode(), U.tMin.value.toFixed(1), U.tMax.value.toFixed(1), state.model].join('|'); if (key === wristKey) return; wristKey = key;
       const g = WP.g; g.clearRect(0, 0, 512, 560); rr(g, 4, 4, 504, 552, 24); g.fillStyle = 'rgba(8,14,26,0.9)'; g.fill(); g.strokeStyle = 'rgba(94,234,212,0.7)'; g.lineWidth = 3; g.stroke();
-      g.textBaseline = 'top'; g.fillStyle = '#5eead4'; g.font = '700 28px system-ui, sans-serif'; g.fillText(L(UI.wristTitle) + ' · ' + L(UI.mode[X.opts.mode] || UI.mode.real) + (state.model > 1 ? ' · 1:' + state.model : ''), 22, 20);
+      g.textBaseline = 'top'; g.fillStyle = '#5eead4'; g.font = '700 28px system-ui, sans-serif'; g.fillText(L(UI.wristTitle) + ' · ' + L(UI.mode[curMode()] || UI.mode.real) + (state.model > 1 ? ' · 1:' + state.model : ''), 22, 20);
       g.font = '500 22px system-ui, sans-serif';
       UI.wrist.forEach((r, i) => { g.fillStyle = '#ff8a3d'; g.fillText(r[0], 22, 68 + i * 40); g.fillStyle = '#e2e8f0'; g.fillText(r[1 + li()], 140, 68 + i * 40, 360); });
       const y0 = 410; g.fillStyle = '#94a3b8'; g.font = '600 22px system-ui, sans-serif'; g.fillText(L(UI.scale) + ' °C', 22, y0);
@@ -8627,7 +8795,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       else { state.model = 1; rig.scale.setScalar(1); const G = X.G() || { B: 10 }; placeEye(V(0, 1.65, G.B / 2 + 7), V(0, 3, 0)); }
       layFloor(); wristKey = ''; if (IP.mesh.visible && ipCur) drawIP(); if (state.menu) showMenu(true); else if (state.active && !state.free) showVRPanel(rob.target); else if (state.active) followRobot(true);
     }
-    function cycleMode() { const M = ['real', 'thermal', 'xray'], m = M[(M.indexOf(X.opts.mode) + 1) % 3]; if (cfg.setMode) cfg.setMode(m); wristKey = ''; }
+    function cycleMode() { const M = MODES, m = M[(M.indexOf(curMode()) + 1) % M.length]; if (cfg.setMode) cfg.setMode(m); wristKey = ''; }
 
     const ctrls = [0, 1].map(i => {
       const c = renderer.xr.getController(i), grip = renderer.xr.getControllerGrip(i);
@@ -8718,6 +8886,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       HUD.tx.needsUpdate = true;
     }
     /* ---- Info-Schilder an den Bauteilen (Beschriftungen in VR): zeigen + Trigger → Erklärpanel mit Schnittbild und Stimme ---- */
+    const dimLabs = new Set(); /** in VR umgestellte Maßbeschriftungen (beim Verlassen zurücksetzen) */
     const infoG = new T.Group(); infoG.name = 'xrInfo'; scene.add(infoG); let infoSig = '', infoSprites = [], hoverSign = null, lastHoverSign = null, hoverSignT = 0;
     function infoTex(title) {
       const c = document.createElement('canvas'); c.width = 512; c.height = 96; const g = c.getContext('2d');
@@ -8837,7 +9006,10 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function followFloor(dt) {
       if (state.model !== 1 || performance.now() < state.hoverUntil || (++floorTick & 1)) return;
       const hw = headWorld(), feet = rig.position.y; fray.set(V(hw.x, feet + 0.45, hw.z), down); fray.far = 1.05;
-      const h = fray.intersectObjects(solidMeshes(), false).find(q => { if (X.isClipped(q)) return false; const n = q.face ? q.face.normal.clone().transformDirection(q.object.matrixWorld) : UP; return Math.abs(n.y) > 0.7; });
+      const upF = q => { if (X.isClipped(q)) return false; const n = q.face ? q.face.normal.clone().transformDirection(q.object.matrixWorld) : UP; return n.y > 0.7; };
+      let h = fray.intersectObjects(solidMeshes(), false).find(upF);
+      // Abwärts schneller als die Bildrate (Treppe hinunter, Treppenauge): weiter unten suchen statt stehen zu bleiben
+      if (!h) { fray.far = 1.7; h = fray.intersectObjects(solidMeshes(), false).find(upF); }
       if (h) { const dy = h.point.y - feet; if (Math.abs(dy) > 0.004) rig.position.y += dy * Math.min(1, dt * 2 * 10); }
     }
     function pollInput(dt) {
@@ -8854,7 +9026,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           const hb = u.btn || null, hr = u.row != null ? u.row : null;
           if (hover.panel !== u.panel || hover.btn !== hb || hover.row !== hr) { hover = { panel: u.panel, btn: hb, row: hr, src: C.i }; if (u.panel === 'vp') drawVP(); if (u.panel === 'mp') drawMP(); if (u.panel === 'ip') drawIP(); } }
         else if (C.sel && isR) { C.tp = teleTarget(C); if (C.tp) { len = C.tp.d; col = C.tp.ok ? 0x34d399 : 0xef4444; tpMark.visible = true; tpMark.position.copy(C.tp.p); tpMark.position.y += 0.02; tpMark.scale.setScalar(s); tpRing.material.color.set(col); } else tpMark.visible = false; }
-        else if (C.sel && isL) { const m = measure(C); if (m) { len = m.h.distance; col = 0xfde68a; drawMeasure(m.r); const hw = headWorld(); MS.sp.position.copy(m.h.point).lerp(hw, 0.08); const sc = rig.scale.x, dd = m.h.point.distanceTo(hw) / sc, k = Math.min(2.2, Math.max(0.35, dd / 1.6)) * sc * (sc > 1 ? 0.36 : 1); MS.sp.scale.set(0.44 * k, 0.13 * k, 1); MS.sp.visible = true; } else MS.sp.visible = false; }
+        else if (C.sel && isL) { const m = measure(C); if (m) { len = m.h.distance; col = 0xfde68a; drawMeasure(m.r); const hw = headWorld(); MS.sp.position.copy(m.h.point).lerp(hw, 0.08); const sc = rig.scale.x, dd = m.h.point.distanceTo(hw) / sc, k = Math.min(2.2, Math.max(0.35, dd / 1.6)) * sc * (sc > 1 ? 0.2 : 1); MS.sp.scale.set(0.44 * k, 0.13 * k, 1); MS.sp.visible = true; } else MS.sp.visible = false; }
         C.line.scale.z = Math.max(0.05, len / s); C.line.material.color.set(col); C.line.visible = true;
         if (!gp) return;
         if (C.grab && !(gp.buttons[1] && gp.buttons[1].pressed)) C.grab = null;
@@ -8892,6 +9064,14 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           sp.scale.set(h * sc * (full ? 5.33 : 0.9), h * sc, 1); });
         if (hoverSign) { lastHoverSign = hoverSign; hoverSignT = 0.6; } else if ((hoverSignT -= dt) <= 0) lastHoverSign = null;
       }
+      // Maß-/Kompassbeschriftungen der 3D-Ansicht: am Bildschirm konstante Pixelgröße (sizeAttenuation aus) – im Headset würden sie so
+      // ≈ 11 % des Sichtfelds füllen. In VR daher Weltgröße nach Abstand: 1:1 ≈ 1,2° Sehwinkel, Maquette ≈ 0,8 cm Schrifthöhe.
+      if (state.xr && X.labels) { const sc = rig.scale.x, hw = headWorld();
+        X.labels().forEach(Lb => { const sp = Lb.sp; if (!sp || !sp.parent) return;
+          if (sp.material.sizeAttenuation === false) { sp.material.sizeAttenuation = true; sp.material.needsUpdate = true; dimLabs.add(Lb); }
+          const d = sp.position.distanceTo(hw) / sc, h = sc > 1 ? Math.min(0.009, Math.max(0.004, d * 0.008)) : Math.min(0.12, Math.max(0.03, d * 0.021));
+          sp.scale.set(h * sc * Lb.cv.width / 128, h * sc, 1); });
+      }
       if (fadeT >= 0) { fadeT += dt; const a = fadeT < 0.12 ? fadeT / 0.12 : Math.max(0, 1 - (fadeT - 0.12) / 0.35); fade.material.opacity = 0.85 * a; if (fadeT > 0.5) { fadeT = -1; fade.visible = false; } }
       followFloor(dt);
       if (WP.mesh.parent) { const n = V(0, 0, 1).transformDirection(WP.mesh.matrixWorld), to = headWorld().sub(V(0, 0, 0).setFromMatrixPosition(WP.mesh.matrixWorld)).normalize(); WP.mesh.visible = n.dot(to) > 0.55; }
@@ -8926,6 +9106,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function restore() {
       state.xr = false; state.menu = false; VP.mesh.visible = false; CP.mesh.visible = false; MP.mesh.visible = false; tpMark.visible = false; MS.sp.visible = false; floor.visible = false;
       if (cam.parent === rig) rig.remove(cam); scene.remove(rig);
+      dimLabs.forEach(Lb => { Lb.sp.material.sizeAttenuation = false; Lb.sp.material.needsUpdate = true; Lb.sp.scale.set(Lb.baseS * Lb.cv.width / 512, Lb.baseS / 4, 1); }); dimLabs.clear();
       cam.remove(HUD.mesh); cam.remove(fade); HUD.mesh.visible = false; fade.visible = false; IP.mesh.visible = false; ipCur = null; infoSig = 'x'; syncInfo();
       if (saved) { cam.position.copy(saved.pos); cam.quaternion.copy(saved.quat); cam.scale.set(1, 1, 1); cam.updateMatrixWorld(true); X.opts.isolate = saved.iso; X.opts.dims = saved.dims; saved = null; }
       X.applyMode(); if (V3.resize) setTimeout(() => V3.resize(), 60);
@@ -8974,7 +9155,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – UI-Schicht (keine Physik; ruft nur WPV.engine)
- * Autor: Alirio Jiménez Franco · Version 1.3 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.4 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * ===================================================================== */
 (function () {
   'use strict';
@@ -9743,7 +9924,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     $$('#v3Mode button').forEach(b => b.classList.toggle('on', b.dataset.mode === v3Opts.mode));
     $('#v3Scale').value = v3Opts.scale; $('#v3Op').value = v3Opts.envOpacity;
     ['cut', 'labels', 'dims', 'fx', 'isolate'].forEach(k => { $('#v3_' + k).checked = !!v3Opts[k]; });
-    const tSl = $('#v3T'); if (out) { tSl.min = Math.floor(out.building.td - 4); tSl.max = 20; }
+    const tSl = $('#v3T'); if (out) { tSl.min = Math.floor(out.building.td - 4); tSl.max = 36; } // bis 36 °C: Sommer/Kühlbetrieb erreichbar (früher 20 °C)
   }
   /** Baut die 3D-Szene für das gewählte Szenario. */
   function build3D() {
@@ -9917,6 +10098,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     $('.rangeRow').classList.toggle('on', v3Opts.scale === 'manual');
     $('#v3legQlab').innerHTML = [0, 0.5, 1].map(f => `<span>${fmt(f * r.qMax, 0)}</span>`).join('');
     $('#v3legQwrap').hidden = v3Opts.mode !== 'thermal';
+    { const lg = $('.v3legend'); if (lg) lg.style.display = v3Opts.mode === 'natural' ? 'none' : ''; } // Ansicht „Natürlich“: keine Temperaturskala
     // Kennwerte und Volumenströme
     const vHK = op.qsh > 0 && op.flow - op.ret > 0.1 ? op.qsh * 860 / (op.flow - op.ret) : 0;
     const vBr = isHP(scn) && scn.type !== 'ashp' && scn.type !== 'aahp' && !(scn.type === 'hybrid' && scn.hpSource !== 'ground') ? Math.max(0, op.qhp - op.ehp) * 860 / 3 / 0.93 : 0;
@@ -10570,7 +10752,7 @@ document.getElementById('schemaV').textContent = WPV.engine.SCHEMA_VERSION;
 #wpvVer a{color:#d4f56a;text-decoration:none}#wpvVer a:hover{text-decoration:underline}#wpvVer .arc{background:#a2c617;color:#0b2a52;border-radius:3px;padding:1px 5px}
 @media print{#wpvVer{display:none}}</style>
 <script>(function(){
-  var VER='v1.3', m=location.pathname.match(/\/(v\d+\.\d+)\/(index\.html)?$/), inFolder=!!m, latest='v1.3';
+  var VER='v1.4', m=location.pathname.match(/\/(v\d+\.\d+)\/(index\.html)?$/), inFolder=!!m, latest='v1.4';
   var base=inFolder?'../':'', L={de:['Versionen','Archiv','aktuelle Version'],en:['Versions','archive','latest version'],es:['Versiones','archivo','versión actual']};
   var el=document.createElement('div'); el.id='wpvVer';
   function draw(){var l=(document.documentElement.lang||'de').slice(0,2), t=L[l]||L.de, old=VER!==latest;
