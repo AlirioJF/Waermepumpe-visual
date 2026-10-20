@@ -1,11 +1,11 @@
-[README.md](https://github.com/user-attachments/files/33641809/README.md)
+[README.md](https://github.com/user-attachments/files/33703845/README.md)
 # Wärmepumpen Visual
 
 **Interaktive Plattform zum Vergleich von Heizsystemen für Ein- und Mehrfamilienhäuser, mit Energieflüssen, 3D-Thermografie und VR-Rundgang (Meta Quest).**
 
 © 2026 Alirio Jiménez Franco. Alle Rechte vorbehalten (siehe `LICENSE`). Entstanden in der Freizeit des Autors.
 
-Aktuelle Version: **1.2** (Oktober 2026). Ältere Versionen bleiben unter `/v0.8/` … `/v1.1/` abrufbar.
+Aktuelle Version: **1.4** (Oktober 2026). Ältere Versionen bleiben unter `/v0.8/` … `/v1.3/` abrufbar.
 
 ---
 
@@ -39,7 +39,8 @@ Einsatzbereich: Variantenbewertung in den HOAI-Leistungsphasen 1–2, Lehre und 
   - Wirtschaftlichkeit: Annuitäten, LCOH, CO₂;
   - Batteriespeicher-Auslegung als Rasterdurchlauf über die Kapazität.
 - **3D-Ansicht** (`src/view3d/view3d.js`, three.js r128):
-  - parametrisches Gebäude mit Real-, Wärmebild- und Röntgenmodus;
+  - parametrisches Gebäude mit den Ansichten Real + Thermo, Natürlich (Materialaussehen ohne Temperaturfarben), Wärmebild und Röntgen (Bauteile gläsern, Strömung im Inneren sichtbar);
+  - MAG im Schnitt (Membran, N₂-Polster, Wasservorlage nach n(θ)), Monoblock-Innenleben, 4-Wege-Ventil mit Kreisumkehr im aktiven Kühlbetrieb;
   - Fluidpartikel: Richtung, Tempo ∝ v = V̇/A, Temperatur, Fluidart;
   - Rohrkennzeichnung nach DIN 2403 und automatische Prüfung offener Rohrenden;
   - Zählerschrank nach VDE-AR-N 4100 mit Thermografie (I²·R);
@@ -85,6 +86,15 @@ Dafür wird nur Node.js ≥ 16 benötigt; es gibt keine npm-Abhängigkeiten. Die
   - `versionen/` ist die Übersichtsseite;
   - `vX.Y/` enthält die Archivversionen.
 - Für eine neue Version eine Ordnerkopie `vX.Y/index.html` anlegen, `index.html` ersetzen und in `versionen/index.html` einen Eintrag ergänzen.
+
+### Prüfskripte (Entwicklung)
+Unter `tests/` liegen Playwright-Skripte. Sie erwarten die gebaute Datei als `../v14.html` und ein lokales Chromium.
+- `flow13.js`: Fließrichtungen und Anschlüsse aller Rohre in allen Konfigurationen (Topologie).
+- `fe13.js`: freie Rohrenden je Heizflächenart.
+- `mv13.js`: Rohre, deren Partikel stehen, obwohl die Anlage läuft.
+- `keys13.js`: Beschriftungen und Messobjekte ohne Erklärtext oder Namen.
+- `dbg13c.js` / `dbg13d.js`: Heizkörper vor Türen und bodentiefen Fenstern bzw. unter Waschtisch und Dusche.
+- `x13.js`: VR-Emulation (IWER) mit Maquette 1:15.
 
 ### Meta Quest
 - Die Plattform im Quest-Browser über die **HTTPS-Adresse** öffnen und auf „VR“ tippen.
