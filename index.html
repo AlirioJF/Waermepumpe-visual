@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   Wärmepumpen Visual – Plattform für Energieflüsse und Systemvergleich von Heizungsanlagen (EFH/MFH)
-  Autor: Alirio Jiménez Franco · Version 1.7 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+  Autor: Alirio Jiménez Franco · Version 1.9 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
   Diese Vorlage wird von build.py befüllt: Bibliotheken (CDN), Stile, Markup der Reiter und die
   eingebetteten Module engine.js, i18n.js, view3d.js, room.js, xlsx_export.js, app.js.
 -->
@@ -316,6 +316,16 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
 #btnMusic{font-size:15px;line-height:1;min-width:34px}#btnMusic.off{opacity:.45;text-decoration:line-through}
 .v3wrap.fs #rmCanvas{height:100vh!important}
 .brPhoto{margin:0 0 8px}.brPhoto img{width:100%;max-height:240px;object-fit:contain;background:#fff;border-radius:4px;display:block}.brPhoto figcaption{font:400 10.5px var(--font);color:var(--muted);margin-top:3px}.brPhoto a{color:inherit;text-decoration:underline}
+/* v1.8: Auswertung Gesamtsystem */
+.v3eval{position:absolute;right:12px;top:52px;width:min(470px,48%);z-index:6;border-radius:6px;border:1px solid rgba(162,198,23,.5);background:rgba(7,22,44,.9);color:#eaf0f8;box-shadow:0 6px 24px rgba(0,0,0,.3);max-height:calc(100% - 70px);overflow:auto}
+.v3eval header{display:flex;align-items:center;gap:8px;padding:5px 6px 4px 10px;cursor:move;user-select:none;font:600 12px var(--font);position:sticky;top:0;background:rgba(7,22,44,.97)}
+.v3eval header .sub{flex:1;color:#cfe7a0;font:400 10.5px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v3eval .pb{background:rgba(226,232,240,.12);border:0;color:#fff;border-radius:3px;width:22px;height:20px;cursor:pointer}
+.evt{width:100%;border-collapse:collapse;font:11.5px/1.35 var(--font)}.evt th,.evt td{padding:3px 8px;text-align:left;border-top:1px solid rgba(148,163,184,.14)}
+.evt thead th{color:#94a3b8;font-weight:600;font-size:10.5px}.evt td{font-family:var(--mono);color:#fde68a;white-space:nowrap}.evt tr.hl td{color:#fff}.evt small{color:#94a3b8;font-size:9.5px}
+.evb{display:block;height:4px;background:rgba(148,163,184,.25);border-radius:2px;margin-top:2px}.evb b{display:block;height:100%;border-radius:2px}
+.evn{font:400 9.5px/1.35 var(--font);color:#94a3b8;margin:4px 10px 8px}
+.v3wrap.fs .v3eval{top:60px;right:360px}
 </style>
 </head>
 <body>
@@ -425,6 +435,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
         <div class="hud" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <div class="v3hud" id="v3hud"></div>
         <div class="v3day" id="v3dayHud" aria-live="off"></div>
+        <div class="v3eval" id="v3Eval" hidden><header id="v3EvalH"><b data-i18n="ev.title"></b><span class="sub" id="v3EvalSub"></span><button type="button" class="pb" id="v3EvalX" aria-label="close">✕</button></header><div id="v3EvalBody"></div></div>
         <div class="v3prof" id="v3Prof" hidden><header id="v3ProfH"><b data-i18n="v.prof"></b><span class="sub" id="v3ProfSub"></span><button type="button" class="pb" id="v3ProfBig" data-tip="v.profBig">⤢</button><button type="button" class="pb" id="v3ProfOp" data-tip="v.profOp">◑</button><button type="button" class="pb" id="v3ProfX" aria-label="close">✕</button></header><canvas id="v3ProfC" width="760" height="300"></canvas></div>
         <div class="v3fade" id="v3fade"><div class="spin"></div><span id="v3fadeTxt"></span></div>
         <div id="v3card" class="v3card" hidden></div>
@@ -450,6 +461,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
           <button data-fs="tour" data-tip="fs.tour">▶ <span data-i18n="fs.tour"></span> <kbd>T</kbd></button>
           <button data-fs="kelvin" data-tip="fs.kelvin">🤖 <span data-i18n="fs.kelvin"></span> <kbd>K</kbd></button>
           <button data-fs="vr" data-tip="fs.vr">🥽 <span data-i18n="fs.vr"></span> <kbd>V</kbd></button>
+          <button data-fs="eval" data-tip="fs.eval">📊 <span data-i18n="fs.eval"></span> <kbd>E</kbd></button>
           <button data-fs="shot" data-tip="fs.shot">⤓ <span data-i18n="fs.shot"></span> <kbd>S</kbd></button>
           <button data-fs="full" data-tip="fs.full">⛶ <span id="fsFullLbl" data-i18n="fs.enter"></span> <kbd>F</kbd></button>
         </div>
@@ -476,6 +488,19 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
         <div class="chkrow">
           <label data-tip="v.pvQuick"><input type="checkbox" id="v3_pv"> <span data-i18n="v.pvQuick"></span></label>
           <label data-tip="v.stQuick"><input type="checkbox" id="v3_st"> <span data-i18n="v.stQuick"></span></label>
+          <label data-tip="v.windQuick"><input type="checkbox" id="v3_wind"> <span data-i18n="v.windQuick"></span></label>
+        </div>
+        <div class="v3size" id="v3Size">
+          <label class="fld" id="v3PvWrap" data-tip="v.pvSize"><span><span data-i18n="v.pvSize"></span>: <b class="mono" id="v3PvV"></b></span><input type="range" id="v3PvK" min="0.43" max="10" step="0.43"></label>
+          <div class="grid2" style="grid-template-columns:1.4fr 1fr;gap:8px" id="v3StWrap">
+            <label class="fld" data-tip="v.stSize"><span><span data-i18n="v.stSize"></span>: <b class="mono" id="v3StV"></b></span><input type="range" id="v3StA" min="2.5" max="10" step="2.5"></label>
+            <label class="fld" data-tip="s.stType"><span data-i18n="v.stType"></span><select id="v3StT"></select></label>
+          </div>
+          <div class="grid2" style="grid-template-columns:1.4fr 1fr;gap:8px" id="v3WindWrap">
+            <label class="fld" data-tip="v.windN"><span><span data-i18n="v.windN"></span>: <b class="mono" id="v3WnV"></b></span><input type="range" id="v3Wn" min="1" max="8" step="1"></label>
+            <label class="fld" data-tip="v.windWp"><span data-i18n="v.windWp"></span><select id="v3Wp"><option value="300">300 W</option><option value="400">400 W</option><option value="500">500 W</option></select></label>
+          </div>
+          <p class="note mono" id="v3SizeInfo"></p>
         </div>
         <label class="fld" data-tip="v.roofType"><span data-i18n="v.roofType"></span><select id="v3Roof"></select></label>
         <button class="btn small" id="v3EditBtn" data-tip="ed.btn">🏠 <span data-i18n="ed.btn"></span></button>
@@ -620,13 +645,13 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     </div>
   </section>
 </main>
-<footer class="foot"><span data-i18n="msg.footer"></span> · <b>© 2026 Alirio Jiménez Franco</b> · v1.7 · Schema v<span id="schemaV"></span></footer>
+<footer class="foot"><span data-i18n="msg.footer"></span> · <b>© 2026 Alirio Jiménez Franco</b> · v1.9 · Schema v<span id="schemaV"></span></footer>
 <div id="toast" class="toast"></div>
 <!-- Eingebettete Module (Platzhalter werden von build.py ersetzt) -->
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Rechenkern (engine)
- * Autor: Alirio Jiménez Franco · Version 1.5 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.9 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Reine Funktionen, keine UI-Logik. Läuft im Browser (window.WPV.engine)
  * und in Node (module.exports) für Unit-Tests.
  *
@@ -775,19 +800,31 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     stCapexTube:   { v: 800,  unit: '€/m²',   cat: 'est',  grp: 'solar', src: 'Vakuumröhre inkl. Montage (Annahme)', date: '2026-10' },
     stCapexFix:    { v: 3500, unit: '€',      cat: 'est',  grp: 'solar', src: 'Solarstation, Regelung, bivalenter Speicher-Mehrpreis (Annahme)', date: '2026-10' },
     lifeSt:        { v: 20,   unit: 'a',      cat: 'assum', grp: 'solar', src: 'VDI 2067-1 Größenordnung – prüfen', date: '2012' },
-    maintSt:       { v: 1.5,  unit: '%/a',    cat: 'assum', grp: 'solar', src: 'Wartung Solarthermie (Annahme)', date: '2026-10' }
+    maintSt:       { v: 1.5,  unit: '%/a',    cat: 'assum', grp: 'solar', src: 'Wartung Solarthermie (Annahme)', date: '2026-10' },
+    // --- Kleinwind auf dem Dach (v1.9) ---
+    windVin:       { v: 3.0,  unit: 'm/s',    cat: 'est',  grp: 'solar', src: 'Anlaufgeschwindigkeit Kleinstwindanlage ≤ 500 W (Herstellerangaben typ. 2,5–3,5 m/s)', date: '2026-10' },
+    windVr:        { v: 12,   unit: 'm/s',    cat: 'est',  grp: 'solar', src: 'Nenngeschwindigkeit (typ. 11–13 m/s; Nennleistung = Wp-Angabe)', date: '2026-10' },
+    windVout:      { v: 20,   unit: 'm/s',    cat: 'est',  grp: 'solar', src: 'Sturmregelung (Furling/Bremse), darüber ≈ 25 % Leistung', date: '2026-10' },
+    windEta:       { v: 0.88, unit: '–',      cat: 'est',  grp: 'solar', src: 'Laderegler/Wechselrichter + Leitungen (Annahme)', date: '2026-10' },
+    windZ0:        { v: 0.8,  unit: 'm',      cat: 'assum', grp: 'solar', src: 'Rauigkeitslänge Vorstadt/Wohngebiet (EN 1991-1-4 Kat. III ≈ 0,3 m, IV ≈ 1,0 m)', date: '2026-10' },
+    windRoofK:     { v: 0.8,  unit: '–',      cat: 'assum', grp: 'solar', src: 'Abschlag Dachkante: Turbulenz/Nachlauf des Gebäudes (Feldtests Kleinwind, Größenordnung)', date: '2026-10' },
+    windMast:      { v: 1.5,  unit: 'm',      cat: 'assum', grp: 'solar', src: 'Masthöhe über First/Attika (Annahme)', date: '2026-10' },
+    capexWindW:    { v: 2.6,  unit: '€/W',    cat: 'est',  grp: 'solar', src: 'Kleinstwindanlage inkl. Laderegler (Annahme, Marktpreise 1,5–4 €/W)', date: '2026-10' },
+    capexWindUnit: { v: 450,  unit: '€',      cat: 'est',  grp: 'solar', src: 'Mast, Dachbefestigung, Schwingungsentkopplung, Montage je Anlage (Annahme)', date: '2026-10' },
+    lifeWind:      { v: 15,   unit: 'a',      cat: 'assum', grp: 'solar', src: 'Nutzungsdauer Kleinstwind (Annahme)', date: '2026-10' },
+    maintWind:     { v: 3.0,  unit: '%/a',    cat: 'assum', grp: 'solar', src: 'Wartung (Lager, Rotorblätter) in % der Investition (Annahme)', date: '2026-10' }
   };
 
   /* Standorte – Näherungen; Normaußentemperatur nach DIN/TS 12831-1 prüfen */
   const LOCATIONS = {
-    koeln:     { name: 'Köln',            tm: 10.6, amp: 8.0, td: -10, lat: 50.9, seed: 101, ghi: 1030 },
-    bonn:      { name: 'Bonn',            tm: 10.6, amp: 8.0, td: -10, lat: 50.7, seed: 102, ghi: 1030 },
-    hamm:      { name: 'Hamm / Lippstadt', tm: 10.0, amp: 8.2, td: -12, lat: 51.7, seed: 103, ghi: 1000 },
-    hamburg:   { name: 'Hamburg',         tm: 9.6,  amp: 8.0, td: -12, lat: 53.6, seed: 104, ghi: 980 },
-    berlin:    { name: 'Berlin',          tm: 10.0, amp: 9.5, td: -14, lat: 52.5, seed: 105, ghi: 1060 },
-    frankfurt: { name: 'Frankfurt/M.',    tm: 10.8, amp: 9.0, td: -12, lat: 50.1, seed: 106, ghi: 1090 },
-    stuttgart: { name: 'Stuttgart',       tm: 10.0, amp: 8.8, td: -12, lat: 48.8, seed: 107, ghi: 1120 },
-    muenchen:  { name: 'München',         tm: 9.0,  amp: 9.2, td: -16, lat: 48.1, seed: 108, ghi: 1160 }
+    koeln:     { name: 'Köln',            tm: 10.6, amp: 8.0, td: -10, lat: 50.9, seed: 101, ghi: 1030, vw: 3.1 },
+    bonn:      { name: 'Bonn',            tm: 10.6, amp: 8.0, td: -10, lat: 50.7, seed: 102, ghi: 1030, vw: 2.8 },
+    hamm:      { name: 'Hamm / Lippstadt', tm: 10.0, amp: 8.2, td: -12, lat: 51.7, seed: 103, ghi: 1000, vw: 3.4 },
+    hamburg:   { name: 'Hamburg',         tm: 9.6,  amp: 8.0, td: -12, lat: 53.6, seed: 104, ghi: 980, vw: 4.1 },
+    berlin:    { name: 'Berlin',          tm: 10.0, amp: 9.5, td: -14, lat: 52.5, seed: 105, ghi: 1060, vw: 3.6 },
+    frankfurt: { name: 'Frankfurt/M.',    tm: 10.8, amp: 9.0, td: -12, lat: 50.1, seed: 106, ghi: 1090, vw: 3.1 },
+    stuttgart: { name: 'Stuttgart',       tm: 10.0, amp: 8.8, td: -12, lat: 48.8, seed: 107, ghi: 1120, vw: 2.6 },
+    muenchen:  { name: 'München',         tm: 9.0,  amp: 9.2, td: -16, lat: 48.1, seed: 108, ghi: 1160, vw: 2.8 }
   };
 
   /* Spezifische Heizlast nach Baualtersklasse [W/m²] bei Normaußentemperatur – Annahme (typische Bandbreiten) */
@@ -1171,13 +1208,50 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     }
     return poaProfile(lat, ghi, ORIENT[orient] == null ? 0 : ORIENT[orient], tilt, base);
   }
-  /** Importierte Zeitreihen (je 8760 Stundenwerte, alle optional): ghi, dhi [W/m²], pvSpec [kW/kWp], qsh, qdhw, pHh [kW], price [ct/kWh] */
-  const TS_KEYS = ['ghi', 'dhi', 'pvSpec', 'qsh', 'qdhw', 'pHh', 'price'];
+  /** Importierte Zeitreihen (je 8760 Stundenwerte, alle optional): ghi, dhi [W/m²], pvSpec [kW/kWp], qsh, qdhw, pHh [kW], price [ct/kWh], wind [m/s in 10 m] */
+  const TS_KEYS = ['ghi', 'dhi', 'pvSpec', 'qsh', 'qdhw', 'pHh', 'price', 'wind'];
   /** Gültige importierte Zeitreihen (je Schlüssel 8760 Werte) aus state.climate.ts; leere/ungültige werden verworfen. */
   function tsOf(state) {
     const t = (state.climate && state.climate.ts) || {}, o = {};
     TS_KEYS.forEach(k => { if (Array.isArray(t[k]) && t[k].length >= HOURS) o[k] = t[k]; });
     return o;
+  }
+  /* ------------------------- Wind (v1.9): Stundenreihe 10 m und Kleinstwindanlagen auf dem Dach ------------------------- */
+  const _windCache = {};
+  /** Synthetische Windgeschwindigkeit in 10 m Höhe [m/s]: Weibull-Verteilung (k = 1,8, Mittel = Standortwert vw), zeitlich korreliert
+   *  (AR(1), Erhaltungsneigung ≈ 0,96 je Stunde), Jahresgang (Winter +20 %) und Tagesgang (Maximum ≈ 14 Uhr). Ersatz für DWD-TRY-Windreihen. */
+  function synthWind(locKey) {
+    const loc = LOCATIONS[locKey] || LOCATIONS.koeln; if (_windCache[locKey]) return _windCache[locKey];
+    const r = mulberry32(loc.seed + 5000), V = new Float64Array(HOURS), k = 1.8, ph = 0.96; let x = 0, sum = 0;
+    const Phi = z => 0.5 * (1 + Math.tanh(0.7978845608 * (z + 0.044715 * z * z * z)));            // Normalverteilung (Näherung)
+    for (let i = 0; i < HOURS; i++) { x = ph * x + Math.sqrt(1 - ph * ph) * gauss(r); const d = (i / 24) | 0, h = i % 24;
+      const u = Math.min(0.9995, Math.max(1e-6, Phi(x))), w = Math.pow(-Math.log(1 - u), 1 / k);
+      V[i] = w * (1 + 0.2 * Math.cos(2 * Math.PI * (d - 15) / 365)) * (1 + 0.15 * Math.cos(2 * Math.PI * (h - 14) / 24)); sum += V[i]; }
+    const f = (loc.vw || 3) * HOURS / sum; for (let i = 0; i < HOURS; i++) V[i] *= f;
+    return (_windCache[locKey] = { V, mean: loc.vw || 3, source: 'synthetic' });
+  }
+  /** Windreihe 10 m: importiert (Zeitreihen-Vorlage, Spalte wind) oder synthetisch. */
+  function getWind(state) { const ts = tsOf(state); if (ts.wind) { const V = Float64Array.from(ts.wind.slice(0, HOURS), v => Math.max(0, +v || 0)); return { V, mean: V.reduce((a, b) => a + b, 0) / HOURS, source: 'import' }; } return synthWind(state.climate.location); }
+  /** Nabenhöhe über Gelände: First (Satteldach) bzw. Attika (Flachdach) + Mast */
+  function windHub(state) { const G = buildingGeometry(state); return (G.roof === 'gable' ? G.ridge : G.eaves + 0.9) + P(state, 'windMast'); }
+  /** Windgeschwindigkeit an der Nabe: logarithmisches Profil v(h) = v10·ln(h/z0)/ln(10/z0), Abschlag Dachkante */
+  function windAtHub(state, v10) { const z0 = P(state, 'windZ0'), h = Math.max(z0 * 2, windHub(state)); return v10 * Math.log(h / z0) / Math.log(10 / z0) * P(state, 'windRoofK'); }
+  /** Leistungskennlinie einer Anlage [kW]: 0 unter v_in, kubisch bis v_r (P = Wp·(v³−v_in³)/(v_r³−v_in³)), Nennleistung bis v_out, darüber Sturmregelung 25 % */
+  function windTurbineP(state, v, wp) {
+    const vin = P(state, 'windVin'), vr = P(state, 'windVr'), vo = P(state, 'windVout'), pr = Math.min(500, Math.max(0, wp || 0)) / 1000;
+    if (v < vin) return 0; if (v >= vo) return pr * 0.25; if (v >= vr) return pr; return pr * (v * v * v - vin * vin * vin) / (vr * vr * vr - vin * vin * vin);
+  }
+  function windOn(scn) { return !!(scn && scn.wind && scn.wind.on && scn.wind.n > 0 && scn.wind.wp > 0); }
+  /** Elektrische Leistung aller Dach-Windanlagen [kW] bei v10 [m/s] */
+  function windPower(state, scn, v10) { return windOn(scn) ? scn.wind.n * windTurbineP(state, windAtHub(state, v10), scn.wind.wp) * P(state, 'windEta') : 0; }
+  /** Max. Anzahl Anlagen an den Dachkanten: Satteldach = beide Giebelspitzen (Ortgang am First) + die zwei Traufecken der Rückseite, Flachdach = vier Attika-Ecken;
+   *  bei langen Dächern zusätzlich je 5 m ein Paar entlang der Kante (Abstand ≥ 2 Rotordurchmesser), höchstens 8 */
+  function windMaxUnits(state) { const G = buildingGeometry(state); return Math.min(8, 4 + 2 * Math.max(0, Math.floor((G.L - (G.roof === 'gable' ? 10 : 12)) / 5))); }
+  /** Max. Kollektoren (2,5 m² brutto je Kollektor, max. 2 Zeilen) – gleiche Logik wie die 3D-Belegung */
+  function stRoofCapacity(state) {
+    const G = buildingGeometry(state), gable = G.roof === 'gable', per = Math.max(1, Math.floor((G.L - (gable ? 1.2 : 3.2)) / (gable ? 1.18 : 1.2)));
+    const slope = (G.B / 2 + 0.5) / Math.cos(G.pitch * Math.PI / 180), rows = gable ? (slope > 0.6 + 2 * 2.27 + 0.5 ? 2 : 1) : (G.B - 2 > 2.6 + 2.2 ? 2 : 1);
+    return { perRow: per, rows, max: per * rows, area: per * rows * 2.5, unit: 2.5 };
   }
   /** Belegbare Dachfläche → max. installierbare PV (Modul 1,134 × 1,722 m, 430 Wp).
    *  Schrägdach: Randabstand Ortgang/Traufe/First ≥ 0,4 m (Windsogzonen, Montagepraxis); Ost-West = beide Dachflächen.
@@ -1202,7 +1276,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     const faces = sides.map(side => {
       const obs = items.filter(it => (it.side || 1) === side).map(it => { const d = ROOF_ITEM[it.type] || ROOF_ITEM.vent, x = (it.xr || 0) * G.L, u = 0.15 + (it.ur == null ? 0.5 : it.ur) * (slope - 0.3);
         return { x0: x - d.w / 2, x1: x + d.w / 2, u0: u - d.d / 2, u1: u + d.d / 2, type: it.type }; });
-      if (stOn && side === 1) { const x0 = -G.L / 2 + 0.6; obs.push({ x0, x1: x0 + Math.min(stCols, Math.floor((G.L - 1.2) / 1.18)) * 1.18, u0: 0.5, u1: 0.6 + 2.17, type: 'st' }); }
+      if (stOn && side === 1) { const x0 = -G.L / 2 + 0.6, per = Math.max(1, Math.floor((G.L - 1.2) / 1.18)), rows = Math.min(2, Math.ceil(stCols / per)); obs.push({ x0, x1: x0 + Math.min(stCols, per) * 1.18, u0: 0.5, u1: 0.6 + rows * 2.27, type: 'st' }); }
       const fill = (mw, mh) => {
         const mods = [], uMax = slope - edge - 0.12;                              // Traufe: Rinne + Randabstand
         for (let u0 = 0.15 + edge; u0 + mh <= uMax + 1e-9; u0 += mh + gap) {
@@ -1331,6 +1405,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     const bMean = P(state, 'brineMean'), bAmp = P(state, 'brineAmp');
     const pvOn = !!(scn.pv && scn.pv.on && scn.pv.kWp > 0);
     const pvPoa = pvOn ? poaFor(state, scn.pv.orient || 'S', scn.pv.tilt == null ? 35 : scn.pv.tilt) : null;
+    const wOn = windOn(scn), WV = wOn ? getWind(state).V : null;   // v1.9: Kleinwind
     // spezifischer Ertrag: Eingabe (> 0) skaliert das Strahlungsprofil, sonst Strahlungsmodell × PR
     const pvScale = pvOn ? scn.pv.kWp * (scn.pv.yield > 0 ? scn.pv.yield / pvPoa.sum * orientFactor(state, scn.pv.orient || 'S', scn.pv.tilt == null ? 35 : scn.pv.tilt) : P(state, 'pvPR')) : 0;
     // Solarthermie: Tagesbilanz mit Speicherbegrenzung
@@ -1357,8 +1432,8 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     const S = { Qsh_use: 0, Qdhw_use: 0, lossDist: 0, lossBuf: 0, lossStor: 0, lossCirc: 0,
       Q_hp: 0, Q_heater: 0, Q_gas: 0, Q_dh: 0, dhIn: 0, E_hp: 0, E_heater: 0, gasHs: 0, ambient: 0,
       pvGen: 0, pvSelf: 0, pvHh: 0, hhEl: 0, elecCostVar: 0, pvSelfHp: 0, pvSelfHeater: 0, pvFeed: 0, eGrid: 0, eGridHp: 0, eGridHeater: 0,
-      peakEl: 0, peakHeat: 0, heatingHours: 0, Q_hp_sh: 0, E_hp_sh: 0, Q_st: 0, Q_stDhw: 0, stGross: 0, stExcess: 0 };
-    const H = { demand: new Float64Array(HOURS), hp: new Float64Array(HOURS), cop: new Float64Array(HOURS), tAmb: T, flow: new Float64Array(HOURS), el: new Float64Array(HOURS), pv: new Float64Array(HOURS) };
+      peakEl: 0, peakHeat: 0, heatingHours: 0, Q_hp_sh: 0, E_hp_sh: 0, Q_st: 0, Q_stDhw: 0, stGross: 0, stExcess: 0, windGen: 0 };
+    const H = { demand: new Float64Array(HOURS), hp: new Float64Array(HOURS), cop: new Float64Array(HOURS), tAmb: T, flow: new Float64Array(HOURS), el: new Float64Array(HOURS), pv: new Float64Array(HOURS), wind: new Float64Array(HOURS) };
     const monthly = Array.from({ length: 12 }, () => ({ hp: 0, heater: 0, gas: 0, el: 0, gasIn: 0, st: 0, pv: 0 }));
     const storH = bm.storDaily / 24, circH = bm.circDaily / 24;
 
@@ -1443,17 +1518,20 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
       // PV-Eigenverbrauch: Haushaltsstrom (falls importiert) hat Vorrang, der Überschuss deckt WP/Heizstab
       let pv = 0, self = 0;
       const hh = ts.pHh ? Math.max(0, +ts.pHh[i] || 0) : 0;
-      if (pvOn) { pv = ts.pvSpec ? scn.pv.kWp * Math.max(0, +ts.pvSpec[i] || 0) : pvScale * pvPoa.P[i]; self = Math.min(Math.max(0, pv - hh), eTot); S.pvHh += Math.min(pv, hh); }
-      S.hhEl += hh; H.pv[i] = pv;
+      if (pvOn) pv = ts.pvSpec ? scn.pv.kWp * Math.max(0, +ts.pvSpec[i] || 0) : pvScale * pvPoa.P[i];
+      const wd = wOn ? windPower(state, scn, WV[i]) : 0; H.wind[i] = wd; S.windGen += wd; H.pv[i] = pv;
+      pv += wd;                                                       // Eigenerzeugung gesamt (PV + Wind) für Eigenverbrauch/Einspeisung
+      if (pvOn || wOn) { self = Math.min(Math.max(0, pv - hh), eTot); S.pvHh += Math.min(pv, hh); }
+      S.hhEl += hh;
       if (ts.price) S.elecCostVar += (eTot - self) * (+ts.price[i] || 0) / 100;   // dynamischer Tarif: Netzbezug × Stundenpreis
       const selfHp = eTot > 0 ? self * ehp / eTot : 0;
-      S.pvGen += pv; S.pvSelf += self; S.pvSelfHp += selfHp; S.pvSelfHeater += self - selfHp; S.pvFeed += pv - self - Math.min(pv, hh);
+      S.pvGen += pv - wd; S.pvSelf += self; S.pvSelfHp += selfHp; S.pvSelfHeater += self - selfHp; S.pvFeed += pv - self - Math.min(pv, hh);
       S.eGridHp += ehp - selfHp; S.eGridHeater += ehe - (self - selfHp); S.eGrid += eTot - self;
       S.Q_hp += qhp; S.E_hp += ehp; S.Q_heater += qhe; S.E_heater += ehe; S.Q_gas += qgas; S.gasHs += gin; S.Q_dh += qdh; S.dhIn += din;
       S.ambient += qhp - ehp;
       S.peakEl = Math.max(S.peakEl, eTot); S.peakHeat = Math.max(S.peakHeat, qShG + qDhwG);
       H.hp[i] = qhp;
-      const M = monthly[mo]; M.hp += qhp; M.heater += qhe; M.gas += qgas; M.el += eTot; M.gasIn += gin; M.dh = (M.dh || 0) + qdh; M.st += qSt; M.pv += pv;
+      const M = monthly[mo]; M.hp += qhp; M.heater += qhe; M.gas += qgas; M.el += eTot; M.gasIn += gin; M.dh = (M.dh || 0) + qdh; M.st += qSt; M.pv += pv - wd; M.wind = (M.wind || 0) + wd;
     }
     // Kennzahlen
     const Quse = S.Qsh_use + S.Qdhw_use;
@@ -1461,7 +1539,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     S.boilerLoss = S.gasHs - S.Q_gas;
     S.stExcess += stPool; S.stGross = stGross;
     S.dhLoss = S.dhIn - S.Q_dh;
-    const energyIn = S.eGrid + S.pvGen + S.gasHs + S.ambient + S.Q_st + S.dhIn;
+    const energyIn = S.eGrid + S.pvGen + S.windGen + S.gasHs + S.ambient + S.Q_st + S.dhIn;
     const energyOut = Quse + S.lossDist + S.lossBuf + S.lossStor + S.lossCirc + S.boilerLoss + S.pvFeed + S.dhLoss + S.pvHh;
     S.balanceResidual = energyIn > 0 ? (energyIn - energyOut) / energyIn : 0;
     S.Quse = Quse; S.Qgen = Qgen;
@@ -1472,7 +1550,8 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     S.fullLoadHours = bm.phiHL > 0 ? S.Qsh_use / bm.phiHL : 0;
     S.specDemand = Quse / state.building.area;
     S.efficiencyFinal = (S.eGrid + S.pvSelf + S.gasHs + S.dhIn) > 0 ? Quse / (S.eGrid + S.pvSelf + S.gasHs + S.dhIn) : null; // Nutzwärme/Endenergie
-    S.selfConsRate = S.pvGen > 0 ? S.pvSelf / S.pvGen : null;
+    S.selfConsRate = S.pvGen + S.windGen > 0 ? S.pvSelf / (S.pvGen + S.windGen) : null;
+    S.windSpec = wOn ? S.windGen / (scn.wind.n * scn.wind.wp / 1000) : null;   // kWh/kW·a
     S.solarFraction = Qgen > 0 && S.Q_st > 0 ? S.Q_st / Qgen : null;
     S.pvSpecYield = pvOn ? S.pvGen / scn.pv.kWp : null;
     S.stSpecYield = stOn ? S.Q_st / scn.st.area : null;
@@ -1502,6 +1581,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
       out.qSt = out.stEta * Girr / 1000 * scn.st.area * (1 - P(state, 'stLoss') / 100);
     }
     if (scn.pv && scn.pv.on && scn.pv.kWp > 0) out.pvP = scn.pv.kWp * Girr / 1000 * P(state, 'pvPR');
+    out.windP = windPower(state, scn, wind); out.vHub = windAtHub(state, wind);
     let allowHP = hasHP(scn) && !(scn.type === 'hybrid' && scn.hybridMode === 'alternative' && te < scn.bivalenceTemp);
     if (allowHP && scn.type === 'hybrid' && scn.hybridMode === 'costopt') {
       const tS = isAir ? te : P(state, 'brineMean'), dTe0 = isAir ? P(state, 'dTevapAir') : P(state, 'dTevapBrine');
@@ -1629,6 +1709,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     if (s.separator) C.push({ key: 'separator', capex: P(state, 'capexSeparator') * cf, life: P(state, 'lifeBuffer'), maint: 0, eligible: hasHP(s) });
     if (s.buffer && s.buffer.on) C.push({ key: 'buffer', capex: P(state, 'capexBuffer') * cf, life: P(state, 'lifeBuffer'), maint: 0, eligible: hasHP(s) });
     if (s.pv && s.pv.on && s.pv.kWp > 0) C.push({ key: 'pv', capex: P(state, 'capexPvKwp') * s.pv.kWp * cf, life: P(state, 'lifePv'), maint: P(state, 'maintPv'), eligible: false });
+    if (windOn(s)) C.push({ key: 'wind', capex: (P(state, 'capexWindW') * s.wind.wp + P(state, 'capexWindUnit')) * s.wind.n * cf, life: P(state, 'lifeWind'), maint: P(state, 'maintWind'), eligible: false });
     if (s.st && s.st.on && s.st.area > 0) C.push({ key: 'st', capex: (P(state, s.st.type === 'tube' ? 'stCapexTube' : 'stCapexFlat') * s.st.area + P(state, 'stCapexFix')) * cf, life: P(state, 'lifeSt'), maint: P(state, 'maintSt'), eligible: true });
     if (s.extraCapex > 0) C.push({ key: 'extra', capex: s.extraCapex * cf, life: 30, maint: 0, eligible: hasHP(s) });
     return C;
@@ -1779,6 +1860,30 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
       inputs: { hhAnnual: hh.reduce((x, y) => x + y, 0), evAnnual: ev.reduce((x, y) => x + y, 0), hpAnnual: H.el ? H.el.reduce((x, y) => x + y, 0) : 0, pvAnnual: pv.reduce((x, y) => x + y, 0), pG, pF } };
   }
 
+  /** v1.8: Auswertung des Gesamtsystems (Heizung + Haushalt + E-Auto + PV + Batterie) für ein Szenario, Stundenbilanz über 8760 h.
+   *  Referenz: Szenario „Referenz“ (Standard: Gas-Brennwert) OHNE PV und Batterie, gesamter Strom (Heizung, Haushalt, E-Auto) aus dem Netz.
+   *  Kennzahlen: Eigenverbrauchsquote = PV selbst genutzt / PV erzeugt; Autarkiegrad = 1 − Netzbezug / Verbrauch; CO₂ nach GEG-Faktoren;
+   *  Energiekosten Jahr 1 (Strom HH-Tarif bzw. WP-Tarif für den Heizstrom, Gas inkl. CO₂-Preis, Einspeisevergütung);
+   *  statische Amortisation der Mehrinvestition = ΔInvestition (nach Förderung) / jährliche Einsparung. */
+  function systemEval(state, idx, opt) {
+    opt = opt || {}; const all = opt.all || runAll(state), R = all.results[idx], ref = all.results[state.referenceIndex || 0] || all.results[0];
+    const H = R.sim.hourly, Hr = ref.sim.hourly, hh = householdProfile(state), ev = evProfile(state, opt.ev == null ? 1 : opt.ev), N = HOURS;
+    const load = new Float64Array(N), pv = new Float64Array(N); let hhS = 0, evS = 0, heatEl = 0, refEl = 0;
+    for (let i = 0; i < N; i++) { const e = H.el ? H.el[i] : 0; load[i] = hh[i] + ev[i] + e; pv[i] = (H.pv ? H.pv[i] : 0) + (H.wind ? H.wind[i] : 0); hhS += hh[i]; evS += ev[i]; heatEl += e; refEl += Hr.el ? Hr.el[i] : 0; }
+    const C = Math.max(0, opt.batC || 0), b = batteryYear(state, pv, load, C), b0 = batteryYear(state, pv, load, 0);
+    const efE = P(state, 'efElec') / 1e6, efG = P(state, 'efGasHi') / 1e6, efD = P(state, 'efDh') / 1e6, hsHi = P(state, 'hsHi');
+    const S = R.sim.sums, Sr = ref.sim.sums, pHH = P(state, 'elecPriceHH') / 100, pF = P(state, 'feedInTariff') / 100;
+    const co2Sys = S.gasHs / hsHi * efG + S.dhIn * efD + b.imp * efE, co2Ref = Sr.gasHs / hsHi * efG + Sr.dhIn * efD + (refEl + hhS + evS) * efE;
+    const E = R.eco, Er = ref.eco, fuel = x => x.gasEnergy1 + x.co2Cost1 + x.dh1 + x.maint1;
+    const pHP = P(state, 'elecPriceHP') / 100, shH = b.loadSum > 0 ? heatEl / b.loadSum : 0;   // Netzbezug anteilig: Heizstrom zum WP-Tarif, Rest zum Haushaltstarif
+    const costSys = fuel(E) + b.imp * (shH * pHP + (1 - shH) * pHH) - b.exp * pF, costRef = fuel(Er) + refEl * pHP + (hhS + evS) * pHH;
+    const pvCap = cs => (cs.comps || []).filter(c => c.key === 'pv' || c.key === 'wind').reduce((x, c) => x + c.capex, 0);
+    const batI = C > 0 ? P(state, 'batCapexFix') + P(state, 'batCapexKwh') * C : 0;
+    const capSys = E.capexNet + batI, capRef = Er.capexNet - pvCap(Er), dCap = capSys - capRef, save = costRef - costSys;
+    return { C, windSum: R.sim.sums.windGen || 0, pvSum: b.pvSum, loadSum: b.loadSum, hh: hhS, ev: evS, heatEl, imp: b.imp, exp: b.exp, self: b.pvSum - b.exp, selfCons: b.pvSum > 0 ? b.selfCons : null, autarky: b.autarky,
+      autarkyNoBat: b0.autarky, selfConsNoBat: b0.pvSum > 0 ? b0.selfCons : null, co2Sys, co2Ref, co2Saved: co2Ref - co2Sys, costSys, costRef, save, capSys, capRef, dCap, batI,
+      payback: save > 0 ? Math.max(0, dCap) / save : null, paybackHeat: E.payback, lcoh: E.lcoh, refName: ref.sim.scn.name || ref.sim.scn.type, efE: efE * 1e6, efG: efG * 1e6, pHH, pF };
+  }
   function runScenario(state, scn) { const sim = simulate(state, scn); const eco = economics(state, sim); return { sim, eco }; }
   /** Rechnet alle Szenarien eines Zustands: Dimensionierung → Jahressimulation → Wirtschaftlichkeit. */
   function runAll(state) {
@@ -1833,7 +1938,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     const base = { id, name: '', type, hpPower: 0, boilerPower: 0, etaC: type === 'gshp' ? 0.5 : type === 'aahp' ? 0.42 : 0.45, hpMaxFlow: type === 'gshp' ? 65 : 70,
       hpSource: 'air', hybridMode: 'parallel', bivalenceTemp: -3, par14a: true, hpConfig: 'monoblock', cooling: 'off',
       buffer: { on: false, lossKWhd: 1.2 }, pv: { on: false, kWp: 8, yield: 0, orient: 'S', tilt: 35, fill: true },
-      st: { on: false, area: 6, type: 'flat', use: 'dhw', orient: 'S', tilt: 45 }, separator: false, extraCapex: 0, subsidyOff: false,
+      st: { on: false, area: 6, type: 'flat', use: 'dhw', orient: 'S', tilt: 45 }, wind: { on: false, n: 4, wp: 500 }, separator: false, extraCapex: 0, subsidyOff: false,
       existing: { on: false, remaining: 10 } };
     return Object.assign(base, extra || {});
   }
@@ -2002,7 +2107,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
   const api = { SCHEMA_VERSION, HOURS, PARAM_DEFS, LOCATIONS, AGE_CLASSES, EMITTERS, TYPOLOGY, GEO, emitterKey, buildingGeometry, CONSTRUCTIONS, ENV_DEFAULTS, resolveEnvelope, envelopeLoss, facadeOpenings, uWall, RSI, RSE,
     ORIENT, poaFor, solarDetail, pvSpecificYield, wallTempProfile, RENO_STANDARDS, buildStyle, compareStandards, orientFactor, collectorEta, solarBase, presetEFH, presetMFH, scenario, normalizeState, defaultParams,
     buildingModel, heatingCurve, pvRoofCapacity, PV_MOD, solarFromSeries, _solarBase: solarBase, poaFor, tsOf, TS_KEYS, copCarnot, gasEta, hpCapacity, hasHP, hasGas, hasDH, isAirSrc, aahpSink, autoSize, simulate, operatingPoint, economics, runScenario, runAll,
-    coolingPoint, coolingYear, dewPoint, etaOf, householdProfile, householdAnnual, evProfile, batteryYear, batteryScan, pvLayout, roofItems, ROOF_ITEM, P_: (st, k) => P(st, k),
+    systemEval, synthWind, getWind, windHub, windAtHub, windTurbineP, windPower, windMaxUnits, stRoofCapacity, windOn, coolingPoint, coolingYear, dewPoint, etaOf, householdProfile, householdAnnual, evProfile, batteryYear, batteryScan, pvLayout, roofItems, ROOF_ITEM, P_: (st, k) => P(st, k),
     sensitivity, annuityFactor, priceDynFactor, capitalAnnuity, synthClimate, min48, getClimate, runTests, deepClone, clamp };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.WPV = root.WPV || {}; root.WPV.engine = api; }
@@ -2447,6 +2552,15 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     'd.hh': ["Haushalt", "Household", "Hogar"], 'd.hp': ["Heizung (el.)", "Heating (el.)", "Calefacción (el.)"], 'd.evc': ["E-Auto", "EV", "Coche eléctrico"], 'd.pv': ["PV", "PV", "FV"],
     'v.profBig': ["Vergrößern / verkleinern", "Enlarge / shrink", "Ampliar / reducir"], 'tip.v.profBig': ["Diagramm vergrößern. Mausrad im Diagramm = Zeitachse zoomen, Ziehen = verschieben, Doppelklick = ganzer Tag, rechte untere Ecke ziehen = Breite ändern.", "Enlarge the chart. Mouse wheel = zoom the time axis, drag = pan, double-click = whole day, drag the bottom-right corner = change width.", "Ampliar la gráfica. Rueda del ratón = zoom del eje temporal, arrastrar = desplazar, doble clic = día completo, arrastrar la esquina inferior derecha = cambiar el ancho."],
     'tip.music': ["Hintergrundmusik an/aus – leise Lobby-Atmosphäre, live im Browser erzeugt; wird leiser, wenn Kelvin spricht.", "Background music on/off – soft lobby ambience generated live in the browser; ducks while Kelvin speaks.", "Música de fondo sí/no: ambiente suave de lobby generado en el navegador; baja cuando habla Kelvin."], 'music': ["Musik", "Music", "Música"],
+    'fs.eval': ["Auswertung", "Evaluation", "Evaluación"], 'tip.fs.eval': ["Auswertung des Gesamtsystems: Eigenverbrauch, Autarkie, CO₂ und Kosten für den simulierten Tag und das Jahr, Mehrinvestition und Amortisation gegenüber der Referenz", "Whole-system evaluation: self-consumption, autarky, CO₂ and costs for the simulated day and the year, extra investment and payback against the reference", "Evaluación del sistema completo: autoconsumo, autarquía, CO₂ y costes del día simulado y del año, inversión adicional y amortización frente a la referencia"],
+    'ev.title': ["Auswertung Gesamtsystem", "Whole-system evaluation", "Evaluación del sistema"], 'ev.day': ["Tag", "Day", "Día"], 'ev.year': ["Jahr", "Year", "Año"], 'ev.none': ["Keine Ergebnisse – bitte Szenario wählen.", "No results – please select a scenario.", "Sin resultados: selecciona un escenario."],
+    'ev.pv': ["PV-Erzeugung", "PV generation", "Generación FV"], 'ev.load': ["Verbrauch (Haushalt + Heizung el. + E-Auto)", "Consumption (household + heating el. + EV)", "Consumo (hogar + calefacción el. + VE)"],
+    'ev.sc': ["Eigenverbrauchsquote", "Self-consumption rate", "Tasa de autoconsumo"], 'ev.aut': ["Autarkiegrad", "Self-sufficiency", "Grado de autarquía"], 'ev.impExp': ["Netzbezug / Einspeisung", "Grid import / export", "Consumo de red / inyección"],
+    'ev.co2': ["CO₂ System / Referenz", "CO₂ system / reference", "CO₂ sistema / referencia"], 'ev.co2s': ["CO₂ eingespart", "CO₂ saved", "CO₂ ahorrado"], 'ev.cost': ["Energiekosten System / Referenz", "Energy cost system / reference", "Coste energético sistema / referencia"],
+    'ev.save': ["Einsparung", "Savings", "Ahorro"], 'ev.dcap': ["Mehrinvestition (nach Förderung)", "Extra investment (after subsidy)", "Inversión adicional (tras subvención)"], 'ev.incBat': ["inkl. Batterie", "incl. battery", "incl. batería"],
+    'ev.pb': ["Amortisation (statisch)", "Payback (static)", "Amortización (estática)"], 'ev.pbHeat': ["Heizsystem dyn.:", "Heating system dyn.:", "Sistema de calefacción din.:"],
+    'ev.note': ["Referenz: {ref} ohne PV und Batterie, gesamter Strom aus dem Netz. Stundenbilanz 8760 h (Jahr) bzw. 15-min-Profil (Tag). CO₂ nach GEG: Strom {efE} g/kWh, Gas {efG} g/kWh. Kosten Jahr 1: Heizstrom zum WP-Tarif, Haushalt/E-Auto zum Haushaltstarif, Gas inkl. CO₂-Preis, Einspeisevergütung. Statische Amortisation = Mehrinvestition / jährliche Einsparung; „dyn.“ = Barwertvergleich des Heizsystems (Reiter Wirtschaftlichkeit).", "Reference: {ref} without PV and battery, all electricity from the grid. Hourly balance 8760 h (year) or 15-min profile (day). CO₂ per GEG: electricity {efE} g/kWh, gas {efG} g/kWh. Year-1 costs: heating power at heat-pump tariff, household/EV at household tariff, gas incl. CO₂ price, feed-in tariff. Static payback = extra investment / annual savings; 'dyn.' = present-value comparison of the heating system (Economics tab).", "Referencia: {ref} sin FV ni batería, toda la electricidad de la red. Balance horario de 8760 h (año) o perfil de 15 min (día). CO₂ según GEG: electricidad {efE} g/kWh, gas {efG} g/kWh. Costes del año 1: electricidad de calefacción con tarifa de bomba de calor, hogar/VE con tarifa doméstica, gas con precio de CO₂, tarifa de inyección. Amortización estática = inversión adicional / ahorro anual; «din.» = comparación de valor actual del sistema de calefacción (pestaña Economía)."],
+    'ev.noteShort': ["Referenz: {ref} ohne PV/Batterie · GEG-Faktoren · Kosten Jahr 1 · statische Amortisation", "Reference: {ref} without PV/battery · GEG factors · year-1 costs · static payback", "Referencia: {ref} sin FV/batería · factores GEG · costes año 1 · amortización estática"],
     'v.collapse': ["Einklappen", "Collapse", "Plegar"], 'v.expand': ["Ausklappen", "Expand", "Desplegar"],
     'v.prof': ["Tagesprofil-Diagramm", "Daily profile chart", "Gráfica de perfil diario"], 'tip.v.prof': ["Schwebendes Diagramm oben in der 3D-Ansicht: PV, Heizung (el.), E-Auto, Haushalt, Netz und SoC des simulierten Tages. Kopfzeile ziehen = verschieben, Doppelklick = zurücksetzen, ◐ = deckend/durchscheinend.", "Floating chart at the top of the 3D view: PV, heating (el.), EV, household, grid and SoC of the simulated day. Drag the header to move, double-click to reset, ◐ = opaque/translucent.", "Gráfica flotante en la parte superior de la vista 3D: FV, calefacción (el.), VE, hogar, red y SoC del día simulado. Arrastrar la cabecera = mover, doble clic = restablecer, ◐ = opaca/translúcida."],
     'v.profOp': ["Deckend / durchscheinend", "Opaque / translucent", "Opaca / translúcida"], 'tip.v.profOp': ["Diagrammhintergrund deckend oder durchscheinend", "Chart background opaque or translucent", "Fondo de la gráfica opaco o translúcido"],
@@ -3078,6 +3192,47 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
     'fun.utilWater': ["In 1,5 m Tiefe schwankt die Bodentemperatur übers Jahr nur um wenige Kelvin – deshalb friert dort kein Wasser ein.", "At 1.5 m depth the soil temperature varies by only a few kelvin over the year – that is why water does not freeze there.", "A 1,5 m de profundidad la temperatura del suelo varía solo unos pocos kelvin al año; por eso el agua no se congela."],
     'brief.utilPower': ["Das Niederspannungskabel des Netzbetreibers liegt im Gehweg; eine Abzweigmuffe speist das Hausanschlusskabel, das im HAK auf die NH-Sicherungen endet. Je mehr Strom fließt, desto wärmer wird das Kabel (P = I²·R) – im Wärmebild sichtbar.", "The DSO's low-voltage cable runs under the pavement; a branch joint feeds the service cable that ends on the NH fuses in the service box. The more current flows, the warmer the cable gets (P = I²·R) – visible in the thermal view.", "El cable de baja tensión de la distribuidora va bajo la acera; un empalme de derivación alimenta la acometida, que termina en los fusibles NH de la caja. Cuanta más corriente, más se calienta el cable (P = I²·R), visible en la vista térmica."],
     'fun.utilPower': ["Aluminium leitet schlechter als Kupfer, ist aber leichter und günstiger – daher sind Netzkabel meist aus Aluminium (NAYY), Hausinstallationen aus Kupfer.", "Aluminium conducts worse than copper but is lighter and cheaper – so grid cables are mostly aluminium (NAYY), house wiring copper.", "El aluminio conduce peor que el cobre, pero es más ligero y barato; por eso los cables de red suelen ser de aluminio (NAYY) y la instalación interior de cobre."],
+    'l3.utIn': ["Unitower innen", "Unitower inside", "Unitower por dentro"], 'l3.compressor': ["Verdichter", "compressor", "compresor"],
+    'brief.utIn': ["Im Unitower steckt die ganze Wärmepumpe: Oben saugt ein Ventilator Außenluft über den Kanal durch den Lamellenverdampfer, das Kältemittel verdampft dort bei wenigen Grad unter der Lufttemperatur. Der Verdichter hebt den Dampf auf hohen Druck und hohe Temperatur; im Plattenverflüssiger gibt er die Wärme im Gegenstrom an das Heizwasser ab und wird wieder flüssig. Das Expansionsventil entspannt die Flüssigkeit, der Kreis beginnt von vorn. Ein 3-Wege-Ventil leitet das warme Wasser entweder in die Heizung oder in die Wendel des Trinkwasserspeichers unten im Gerät, der sich von oben nach unten warm schichtet.", "The unitower contains the complete heat pump: at the top a fan draws outdoor air through the duct and the finned evaporator, where the refrigerant evaporates a few degrees below the air temperature. The compressor raises the vapour to high pressure and temperature; in the plate condenser it releases the heat in counterflow to the heating water and liquefies again. The expansion valve throttles the liquid and the cycle starts over. A 3-way valve sends the warm water either to the heating or into the coil of the DHW cylinder at the bottom of the unit, which stratifies warm from the top down.", "El Unitower contiene toda la bomba de calor: arriba un ventilador aspira aire exterior por el conducto a través del evaporador de aletas, donde el refrigerante se evapora unos grados por debajo de la temperatura del aire. El compresor eleva el vapor a alta presión y temperatura; en el condensador de placas cede el calor a contracorriente al agua de calefacción y vuelve a condensar. La válvula de expansión lo despresuriza y el ciclo comienza de nuevo. Una válvula de 3 vías envía el agua caliente a la calefacción o al serpentín del acumulador de ACS en la parte inferior, que se estratifica de arriba abajo."],
+    'fun.utIn': ["Der Verflüssiger arbeitet im Gegenstrom: Das kälteste Heizwasser trifft auf das schon abgekühlte Kältemittel – so lässt sich fast die ganze Wärme übertragen.", "The condenser works in counterflow: the coldest heating water meets the already cooled refrigerant – so almost all the heat can be transferred.", "El condensador trabaja a contracorriente: el agua más fría se encuentra con el refrigerante ya enfriado, así se transfiere casi todo el calor."],
+    'l3.k.utCoil': ["TWW-Wendel (Ladewasser)", "DHW coil (charging water)", "Serpentín ACS (agua de carga)"], 'l3.k.utEvap': ["Kältemittel im Verdampfer", "Refrigerant in evaporator", "Refrigerante en el evaporador"],
+    'l3.k.utHot': ["Heißgasleitung", "Hot-gas line", "Línea de gas caliente"], 'l3.k.utLiq': ["Flüssigkeitsleitung", "Liquid line", "Línea de líquido"], 'l3.k.utTwo': ["Nach dem Expansionsventil (Nassdampf)", "After the expansion valve (wet vapour)", "Tras la válvula de expansión (vapor húmedo)"],
+    'l3.k.utSuc': ["Sauggasleitung", "Suction line", "Línea de aspiración"], 'l3.k.utRet': ["Heizwasser-Rücklauf im Gerät", "Heating return inside the unit", "Retorno de calefacción en el equipo"], 'l3.k.utFlow': ["Heizwasser-Vorlauf im Gerät", "Heating flow inside the unit", "Impulsión de calefacción en el equipo"], 'l3.k.utChg': ["Speicherladung (3-Wege-Ventil → Wendel)", "Cylinder charging (3-way valve → coil)", "Carga del acumulador (válvula 3 vías → serpentín)"],
+    // ---- v1.9
+    'l3.k.stHarp': ["Harfenabsorber (Sammel-/Steigrohre)", "Harp absorber (headers/risers)", "Absorbedor de parrilla (colectores/tubos ascendentes)"],
+    'l3.k.stHeader': ["Sammelrohr Röhrenkollektor", "Tube collector header", "Colector del captador de tubos"],
+    'l3.k.solarSField': ["Feldverbindung Kollektorzeilen", "Collector row connection", "Unión entre filas de captadores"],
+    'l3.stField': ["Kollektorfeld", "Collector array", "Campo de captadores"], 'l3.stFlat': ["Flachkollektor, Harfe – diagonal angeschlossen", "Flat-plate, harp – diagonal connection", "Plano, parrilla – conexión en diagonal"],
+    'l3.stTube': ["Vakuumröhre (Heatpipe) – Anschluss oben am Sammler", "Evacuated tube (heat pipe) – connection at header", "Tubos de vacío (heat pipe) – conexión arriba en el colector"],
+    'brief.stField': ["Flachkollektoren mit Harfenabsorber haben oben und unten ein Sammelrohr, dazwischen dünne Steigrohre. Mehrere Kollektoren einer Reihe werden über Wellrohrverbinder parallel gekoppelt und DIAGONAL angeschlossen: kalter Rücklauf unten am Anfang, warmer Vorlauf oben am Ende – so ist jeder Weg durch das Feld gleich lang und alle Harfen werden gleich durchströmt (Tichelmann-Prinzip). Am höchsten Punkt sitzen der Kollektorfühler und ein Entlüfter. Vakuumröhrenkollektoren mit Heatpipes werden dagegen nur durch das Sammelrohr im gedämmten Kasten oben durchströmt; beide Anschlüsse liegen oben, mehrere Kollektoren in Reihe. Mehrere Zeilen werden als Mäander in Reihe geschaltet.",
+      "Flat-plate collectors with a harp absorber have a header at the top and bottom with thin risers in between. Collectors in a row are coupled in parallel via corrugated connectors and connected DIAGONALLY: cold return at the bottom of the first, hot flow at the top of the last – every path through the array is equally long, so all harps receive the same flow (reverse-return principle). The collector sensor and an air vent sit at the highest point. Evacuated-tube collectors with heat pipes, by contrast, are only flowed through in the header inside the insulated box at the top; both connections are at the top and several collectors are connected in series. Several rows are connected in series as a meander.",
+      "Los captadores planos con absorbedor de parrilla tienen un colector arriba y otro abajo con tubos finos entre ambos. Los captadores de una fila se unen en paralelo con conectores corrugados y se conectan EN DIAGONAL: retorno frío abajo al inicio, impulsión caliente arriba al final; así todos los caminos tienen la misma longitud y todas las parrillas reciben el mismo caudal (principio de Tichelmann). En el punto más alto van la sonda del captador y un purgador. Los captadores de tubos de vacío con heat pipe, en cambio, solo se recorren por el colector dentro de la caja aislada superior; las dos conexiones están arriba y varios captadores van en serie. Varias filas se conectan en serie en forma de meandro."],
+    'fun.stField': ["Bei Stillstand im Sommer kann ein Flachkollektor über 200 °C erreichen, ein Vakuumröhrenkollektor sogar über 250 °C – deshalb gibt es Solarflüssigkeit mit Frostschutz und ein großzügiges Ausdehnungsgefäß.", "When idle in summer a flat-plate collector can exceed 200 °C, an evacuated tube even 250 °C – hence the antifreeze solar fluid and a generously sized expansion vessel.", "En estancamiento en verano un captador plano puede superar los 200 °C y uno de tubos de vacío incluso los 250 °C; por eso se usa fluido solar anticongelante y un vaso de expansión generoso."],
+    'l3.windT': ["Kleinwindanlage", "Small wind turbine", "Microaerogenerador"], 'l3.hub': ["Nabe", "hub", "buje"],
+    'brief.windT': ["Kleinstwindanlagen bis 500 W an den Dachkanten: Horizontalläufer mit drei Blättern und Windfahne, auf einem verzinkten Mast mit Schwingungsdämpfern (gegen Körperschall ins Gebäude). Die Leistung steigt mit der dritten Potenz der Windgeschwindigkeit – Nennleistung erst bei etwa 12 m/s. Im Wohngebiet bremst die Bebauung den Wind und die Dachkante erzeugt Turbulenz; realistisch sind deshalb nur etwa 100–300 kWh je kW Nennleistung im Jahr (zum Vergleich PV: 900–1000 kWh/kWp). Genehmigung: in vielen Landesbauordnungen bis 10 m Höhe verfahrensfrei, Abstandsflächen und Lärm (TA Lärm) beachten.",
+      "Micro wind turbines up to 500 W at the roof edges: three-bladed horizontal-axis rotor with tail vane on a galvanised mast with vibration dampers (against structure-borne noise). Power rises with the cube of wind speed – rated power is only reached at about 12 m/s. In residential areas the buildings slow the wind and the roof edge creates turbulence, so realistically only about 100–300 kWh per kW rated per year can be expected (PV for comparison: 900–1000 kWh/kWp). Permits: in many German state building codes exempt up to 10 m height; observe setbacks and noise limits (TA Lärm).",
+      "Microaerogeneradores de hasta 500 W en los bordes del tejado: rotor horizontal de tres palas con veleta, sobre mástil galvanizado con amortiguadores (contra el ruido transmitido a la estructura). La potencia crece con el cubo de la velocidad del viento: la nominal solo se alcanza hacia 12 m/s. En zonas residenciales los edificios frenan el viento y el borde del tejado genera turbulencia; por eso solo cabe esperar unos 100–300 kWh por kW nominal al año (FV en comparación: 900–1000 kWh/kWp). Permisos: en muchos Länder exentos hasta 10 m de altura; respetar distancias y ruido (TA Lärm)."],
+    'fun.windT': ["Doppelte Windgeschwindigkeit bringt achtfache Leistung – darum zählt bei Windrädern jeder Meter Höhe über den Hindernissen.", "Double the wind speed gives eight times the power – that is why every metre above obstacles counts for wind turbines.", "El doble de velocidad del viento da ocho veces más potencia; por eso cada metro de altura sobre los obstáculos cuenta."],
+    's.wind': ["Kleinwind auf dem Dach", "Small wind on the roof", "Minieólica en el tejado"], 's.windN': ["Anzahl Anlagen", "Number of turbines", "Número de aerogeneradores"], 's.windWp': ["Nennleistung je Anlage [W] (≤ 500)", "Rated power per turbine [W] (≤ 500)", "Potencia nominal por unidad [W] (≤ 500)"],
+    's.stCap': ["Dach fasst max.", "Roof fits max.", "El tejado admite máx."], 's.stOver': ["Kollektorfläche {a} m² > Dachfläche erlaubt {b} m² – 3D zeigt die Maximalbelegung.", "Collector area {a} m² > roof allows {b} m² – 3D shows the maximum.", "Superficie {a} m² > el tejado admite {b} m²: el 3D muestra el máximo."],
+    's.windInfo': ["Nabe ≈ {h} m · Wind 10 m Ø {v} m/s · max. {max} Anlagen an den Dachkanten", "Hub ≈ {h} m · wind at 10 m avg {v} m/s · max. {max} turbines at the roof edges", "Buje ≈ {h} m · viento a 10 m Ø {v} m/s · máx. {max} unidades en los bordes"],
+    's.windOver': ["mehr Anlagen als Dachkanten-Plätze (max. {max})", "more turbines than roof-edge positions (max. {max})", "más unidades que posiciones en los bordes (máx. {max})"],
+    'v.windQuick': ["Kleinwind", "Small wind", "Minieólica"], 'tip.v.windQuick': ["Kleinstwindanlagen (≤ 500 W) an den Dachkanten ein-/ausschalten.", "Switch micro wind turbines (≤ 500 W) at the roof edges on/off.", "Activa/desactiva microaerogeneradores (≤ 500 W) en los bordes del tejado."],
+    'v.pvSize': ["PV-Leistung", "PV capacity", "Potencia FV"], 'tip.v.pvSize': ["Frei wählbar bis zur maximalen Dachbelegung (Randabstände, Aufbauten, Solarthermie). Ganz rechts = Dach voll belegen.", "Freely selectable up to the maximum roof coverage (edge distances, roof fixtures, solar thermal). Far right = fill the roof.", "Libre hasta la ocupación máxima del tejado (distancias, elementos, solar térmica). Tope a la derecha = tejado lleno."],
+    'v.stSize': ["Kollektorfläche", "Collector area", "Superficie de captación"], 'tip.v.stSize': ["In Schritten von einem Kollektor (2,5 m² brutto), höchstens zwei Zeilen auf dem Dach.", "In steps of one collector (2.5 m² gross), at most two rows on the roof.", "En pasos de un captador (2,5 m² brutos), como máximo dos filas en el tejado."],
+    'v.stType': ["Kollektorart", "Collector type", "Tipo de captador"], 'v.windN': ["Windanlagen", "Wind turbines", "Aerogeneradores"], 'tip.v.windN': ["Anzahl an den Dachkanten (Giebelspitzen, Traufecken bzw. Attika-Ecken).", "Number at the roof edges (gable peaks, eaves corners or parapet corners).", "Número en los bordes (piñones, esquinas del alero o del pretil)."],
+    'v.windWp': ["Leistung je Anlage", "Power per turbine", "Potencia por unidad"], 'v.mods': ["Module", "modules", "módulos"], 'v.colls': ["Kollektoren", "collectors", "captadores"],
+    'd.wind': ["Wind", "Wind", "Viento"], 'ev.pvw': ["Erzeugung PV + Wind", "Generation PV + wind", "Generación FV + viento"],
+    'pl.windVin': ["Wind: Anlaufgeschwindigkeit", "Wind: cut-in speed", "Viento: velocidad de arranque"], 'pl.windVr': ["Wind: Nenngeschwindigkeit", "Wind: rated speed", "Viento: velocidad nominal"],
+    'pl.windVout': ["Wind: Sturmregelung ab", "Wind: storm control from", "Viento: regulación por tormenta desde"], 'pl.windEta': ["Wind: Wirkungsgrad Regler/WR", "Wind: controller/inverter efficiency", "Viento: rendimiento regulador/inversor"],
+    'pl.windZ0': ["Wind: Rauigkeitslänge z0", "Wind: roughness length z0", "Viento: longitud de rugosidad z0"], 'pl.windRoofK': ["Wind: Abschlag Dachkante", "Wind: roof-edge reduction", "Viento: reducción por borde de tejado"],
+    'pl.windMast': ["Wind: Masthöhe über Dach", "Wind: mast height above roof", "Viento: altura de mástil sobre tejado"], 'pl.capexWindW': ["Wind: Anlage spezifisch", "Wind: turbine specific", "Viento: coste específico"],
+    'pl.capexWindUnit': ["Wind: Mast/Montage je Anlage", "Wind: mast/installation per unit", "Viento: mástil/montaje por unidad"], 'pl.lifeWind': ["Nutzungsdauer Kleinwind", "Service life small wind", "Vida útil minieólica"], 'pl.maintWind': ["Wartung Kleinwind", "Maintenance small wind", "Mantenimiento minieólica"],
+    'n.pvw': ["PV + Wind", "PV + wind", "FV + viento"], 'k.wind': ["Kleinwind-Ertrag", "Small-wind yield", "Producción minieólica"],
+    'comp.wind': ["Kleinwind", "Small wind", "Minieólica"],
+    'l3.tray': ["Kabelrinne", "Cable tray", "Bandeja de cables"], 'l3.traySub': ["Abgänge aus dem Zählerschrank, oben", "Feeders from the meter cabinet, top", "Salidas del armario de contadores, por arriba"],
+    'brief.tray': ["Alle Abgänge verlassen den Zählerschrank oben und laufen gebündelt in einer Gitterrinne unter der Kellerdecke zu den Verbrauchern (Wärmepumpe, Wechselrichter, Wallbox). Zugeleitet wird von unten: das Hausanschlusskabel unten in den Hausanschlusskasten, die Hauptleitung unten links in den netzseitigen Anschlussraum des Zählerschranks. Senkrechte und waagerechte Wege, Schellen etwa alle 35 cm – so bleiben Leitungen geordnet, prüfbar und nachrüstbar (DIN 18015-3: Installationszonen).", "All feeders leave the meter cabinet at the top and run bundled in a wire-mesh tray under the basement ceiling to the loads (heat pump, inverter, wallbox). Supply comes from below: the service cable into the bottom of the service box, the main line into the bottom-left grid-side terminal space of the meter cabinet. Vertical and horizontal runs, clips about every 35 cm – keeping cables orderly, inspectable and extendable (DIN 18015-3: installation zones).", "Todas las salidas abandonan el armario de contadores por arriba y van agrupadas en una bandeja de rejilla bajo el techo del sótano hasta los consumidores (bomba de calor, inversor, wallbox). La alimentación entra por abajo: la acometida por la parte inferior de la caja general y la línea principal por abajo a la izquierda en el espacio de conexión del lado de red del armario. Trazados verticales y horizontales con abrazaderas cada 35 cm aprox.: cables ordenados, revisables y ampliables (DIN 18015-3: zonas de instalación)."],
+    'fun.tray': ["Elektriker planen Leitungen in „Installationszonen“: waagerecht 30 cm unter der Decke oder über dem Boden, senkrecht 10–30 cm neben Türen und Ecken – damit niemand beim Bohren eine Leitung trifft.", "Electricians plan cables in 'installation zones': horizontal 30 cm below the ceiling or above the floor, vertical 10–30 cm beside doors and corners – so nobody drills into a cable.", "Los electricistas planifican los cables en «zonas de instalación»: horizontales a 30 cm del techo o del suelo, verticales a 10–30 cm de puertas y esquinas, para que nadie taladre un cable."],
     'l3.hak': ["Hausanschlusskasten (HAK)", "House service box (HAK)", "Caja general de protección (HAK)"], 'l3.hakSub': ["Netzbetreiber · NH-Sicherungen", "Grid operator · NH fuses", "Distribuidora · fusibles NH"],
     'l3.meter': ["Zählerschrank", "Meter cabinet", "Armario de contadores"], 'l3.meterSub': ["mME · SMGW · LS/RCD", "smart meters · SMGW · MCB/RCD", "contadores · SMGW · PIA/diferencial"], 'l3.meterSubHP': ["WP-Zählpunkt · Steuerbox §14a", "HP meter point · §14a control box", "Punto de medida BC · caja §14a"],
     'l3.subDist': ["Unterverteiler", "Sub-distribution board", "Subcuadro"], 'l3.floorsWord': ["Geschosse", "floors", "plantas"],
@@ -3208,7 +3363,7 @@ footer.foot{max-width:1440px;margin:0 auto;padding:8px 16px 28px;color:var(--mut
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – 3D-Thermografie-Ansicht (three.js r128)
- * Autor: Alirio Jiménez Franco · Version 1.5 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.9 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * - Gebäude parametrisch aus WPV.engine.buildingGeometry (Typologie NRW)
  * - Wandaufbau in Schichten (Putz / Dämmung / Mauerwerk), Fenster, Dach, Keller
  * - Hydraulik: Erzeuger, Puffer (Schichtung), TWW-Speicher mit Wendel,
@@ -3627,23 +3782,28 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const P = pts.filter((p, i) => i === 0 || p.distanceTo(pts[i - 1]) > 1e-4);
       if (P.length < 2) return null;
       routes.push({ P, r });   // v1.7: Leitungsregister für die Kollisionsprüfung (Batterie-Platzsuche)
-      const path = new T.CurvePath(); let prev = P[0].clone();
+      // v1.8: stückweise Röhre – Geraden mit 1 Segment, Bögen mit 10 Segmenten. Vorher wurde der ganze Zug gleichmäßig (7 Segmente/m)
+      // abgetastet; in den kurzen Bögen lag dann kaum ein Stützpunkt → das Rohr (und seine Fluidfarbe) „schnitt“ die Ecke ab.
+      const path = new T.CurvePath(); let prev = P[0].clone(); const pieces = [];
+      const addLine = (a, b) => { if (a.distanceTo(b) > 1e-4) { const cv = new T.LineCurve3(a.clone(), b.clone()); path.add(cv); pieces.push({ cv, n: 1 }); } };
       for (let i = 1; i < P.length - 1; i++) {
         const a = P[i - 1], c = P[i], d = P[i + 1];
         const din = c.clone().sub(a), dout = d.clone().sub(c); const li = din.length(), lo = dout.length();
         din.normalize(); dout.normalize();
         const bb = Math.min(bend, li / 2, lo / 2);
         const p1 = c.clone().addScaledVector(din, -bb), p2 = c.clone().addScaledVector(dout, bb);
-        if (prev.distanceTo(p1) > 1e-4) path.add(new T.LineCurve3(prev, p1));
-        if (Math.abs(din.dot(dout)) < 0.999 && bb > 1e-4) path.add(new T.QuadraticBezierCurve3(p1, c.clone(), p2)); else if (p1.distanceTo(p2) > 1e-4) path.add(new T.LineCurve3(p1, p2));
+        addLine(prev, p1);
+        if (Math.abs(din.dot(dout)) < 0.999 && bb > 1e-4) { const cv = new T.QuadraticBezierCurve3(p1, c.clone(), p2); path.add(cv); pieces.push({ cv, n: 10 }); } else addLine(p1, p2);
         prev = p2;
       }
-      if (prev.distanceTo(P[P.length - 1]) > 1e-4) path.add(new T.LineCurve3(prev, P[P.length - 1].clone()));
-      const len = path.getLength(); if (!(len > 1e-3)) return null;
-      const seg = Math.max(6, Math.min(900, Math.ceil(len * 7))), rad = r > 0.03 ? 10 : 7;
-      const geo = new T.TubeGeometry(path, seg, r, rad, false);
-      const n = geo.attributes.position.count, u = new Float32Array(n), al = new Float32Array(n);
-      for (let i = 0; i <= seg; i++) for (let j = 0; j <= rad; j++) { const k = i * (rad + 1) + j; if (k < n) { u[k] = i / seg; al[k] = len * i / seg; } }
+      addLine(prev, P[P.length - 1]);
+      const len = path.getLength(); if (!(len > 1e-3) || !pieces.length) return null;
+      const rad = r > 0.03 ? 10 : 7, posA = [], norA = [], uvA = [], alA = [], idA = []; let acc = 0, vOff = 0;
+      pieces.forEach(pc => { const g = new T.TubeGeometry(pc.cv, pc.n, r, rad, false), L0 = pc.cv.getLength(), ps = g.attributes.position, ns = g.attributes.normal, us = g.attributes.uv;
+        for (let k = 0; k < ps.count; k++) { const i = Math.floor(k / (rad + 1)); posA.push(ps.getX(k), ps.getY(k), ps.getZ(k)); norA.push(ns.getX(k), ns.getY(k), ns.getZ(k)); uvA.push(us.getX(k), us.getY(k)); alA.push(acc + L0 * i / pc.n); }
+        const ix = g.index.array; for (let k = 0; k < ix.length; k++) idA.push(ix[k] + vOff); vOff += ps.count; acc += L0; g.dispose(); });
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(posA, 3)); geo.setAttribute('normal', new T.Float32BufferAttribute(norA, 3)); geo.setAttribute('uv', new T.Float32BufferAttribute(uvA, 2));
+      geo.setIndex(idA); const al = new Float32Array(alA), u = new Float32Array(alA.length); for (let k = 0; k < al.length; k++) u[k] = al[k] / acc;
       geo.setAttribute('along', new T.BufferAttribute(al, 1));
       return { geo, u, len, path };
     }
@@ -3964,7 +4124,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function clear() {
       rootG.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map && !Object.values(ROOF_TEX).includes(o.material.map) && o.material.map !== TEX.pv && o.material.map !== TEX.grass && o.material.map !== TEX.lawn && o.material.map !== TEX.soil) o.material.map.dispose(); });
       while (rootG.children.length) rootG.remove(rootG.children[0]);
-      parts = null; magState = null; batViz = null; flowPaths = []; frostMats = []; clickables = []; reg = []; pickables = []; labels = []; systems = []; spinners = []; pipesReg = []; obstacles = []; soilMats = []; airSys = []; windSys = null; station = null; stairRect = null; plan = null; planEdges = null; movers = []; moverMeshes = []; pvPos = []; evCable = null; roofObs = []; pickEV = []; wbGlow = null; routes = []; if (hakViz) hakViz.piv = new T.Group();
+      parts = null; magState = null; batViz = null; flowPaths = []; frostMats = []; clickables = []; reg = []; pickables = []; labels = []; systems = []; spinners = []; pipesReg = []; obstacles = []; soilMats = []; airSys = []; windSys = null; station = null; stairRect = null; plan = null; planEdges = null; movers = []; moverMeshes = []; pvPos = []; evCable = null; roofObs = []; pickEV = []; wbGlow = null; routes = []; windTurb = []; if (hakViz) hakViz.piv = new T.Group();
       callouts.forEach(C => C.el.remove()); callouts = [];
       ['site', 'siteT', 'expo', 'envR', 'envT', 'envX', 'inR', 'inT', 'plan', 'sys', 'cas', 'fit', 'fitT', 'air', 'wind', 'flow', 'lab', 'dim', 'fx'].forEach(k => { groups[k] = new T.Group(); groups[k].name = k; rootG.add(groups[k]); });
     }
@@ -4001,11 +4161,11 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       collectWindows(ctxB, fac);
       buildAir(ctxB); buildWind(ctxB);
       buildDHW(ctxB, zones, tech);
-      buildRoofExtras(ctxB); buildRoofSolar(ctxB, tech); if (opts.lps) buildLPS(ctxB);
+      buildRoofExtras(ctxB); buildRoofSolar(ctxB, tech); buildWindTurbines(ctxB); if (opts.lps) buildLPS(ctxB);
       buildElectric(ctxB, tech);
       buildCompass(ctxB);
       buildDims(ctxB);
-      const Q = pipeQueue; pipeQueue = null; stairDetour(Q, ctxB); for (let it = 0; it < 3; it++) resolvePipes(Q); snapEnds(Q); Q.forEach(P => pipeNow(P.pts, P.r, P.mat, P.fnU, P.grp, P.info));
+      const Q = pipeQueue; pipeQueue = null; stairDetour(Q, ctxB); for (let it = 0; it < 3; it++) resolvePipes(Q); snapEnds(Q); connectMag(Q, tech); Q.forEach(P => pipeNow(P.pts, P.r, P.mat, P.fnU, P.grp, P.info));
       decorateHydraulics(ctxB);
       buildTees(); buildElbows(); buildArrows(); buildParticles();
       capFreeEnds(); markPipes();
@@ -4016,6 +4176,24 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       applyMode();
     }
 
+    /** v1.8: Ausdehnungsleitung des MAG nach der Rohrauflösung auf den tatsächlich verlegten Rücklauf vor der Erzeugerpumpe (Saugseite)
+     *  führen: Kappenventil → 14 cm abwärts → seitlich 26 cm → senkrecht bis 12 cm unter die Rücklaufachse → waagerecht x, dann z →
+     *  senkrecht in die Rohrachse (T-Stück). Vorher endete die Leitung an einer festen Stelle, an der kein Rücklauf lag. Nullpunkt-Ring und
+     *  Beschriftung wandern mit. */
+    function connectMag(Q, tech) {
+      const M = Q.find(P => P.info === 'magLine'); if (!M) return;
+      const s0 = M.pts[0], prefs = ['priR', 'bufferToGen', 'secR', 'hpLineR', 'grpR', 'riserR'];
+      let best = null;
+      for (const key of prefs) { Q.forEach(P => { if (P.info !== key) return; for (let i = 1; i < P.pts.length; i++) { const a = P.pts[i - 1], b = P.pts[i], ab = b.clone().sub(a), l2 = ab.lengthSq(); if (l2 < 1e-6) continue;
+          if (Math.abs(ab.y) > 1e-3 * Math.sqrt(l2)) continue;                                                  // nur waagerechte Abschnitte
+          const t = Math.max(0.05, Math.min(0.95, s0.clone().sub(a).dot(ab) / l2)), q = a.clone().addScaledVector(ab, t), d = Math.hypot(q.x - s0.x, q.z - s0.z);
+          if (!best || d < best.d) best = { d, q, r: P.r, dir: ab.clone().normalize() }; } }); if (best) break; }
+      if (!best) return;
+      const q = best.q, dx = q.x - s0.x, x1 = Math.abs(dx) < 0.05 ? s0.x - 0.26 : s0.x + Math.sign(dx) * Math.min(0.26, Math.abs(dx)), yTr = q.y - best.r - 0.12;
+      M.pts = [s0.clone(), V(s0.x, s0.y - 0.14, s0.z), V(x1, s0.y - 0.14, s0.z), V(x1, yTr, s0.z), V(q.x, yTr, s0.z), V(q.x, yTr, q.z), V(q.x, q.y, q.z)].filter((p, i, A) => i === 0 || p.distanceTo(A[i - 1]) > 1e-3);
+      if (tech.nullPt) { tech.nullPt.np.position.copy(q); tech.nullPt.np.quaternion.setFromUnitVectors(V(0, 0, 1), best.dir); tech.nullPt.np.scale.setScalar(Math.max(1, (best.r + 0.02) / 0.06)); if (tech.nullPt.C) tech.nullPt.C.anchor.copy(q).add(V(0.05, -0.15, 0.05)); }
+      tech.magConn = q.clone();
+    }
     /** Rohrenden ohne Anschluss an ein anderes Rohr schließen: Ringleitungsenden erhalten eine Verschlusskappe (Pressfitting),
      *  alle übrigen freien Enden (Übergang auf Armatur/Gerät) eine Verschraubung – kein Rohr endet „im Leeren“. */
     /** Rohrkennzeichnung nach DIN 2403 (Farbband + Fließrichtung): Heizungs-VL rot, RL blau, Trinkwasser warm rot/grün, kalt grün, Sole violett, Kältemittel gelb/braun. */
@@ -4656,7 +4834,20 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
           gutters.push(cy(0.065, L + 2 * ovG, 0, yE - 0.05, s * (run + 0.06), 10, 0, Math.PI / 2));
           gutters.push(cy(0.045, yE, (L / 2 + 0.1), yE / 2, s * (run - 0.05), 8));
         });
-        gutters.push(cy(0.09, L + 2 * ovG, 0, ridge + 0.32, 0, 10, 0, Math.PI / 2));
+        // v1.9: First mit Firstziegeln (statt Rundstab): konische Halbschalen ≈ 42 cm, 38 cm Decklänge (überlappend, Wulst am breiten Ende),
+        // auf Firstlatte mit Firstklammern; seitlich die Lüfterrolle (Firstrolle, dunkel) als Übergang zur Dachfläche. Anfangs- und Endziegel
+        // mit Abschlussscheibe am Ortgang. Farbe = Dachziegelfarbe.
+        { const tiles = [], rolls = [], span = L + 2 * ovG, n = Math.max(2, Math.round(span / 0.38)), pitchT = span / n, yC = ridge + 0.31;
+          const one = () => { const g = new T.CylinderGeometry(0.118, 0.134, 0.42, 16, 1, true, -Math.PI * 0.58, Math.PI * 1.16); g.rotateZ(Math.PI / 2); g.rotateX(-Math.PI / 2);   // Achse entlang x, Schale oben, breites Ende bei +x
+            const w = new T.TorusGeometry(0.134, 0.008, 6, 16, Math.PI * 1.16); w.rotateY(Math.PI / 2); w.rotateX(-Math.PI * 0.08); w.translate(0.21, 0, 0);
+            // Wulst: Torus-Teilring am breiten Ende (+x), Bogen oben
+            const m = merge([g, w]); return m; };
+          for (let k = 0; k < n; k++) { const x = -span / 2 + pitchT * (k + 0.5), t = one(); t.rotateZ(-0.03); t.translate(x, yC, 0); tiles.push(t); }
+          [-1, 1].forEach(e => { const d = new T.CircleGeometry(0.13, 16, 0, Math.PI); d.rotateY(e * Math.PI / 2); d.translate(e * (span / 2 + 0.005), yC - 0.005, 0); tiles.push(d); });
+          [-1, 1].forEach(sz => rolls.push(bx(span, 0.012, 0.07, 0, yC - 0.035, sz * 0.12, 0, -sz * pr)));
+          const tileCol = (ROOF_COL[opts.roofColor] || ROOF_COL.red)[0];
+          mesh(merge(tiles), std(tileCol, { opacity: Math.max(0.9, opts.envOpacity), clip: true, side: T.DoubleSide, p: { roughness: 0.75 } }), groups.envR);   // First bleibt auch bei transparenter Hülle gut sichtbar
+          mesh(merge(rolls), std('#2f3134', { clip: true, env: true, opacity: Math.min(1, opts.envOpacity + 0.1), p: { roughness: 0.8 } }), groups.envR); }
         // Giebelwände
         [-1, 1].forEach(s => {
           const sh = new T.Shape(); sh.moveTo(-D / 2, 0); sh.lineTo(D / 2, 0); sh.lineTo(0, ridge - eaves); sh.lineTo(-D / 2, 0);
@@ -5261,7 +5452,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         groups.fit.add(gm); magState.needle = nd; gm.userData.keep = true; }
       // Nullpunkt der Anlage: Einbindung der Ausdehnungsleitung in den Rücklauf vor der Pumpe (Saugseite) – hier ist der Druck fest
       { const np = new T.Mesh(new T.TorusGeometry(0.06, 0.008, 8, 32), new T.MeshBasicMaterial({ color: 0xa2c617 })); np.material.toneMapped = false; np.position.set(magX, yMainR, zb + 0.32); np.rotation.y = Math.PI / 2; groups.fx.add(np); np.userData.keep = true;
-        label(V(magX + 0.05, yMainR - 0.12, zb + 0.4), () => [tr('l3.nullPt'), tr('l3.nullPtSub')], groups.lab, { prio: -1, key: 'nullPt' }); }
+        label(V(magX + 0.05, yMainR - 0.12, zb + 0.4), () => [tr('l3.nullPt'), tr('l3.nullPtSub')], groups.lab, { prio: -1, key: 'nullPt' }); tech.nullPt = { np, C: callouts[callouts.length - 1] }; }
       tech.magX = magX; tech.panelX = magX + 0.5;
       addObstacle('mag', magX - 0.18, magX + 0.18, yKF + 1.15, yKF + 1.88, zb + 0.04, zb + 0.4, null);
       // Ausdehnungsleitung: vom Kappenventil unten seitlich hoch in die RL-Sammeltrasse (Saugseite der Umwälzpumpen)
@@ -5277,8 +5468,9 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         const hak = V(xin + 0.03, yKF + 1.55, zE - 0.55);
         buildHAK(hak);                                                                                    // v1.6: HAK mit NH-Sicherungen
         tech.hak = hak;
-        [[V(xin - 0.05, yE + 0.06, zE - 0.06), '#16181b', 0.011], [V(xin - 0.05, yE - 0.07, zE - 0.07), '#7c8189', 0.007]].forEach(([p0, col, r], i) => {
-          const tb = tube([p0, V(xin + 0.08 + i * 0.03, p0.y, p0.z), V(xin + 0.08 + i * 0.03, hak.y - 0.18, p0.z), V(xin + 0.08 + i * 0.03, hak.y - 0.18, hak.z - 0.05 + i * 0.06)], r, 0.05); if (tb) mesh(tb.geo, std(col), groups.fit); });
+        // v1.8: Hausanschlusskabel (NAYY) aus der Einführung waagerecht an der Wand, dann senkrecht von UNTEN in den HAK (Mitte); Telekom → buildElectric
+        { const p0 = V(xin - 0.05, yE + 0.06, zE - 0.06), hx = hak.x + 0.065, pts = [p0, V(hx, p0.y, p0.z), V(hx, p0.y, hak.z), V(hx, hak.y - 0.17, hak.z)];
+          const tb = tube(pts, 0.011, 0.08); if (tb) mesh(tb.geo, std('#16181b'), groups.fit); tech.svcCable = pts; }
         mesh(cy(0.028, 0.32, xin + 0.12, yE, zE + 0.0, 16, 0, Math.PI / 2), std('#1d4fa0', { p: { roughness: 0.5 } }), groups.fit); // PE-Hausanschlussleitung
         label(V(xin + 0.1, yE + 0.32, zE + 0.05), () => [tr('l3.houseEntry'), tr('l3.houseEntryUtil')], groups.lab, { prio: 0 });
         if (isGas) tech.gasEntry = { p: V(xin + 0.05, yE + 0.09, zE + 0.07), zE };
@@ -5913,11 +6105,34 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       for (let r = 0; r < 2; r++) for (let k = 0; k < Math.floor((wZ - 0.12) / 0.03); k++) box(0.06, 0.09, 0.016, xF - 0.03, yZ - 0.18 - r * 0.2, zz - 0.07 - k * 0.03, k % 6 === 0 ? '#2b6cb0' : '#e9ebee');
       box(0.07, 0.11, 0.06, xF - 0.035, yZ - 0.18, zz - wZ + 0.08, '#d4a72c'); // SLS (selektiver Hauptschalter)
       }
-      { // Hauptleitung NAR: unten aus dem HAK, seitlich am Kasten vorbei (nicht davor), wandnah hoch und von oben in den Zählerschrank
-        const sg = Math.sign((zz - wZ / 2) - hak.z) || -1, zSide = hak.z + sg * (0.14 + 0.07), xC = hak.x + 0.035;
-        cable([V(xC, hak.y - 0.18, hak.z), V(xC, hak.y - 0.27, hak.z), V(xC, hak.y - 0.27, zSide), V(xC, yZ + hZ / 2 + 0.08, zSide), V(xC, yZ + hZ / 2 + 0.08, zz - 0.1), V(xw + 0.1, yZ + hZ / 2, zz - 0.1)], 0.012, null, () => elI(elLoadKW()), 101, 'elMain');
-        mesh(merge([bx(0.03, 0.03, 0.05, xC, hak.y - 0.27, zSide - sg * 0.02), bx(0.03, 0.03, 0.05, xC, yZ + hZ / 2 + 0.08, zSide)]), M.dark, groups.fit); // Schellen
-      }
+      /* v1.8: Kabelführung neu – Kabel kommen von unten und gehen nach oben, laufen rechtwinklig, wandnah mit Schellen (≈ 35 cm) und
+       * gebündelt in einer Kabelrinne unter der Kellerdecke. HAK: Hausanschlusskabel unten hinein, Hauptleitung oben heraus. Zählerschrank:
+       * Hauptleitung unten links in den netzseitigen Anschlussraum (NAR, Feld 1), alle Abgänge oben heraus in die Rinne. Die Rinne umgeht
+       * den Treppenraum über die Decke. */
+      const topY = yZ + hZ / 2, botY = yZ - hZ / 2, yTr = yKC - 0.16, yCab = yTr + 0.018, clipG = [], trayZ = [];
+      const st = stairRect;
+      /** Schellen an wandnahen Abschnitten (x < Wand + 0,25 m), Abstand 35 cm */
+      const clipRun = pts => { for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], d = b.clone().sub(a), Ld = d.length(); if (Ld < 0.2 || Math.max(a.x, b.x) > xw + 0.25 || (a.y > yTr - 0.01 && b.y > yTr - 0.01)) continue;
+          for (let t = 0.17; t < Ld - 0.1; t += 0.35) { const q = a.clone().addScaledVector(d, t / Ld); clipG.push(bx(Math.max(0.02, q.x - xw + 0.012), 0.022, 0.022, (xw + q.x) / 2 + 0.006, q.y, q.z)); } } };
+      /** Weg in der Rinne von z0 nach z1 auf Spur lx; kreuzt die Spur die Treppe, Umweg über die Decke neben dem Treppenloch */
+      const lanePath = (lx, z0, z1) => { const out = [V(lx, yCab, z0)];
+        if (st && lx < st.x1 + 0.1 && Math.max(z0, z1) > st.z0 - 0.1 && Math.min(z0, z1) < st.z1 + 0.1) { const sx = st.x1 + 0.18 + (lx - xw), up = z1 > z0, za = up ? st.z0 - 0.12 : st.z1 + 0.12, zb2 = up ? st.z1 + 0.12 : st.z0 - 0.12;
+          if ((up && z0 < za) || (!up && z0 > za)) out.push(V(lx, yCab, za)); out.push(V(sx, yCab, up ? Math.max(z0, za) : Math.min(z0, za)), V(sx, yCab, zb2)); out.push(V(lx, yCab, zb2)); trayZ.push(z0, up ? za : za); trayZ.push(zb2); }
+        else trayZ.push(z0, z1);
+        out.push(V(lx, yCab, z1)); return out; };
+      let lane = 0; const laneX = () => xw + 0.07 + (lane++ % 5) * 0.032;
+      /** Abgang k aus dem Schrankdach (Zählerschrank oben) über die Rinne zum Ziel (Punkte ab Rinnenhöhe) */
+      const zFd = k => zz - 0.32 - k * 0.11;
+      const feeder = (k, zT, rest, r, col, iFn, iz, key) => { const lx = laneX(), z0 = zFd(k), pts = [V(xw + 0.1, topY - 0.04, z0), V(xw + 0.1, yCab, z0), ...lanePath(lx, z0, zT), ...rest(lx)];
+        cable(pts.filter((p, i, A) => i === 0 || p.distanceTo(A[i - 1]) > 1e-3), r, col, iFn, iz, key); clipRun(pts); };
+      { // Hauptleitung: HAK oben heraus → über den Schrank/neben ihm → links am Schrank abwärts → unter dem Schrank → von unten links in den NAR
+        const hx = hak.x + 0.065, ht = hak.y + 0.21, yUp = Math.max(ht, topY) + 0.1, zL = zz + 0.12, zIn = zz - 0.09;
+        const pts = [V(hx, ht - 0.03, hak.z), V(hx, yUp, hak.z), V(hx, yUp, zL), V(hx, botY - 0.14, zL), V(hx, botY - 0.14, zIn), V(xw + 0.1, botY - 0.14, zIn), V(xw + 0.1, botY + 0.04, zIn)];
+        cable(pts.filter((p, i, A) => i === 0 || p.distanceTo(A[i - 1]) > 1e-3), 0.012, null, () => elI(elLoadKW()), 101, 'elMain'); clipRun(pts); }
+      { // Telekom/Glasfaser: Hauseinführung → wandnah → von unten rechts ins Multimediafeld
+        const yE = tech.entry ? tech.entry.yE - 0.07 : botY - 0.4, zEn = tech.zE != null ? tech.zE - 0.07 : zz, zM = zz - wZ + 0.22, xT = xw + 0.05;
+        const pts = [V(xw - 0.05, yE, zEn), V(xT, yE, zEn), V(xT, botY - 0.2, zEn), V(xT, botY - 0.2, zM), V(xT, botY + 0.04, zM)];
+        cable(pts.filter((p, i, A) => i === 0 || p.distanceTo(A[i - 1]) > 1e-3), 0.007, '#7c8189'); clipRun(pts); }
       label(V(xF + 0.05, yZ + hZ / 2 + 0.15, zz - wZ / 2), () => [tr('l3.meter'), isHPscn() ? tr('l3.meterSubHP') : tr('l3.meterSub')], groups.lab, { prio: 1 });
       addObstacle('meter', xw, xw + dZ, yZ - hZ / 2, yZ + hZ / 2, zz - wZ, zz, 'x+');
       anchors.elec = { target: V(xw + 0.3, yZ, zz - wZ / 2), dist: 3.0, dir: V(0.85, 0.25, 0.45) };
@@ -5931,7 +6146,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         if (f === 0) label(V(xu + 0.1, yU + 0.38, zr - 0.25), () => [tr('l3.subDist'), (c.heatedTop + 1) + ' × ' + tr('l3.floorsWord')], groups.lab, { prio: -1 });
       }
       // Wärmepumpen-Zuleitung (eigener Zählpunkt/§14a) zum Erzeuger
-      const gen = tech.items.hp; if (gen) cable([V(xw + 0.12, yZ + hZ / 2, zz - 0.3), V(xw + 0.12, yKC - 0.12, zz - 0.3), V(xw + 0.12, yKC - 0.12, gen.ret.z + 0.25), V(gen.ret.x - 0.1, yKC - 0.12, gen.ret.z + 0.25), V(gen.ret.x - 0.1, gen.top + 0.05, gen.ret.z + 0.2)], 0.008, '#1f1f1f', () => elI(S.ehp || 0), 24, 'elHp');
+      const gen = tech.items.hp; if (gen) { const gz = gen.ret.z + 0.22; feeder(0, gz, lx => [V(gen.ret.x - 0.1, yCab, gz), V(gen.ret.x - 0.1, gen.top + 0.05, gz)], 0.008, '#1f1f1f', () => elI(S.ehp || 0), 24, 'elHp'); }
       // ---- PV-System: Wechselrichter, Batteriespeicher, DC-Leitung zum Dach
       if (opts.pvsys) {
         const yi = yKF + 1.45; let zi = dirE > 0 ? zz + 0.6 : zz - 2 * wZ - 0.3; // jenseits der geöffneten Schranktür
@@ -5946,9 +6161,12 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         // nicht im Treppenlauf/Podest (+0,8 m), nicht vor Bedienflächen (Zählerschrank, Geräte: 0,8 m frei), Abstand zu allen Hindernissen
         const BW = 0.62, BD = 0.32, BH = 1.30, bat = placeBattery(c, xw, zi, BW, BD, BH);
         buildBattery(bat, BW, BD, BH);
-        cable([V(xw + 0.12, yi - 0.28, zi - 0.1), V(xw + 0.12, yKF + BH + 0.08, zi - 0.1)].concat(bat.wall === 'left' ? [V(xw + 0.12, yKF + BH + 0.08, bat.z)] : [V(xw + 0.12, yKF + BH + 0.08, bat.cz2), V(bat.x, yKF + BH + 0.08, bat.cz2)]), 0.01, '#16181b', () => Math.abs(opts.batP || 0) * 1000 / 300, 41, 'elBat'); // DC Batterie (HV ≈ 300 V)
+        // v1.8: DC Wechselrichter → Batterie über die Rinne (oben heraus, oben hinein) – nicht mehr quer über die Wand vor dem Zählerschrank
+        { const lx = laneX(), zt = bat.wall === 'left' ? bat.z : bat.cz2, bp = [V(xw + 0.08, yi + 0.27, zi - 0.12), V(xw + 0.08, yCab, zi - 0.12), ...lanePath(lx, zi - 0.12, zt)].concat(bat.wall === 'left'
+            ? [V(xw + BD / 2, yCab, zt), V(xw + BD / 2, yKF + BH - 0.02, zt)] : [V(bat.x, yCab, zt), V(bat.x, yKF + BH - 0.02, zt)]);
+          cable(bp.filter((p, i, A) => i === 0 || p.distanceTo(A[i - 1]) > 1e-3), 0.01, '#16181b', () => Math.abs(opts.batP || 0) * 1000 / 300, 41, 'elBat'); clipRun(bp); } // DC Batterie (HV ≈ 300 V) – von oben in den BMS
         const zb2 = bat.z;
-        cable([V(xw + 0.12, yi + 0.28, zi + 0.1), V(xw + 0.12, yZ + hZ / 2 + 0.05, zi + 0.1), V(xw + 0.12, yZ + hZ / 2 + 0.05, zz - wZ + 0.15)], 0.01, '#2a2d31', () => elI(Math.max(0, (S.pvP || 0) - Math.max(0, opts.batP || 0)) + Math.max(0, -(opts.batP || 0))), 32, 'elInv'); // AC zum Zählerschrank
+        feeder(1, zi + 0.1, lx => [V(xw + 0.14, yCab, zi + 0.1), V(xw + 0.14, yi + 0.27, zi + 0.1)], 0.01, '#2a2d31', () => elI(Math.max(0, (S.pvP || 0) - Math.max(0, opts.batP || 0)) + Math.max(0, -(opts.batP || 0))), 32, 'elInv'); // AC Wechselrichter ↔ Zählerschrank (oben)
         if (pvPos.length) {
           // Strings: je Modulreihe Plus (rot markiert) und Minus (schwarz) unter den Modulen, an der Reihe entlang
           const rows = {}; pvPos.forEach(m => { const k = (m.p.y * 4 | 0) + '|' + (m.n.z > 0 ? 'a' : 'b') + '|' + Math.round(m.p.z * 2); (rows[k] = rows[k] || []).push(m); });
@@ -5976,11 +6194,12 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (opts.wallbox) {
         const xo = -L / 2 - 0.02, zwb = -D / 4;
         buildWallbox(xo, zwb);
-        cable([V(xw + 0.08, yZ + hZ / 2, zz - 0.5), V(xw + 0.08, yKC - 0.2, zz - 0.5), V(xw - 0.4, yKC - 0.2, zwb), V(xo - 0.05, 1.0, zwb)], 0.011, '#202225', () => evI(), 41, 'elWb'); // Zuleitung 5×6 mm² vom Zählerschrank
+        feeder(2, zwb, lx => [V(xo - 0.05, yCab, zwb), V(xo - 0.05, 1.0, zwb)], 0.011, '#202225', () => evI(), 41, 'elWb'); // Zuleitung 5×6 mm² vom Zählerschrank: Rinne → Wanddurchführung → im Schutzrohr an der Fassade hoch
+        mesh(cy(0.03, 0.42, (xo + xw) / 2, yCab, zwb, 12, 0, Math.PI / 2), M.dark, groups.fit);   // Mauerdurchführung (Futterrohr)
         const cx0 = -L / 2 - 1.55, cz0 = zwb + 0.55 - 1.78;                       // Fahrzeugmitte
         const car = buildEV(); car.position.set(cx0, 0, cz0); groups.site.add(car);
         mesh(bx(2.6, 0.03, 5.6, cx0 + 0.1, 0.015, cz0), std('#a9aaa6', { p: { roughness: 0.9 } }), groups.site);          // Stellplatz (Pflaster)
-        const port = V(cx0 + 0.93 + 0.008, 0.84, cz0 + 1.78);                    // Ladeklappe hinten rechts (Typ 2 / CCS), Außenfläche der Klappe
+        const port = car.userData.port.clone().add(V(cx0, 0, cz0));            // Ladeklappe hinten rechts (Typ 2 / CCS), Außenfläche der Klappe
         // v1.6: Stecker sitzt in der Buchse (Steckgesicht 18 mm eingeführt, kein Spalt), Griff schräg nach unten, Knickschutz, Kabel aus dem Griffende.
         // Ladekabel Typ 2 (Mode 3, 5 × 2,5 mm² + CP/PP): aus der Unterseite der Wallbox, durchhängend (Kettenlinie) zum Griffende
         const a0 = V(xo - 0.13, 0.98, zwb), pe = V(port.x + 0.205, port.y - 0.085, port.z), pts = [];
@@ -6016,6 +6235,16 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         label(V(xo - 0.25, 1.85, zwb), () => [tr('l3.wallbox'), '11 kW · ' + tr('l3.wbSub')], groups.lab, { prio: 0 });
         label(V(cx0 + 0.1, 1.95, cz0 + 0.6), () => [tr('l3.ev'), tr(opts.evPlug ? 'l3.evCharging' : 'l3.evParked')], groups.lab, { prio: -1, key: 'ev' });
       }
+      // v1.8: Kabelrinne (Gitterrinne verzinkt, 200 × 50 mm) unter der Kellerdecke entlang der Wand, Ausleger alle 0,8 m; Schellen
+      if (trayZ.length) { const z0 = Math.min(...trayZ) - 0.12, z1 = Math.max(...trayZ) + 0.12, segs = [];
+        const runs = []; if (st && st.x0 < xw + 0.3 && z1 > st.z0 - 0.1 && z0 < st.z1 + 0.1) { if (z0 < st.z0 - 0.12) runs.push([z0, st.z0 - 0.12]); if (z1 > st.z1 + 0.12) runs.push([st.z1 + 0.12, z1]); } else runs.push([z0, z1]);
+        runs.forEach(([a, b]) => { const Lz = b - a, zm = (a + b) / 2; if (Lz < 0.1) return;
+          segs.push(bx(0.2, 0.006, Lz, xw + 0.14, yTr, zm), bx(0.006, 0.05, Lz, xw + 0.04, yTr + 0.025, zm), bx(0.006, 0.05, Lz, xw + 0.24, yTr + 0.025, zm));
+          for (let z = a + 0.05; z < b; z += 0.8) segs.push(bx(0.24, 0.012, 0.03, xw + 0.12, yTr - 0.01, z), bx(0.012, 0.16, 0.03, xw + 0.006, yTr + 0.06, z));
+          addObstacle('tray', xw, xw + 0.25, yTr - 0.02, yTr + 0.06, a, b, null); });
+        if (segs.length) mesh(merge(segs), std('#b8bec4', { p: { metalness: 0.7, roughness: 0.35 } }), groups.fit);
+        label(V(xw + 0.2, yTr + 0.12, (z0 + z1) / 2), () => [tr('l3.tray'), tr('l3.traySub')], groups.lab, { prio: -2, key: 'tray' }); }
+      if (clipG.length) mesh(merge(clipG), M.dark, groups.fit);
     }
     /** Wallbox (11 kW, Typ 2): abgerundetes Gehäuse, dunkle Glasfront, LED-Statusring, Kabelhalter, Wandkonsole */
     let pickEV = [];
@@ -6050,76 +6279,76 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       g.add(new T.Mesh(bx(0.02, 0.46, 0.31, 0.065, 0, 0), std('#9aa0a6')));                                                                  // Wandkonsole
       g.position.set(xo - 0.08, 1.25, z); groups.site.add(g);
     }
-    /** Generische Elektro-Limousine der oberen Mittelklasse (Fließheck, ca. 4,95 × 1,86 × 1,54 m, Radstand 2,97 m) – ohne
-     *  Markenzeichen, keine Nachbildung eines konkreten Modells. Aufbau:
-     *   1) Karosserie: glattes Seitenprofil (Spline) → Extrusion quer → Verformung (Einzug oben = „Tumblehome“, runde Bug-/Heckecken)
-     *   2) Glashaus (Fließheck) mit Panorama-Glasdach und gleicher Verformung
-     *   3) Anbauteile: Lichtbänder, Schweller, Spiegel, Türfugen, Ladeklappe, 19"-Aero-Räder mit Radhausverkleidung
-     *  Koordinaten: Front zeigt nach −z, Ladeklappe hinten rechts (+x). */
+    /** v1.9: Generischer kompakter Elektro-Fünftürer (C-Segment, ca. 4,26 × 1,81 × 1,57 m, Radstand 2,77 m, 18"-Räder) – eigener Entwurf
+     *  ohne Markenzeichen, keine Nachbildung eines konkreten Modells. Typische Proportionen einer E-Plattform: kurze Überhänge, kurze Haube,
+     *  flach stehende Frontscheibe, lange Dachlinie, steile Heckklappe mit Dachkantenspoiler, Ladeklappe hinten rechts.
+     *   1) Karosserie: Seitenprofil (Spline) → Extrusion quer → Verformung (Einzug oben, gerundete Ecken in der Draufsicht)
+     *   2) Glashaus mit gleicher Verformung, schwarze Säulen; 3) Anbauteile: Leuchten, Schweller, Spiegel, Fugen, Räder
+     *  Koordinaten: Front zeigt nach −z. Rückgabe-Gruppe trägt userData.port (Ladeanschluss, Fahrzeug-KS). */
     function buildEV() {
-      const car = new T.Group(), W = 1.86, HW = W / 2;
+      const car = new T.Group(), W = 1.81, HW = W / 2, ZF = -2.13, ZR = 2.13, WB = 2.77, zFw = -1.375, zRw = zFw + WB;
       const CAR = { blue: '#1f4f8f', white: '#e8ebee', silver: '#a9b0b7', grey: '#59616a', red: '#a3161e', black: '#15171a', green: '#2f5d50' };
       const paint = std(CAR[opts.carColor] || CAR.blue, { p: { roughness: 0.25, metalness: 0.6, envMapIntensity: 0.9 } });   // Metallic-Lack (wählbar)
       const black = std('#121416', { p: { roughness: 0.45 } }), glassC = std('#18212b', { p: { roughness: 0.05, metalness: 0.4 } });
       const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-      // Querschnitts-/Grundriss-Verformung: x-Halbbreite abhängig von Höhe y und Längsposition z
       const shapeX = (x, y, z, kTop) => {
-        const tumble = 1 - kTop * sstep(0.88, 1.55, y);                        // Einzug zum Dach hin
-        const plan = 1 - 0.13 * Math.pow(sstep(1.75, 2.5, Math.abs(z)), 1.6);  // abgerundete Bug-/Heckecken (Draufsicht)
-        const lower = 1 - 0.035 * (1 - sstep(0.25, 0.5, y));                   // leicht eingezogene Unterkante
+        const tumble = 1 - kTop * sstep(0.9, 1.57, y);                            // Einzug zum Dach hin
+        const plan = 1 - 0.12 * Math.pow(sstep(1.45, 2.13, Math.abs(z)), 1.5);    // gerundete Bug-/Heckecken (Draufsicht)
+        const lower = 1 - 0.03 * (1 - sstep(0.22, 0.48, y));
         return x * tumble * plan * lower;
       };
       const deform = (geo, kTop) => { const ps = geo.attributes.position; for (let i = 0; i < ps.count; i++) ps.setX(i, shapeX(ps.getX(i), ps.getY(i), ps.getZ(i), kTop)); geo.computeVertexNormals(); return geo; };
-      // Extrusion eines Profils (Profil-x = Welt-z) über die Breite w, zentriert, Breite → Welt-x
       const extr = (pts, w, bev) => {
         const sh = new T.Shape(); sh.moveTo(pts[0][0], pts[0][1]);
         sh.splineThru(pts.slice(1).map(([z, y]) => new T.Vector2(z, y)));
         const g = new T.ExtrudeGeometry(sh, { depth: w - 2 * bev, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 5, curveSegments: 48, steps: 6 });
-        g.translate(0, 0, -(w - 2 * bev) / 2); g.rotateY(-Math.PI / 2); return g;   // rotateY(−90°): Profil-x → Welt-z
+        g.translate(0, 0, -(w - 2 * bev) / 2); g.rotateY(-Math.PI / 2); return g;
       };
-      // 1) Karosserie unterhalb der Gürtellinie: flache Haube, kurzer Bug, Abrisskante am Heck
-      const prof = [[-2.47, 0.34], [-2.49, 0.52], [-2.42, 0.66], [-2.2, 0.75], [-1.6, 0.84], [-1.05, 0.93], [0.0, 0.97], [1.5, 1.0], [2.2, 1.0], [2.45, 0.93],
-        [2.49, 0.72], [2.47, 0.42], [2.3, 0.27], [1.9, 0.25], [0.0, 0.22], [-1.9, 0.25], [-2.3, 0.27], [-2.47, 0.34]];
+      // 1) Karosserie bis Gürtellinie: kurzer, runder Bug, kurze Haube, ansteigende Gürtellinie, steiles Heck
+      const prof = [[-2.1, 0.3], [-2.13, 0.48], [-2.1, 0.64], [-1.98, 0.74], [-1.6, 0.83], [-1.05, 0.95], [-0.2, 0.99], [1.0, 1.02], [1.75, 1.05], [2.04, 1.02],
+        [2.13, 0.84], [2.12, 0.48], [2.0, 0.3], [1.7, 0.25], [0.0, 0.21], [-1.7, 0.25], [-2.0, 0.27], [-2.1, 0.3]];
       car.add(new T.Mesh(deform(extr(prof, W, 0.08), 0.0), paint));
-      // 2) Glashaus: flache Frontscheibe, lange Dachlinie, fließend abfallendes Heck
-      const gp = [[-1.05, 0.93], [-0.55, 1.28], [-0.15, 1.47], [0.55, 1.53], [1.2, 1.46], [1.75, 1.2], [2.2, 0.99], [1.5, 0.97], [0.0, 0.95], [-1.05, 0.93]];
-      car.add(new T.Mesh(deform(extr(gp, W - 0.14, 0.05), 0.24), glassC));
-      // Dach: durchgehendes Panorama-Glasdach (Teil des Glashauses), daher keine separate Dachschale
-      // B-Säule dunkel (Fensterrahmen), Gürtelleiste
-      const pillar = (z0, y0, z1, y1, sx) => { const a = V(shapeX(sx * (HW - 0.05), y0, z0, 0.24), y0, z0), b = V(shapeX(sx * (HW - 0.05), y1, z1, 0.24), y1, z1); const tb = tube([a, b], 0.025, 0); return tb ? tb.geo : null; };
-      const pil = []; [1, -1].forEach(sx => { pil.push(pillar(0.45, 1.02, 0.42, 1.46, sx)); });
+      // 2) Glashaus (Seitenfenster ≈ 0,45 m hoch): flache Frontscheibe, lange Dachlinie, steile Heckscheibe unter dem Dachkantenspoiler
+      const gp = [[-1.05, 0.95], [-0.55, 1.24], [-0.2, 1.42], [0.5, 1.47], [1.35, 1.46], [1.84, 1.42], [1.98, 1.2], [2.04, 1.04], [1.0, 1.01], [-0.2, 0.98], [-1.05, 0.95]];
+      car.add(new T.Mesh(deform(extr(gp, W - 0.12, 0.05), 0.22), glassC));
+      // Dach in Wagenfarbe über dem Glashaus + Dachkantenspoiler
+      const rp = [[-0.3, 1.41], [0.2, 1.55], [0.5, 1.575], [1.35, 1.565], [1.86, 1.52], [1.9, 1.47], [1.35, 1.455], [0.5, 1.465], [-0.3, 1.41]];
+      car.add(new T.Mesh(deform(extr(rp, W - 0.14, 0.03), 0.22), paint));
+      // Säulen (A/B/C) schwarz
+      const pillar = (z0, y0, z1, y1, sx, k) => { const a = V(shapeX(sx * (HW - 0.055), y0, z0, k), y0, z0), b = V(shapeX(sx * (HW - 0.055), y1, z1, k), y1, z1); const tb = tube([a, b], 0.03, 0); return tb ? tb.geo : null; };
+      const pil = []; [1, -1].forEach(sx => { pil.push(pillar(0.28, 1.0, 0.26, 1.46, sx, 0.22), pillar(1.6, 1.03, 1.66, 1.45, sx, 0.22)); });
       car.add(new T.Mesh(merge(pil.filter(Boolean)), black));
-      // Lichtbänder: vorn durchgehender LED-Streifen + Scheinwerfer, hinten durchgehendes Leuchtband
-      car.add(new T.Mesh(bx(1.3, 0.022, 0.05, 0, 0.70, -2.47), std('#ffffff', { p: { emissive: '#e8f4ff', emissiveIntensity: 1.0 } })));
-      car.add(new T.Mesh(merge([bx(0.3, 0.06, 0.05, 0.55, 0.63, -2.52), bx(0.3, 0.06, 0.05, -0.55, 0.63, -2.52)]), std('#dfe8f0', { p: { emissive: '#cfe6ff', emissiveIntensity: 0.6 } })));
-      car.add(new T.Mesh(bx(1.4, 0.05, 0.05, 0, 0.86, 2.55), std('#b3121b', { p: { emissive: '#ff2a2a', emissiveIntensity: 0.8 } })));
-      // Unterer Lufteinlass vorn, Diffusor hinten, Schweller, Außenspiegel
-      car.add(new T.Mesh(merge([bx(1.1, 0.1, 0.05, 0, 0.42, -2.555), bx(1.3, 0.09, 0.05, 0, 0.4, 2.55), bx(0.05, 0.1, 2.9, HW - 0.05, 0.3, 0), bx(0.05, 0.1, 2.9, -HW + 0.05, 0.3, 0)]), black));
-      car.add(new T.Mesh(merge([bx(0.18, 0.08, 0.12, HW + 0.02, 1.02, -0.85), bx(0.18, 0.08, 0.12, -HW - 0.02, 1.02, -0.85)]), paint));
-      // Türfugen (vorn/hinten) und Türgriffe (bündig), Ladeklappe hinten rechts
-      const seam = []; [1, -1].forEach(sx => { [-0.95, 0.42, 1.55].forEach(z => seam.push(bx(0.006, 0.55, 0.008, sx * (HW + 0.004), 0.68, z))); [-0.2, 1.0].forEach(z => seam.push(bx(0.008, 0.025, 0.16, sx * (HW + 0.006), 0.86, z))); });
+      // Leuchten: zwei Scheinwerfer (getrennt), schmaler Lufteinlass, zwei Heckleuchten in den Ecken
+      const hl = std('#e9f1f8', { p: { emissive: '#cfe6ff', emissiveIntensity: 0.7, roughness: 0.15 } }), tl = std('#b3121b', { p: { emissive: '#ff2a2a', emissiveIntensity: 0.8 } });
+      car.add(new T.Mesh(merge([bx(0.36, 0.075, 0.06, 0.56, 0.7, -2.07, 0.25), bx(0.36, 0.075, 0.06, -0.56, 0.7, -2.07, -0.25)]), hl));
+      car.add(new T.Mesh(merge([bx(0.3, 0.09, 0.06, 0.62, 0.9, 2.07, -0.3), bx(0.3, 0.09, 0.06, -0.62, 0.9, 2.07, 0.3)]), tl));
+      car.add(new T.Mesh(merge([bx(0.9, 0.09, 0.05, 0, 0.4, -2.115), bx(1.1, 0.08, 0.05, 0, 0.36, 2.115), bx(0.05, 0.1, 2.5, HW - 0.04, 0.3, 0), bx(0.05, 0.1, 2.5, -HW + 0.04, 0.3, 0)]), black));
+      car.add(new T.Mesh(merge([bx(0.17, 0.08, 0.11, HW + 0.02, 1.02, -0.72), bx(0.17, 0.08, 0.11, -HW - 0.02, 1.02, -0.72)]), paint));
+      // Türfugen, bündige Griffe, Ladeklappe hinten rechts
+      const seam = []; [1, -1].forEach(sx => { [-1.02, 0.27, 1.45].forEach(z => seam.push(bx(0.006, 0.55, 0.008, sx * (HW + 0.004), 0.68, z))); [-0.3, 1.0].forEach(z => seam.push(bx(0.008, 0.025, 0.15, sx * (HW + 0.006), 0.88, z))); });
       car.add(new T.Mesh(merge(seam), black));
-      car.add(new T.Mesh(bx(0.012, 0.13, 0.17, HW + 0.002, 0.84, 1.78), black));
-      // Ladeanschluss-LED (grün = lädt), Kennzeichen vorn/hinten (EU-Feld, E-Kennzeichen), Bremssättel
+      const port = V(HW + 0.008, 0.86, 1.72);
+      car.add(new T.Mesh(bx(0.012, 0.13, 0.17, HW + 0.002, port.y, port.z), black));
       evLed = std('#cfd8e3', { p: { emissive: '#000000', roughness: 0.3 } });
-      car.add(new T.Mesh(new T.TorusGeometry(0.035, 0.006, 6, 20).rotateY(Math.PI / 2).translate(HW + 0.01, 0.84, 1.78), evLed));
+      car.add(new T.Mesh(new T.TorusGeometry(0.035, 0.006, 6, 20).rotateY(Math.PI / 2).translate(HW + 0.01, port.y, port.z), evLed));
       const plate = (() => { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 56; const g = cv.getContext('2d'); g.fillStyle = '#f7f7f2'; g.fillRect(0, 0, 256, 56); g.fillStyle = '#123e9c'; g.fillRect(0, 0, 26, 56);
         g.fillStyle = '#ffd400'; g.font = '10px sans-serif'; g.fillText('★', 7, 18); g.fillStyle = '#fff'; g.font = 'bold 14px sans-serif'; g.fillText('D', 8, 48); g.fillStyle = '#111'; g.font = 'bold 34px "DIN Alternate", Arial Narrow, sans-serif'; g.fillText('WP 2026E', 34, 41);
         g.strokeStyle = '#111'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 253, 53); const tx = new T.CanvasTexture(cv); return std('#ffffff', { p: { map: tx, roughness: 0.4 } }); })();
-      car.add(new T.Mesh(bx(0.52, 0.11, 0.01, 0, 0.47, -2.58), plate), new T.Mesh(bx(0.52, 0.11, 0.01, 0, 0, 0).rotateY(Math.PI).translate(0, 0.62, 2.6), plate));
-      // Räder 19" (235/50 R19 ≈ Ø 0,72 m): Reifen, Aero-Felge mit 5 Speichen, Nabendeckel, Radhausverkleidung
-      const rimM = std('#c9ced4', { p: { metalness: 0.85, roughness: 0.25 } }), tyreM = std('#1a1b1d', { p: { roughness: 0.85 } });
-      [[-1.485, 1], [1.485, 1], [-1.485, -1], [1.485, -1]].forEach(([wz, sx]) => {
-        const wx = sx * (HW - 0.14), xo = wx + sx * 0.118;
-        car.add(new T.Mesh(cy(0.36, 0.235, wx, 0.36, wz, 32, 0, Math.PI / 2), tyreM));
-        car.add(new T.Mesh(cy(0.25, 0.012, xo, 0.36, wz, 32, 0, Math.PI / 2), std('#3a3e44', { p: { metalness: 0.6, roughness: 0.35 } })));
-        const sp = []; for (let k = 0; k < 5; k++) { const g = bx(0.014, 0.22, 0.075, 0, 0.115, 0); g.rotateX(k * 2 * Math.PI / 5); g.translate(xo + sx * 0.008, 0.36, wz); sp.push(g); }
-        sp.push(cy(0.075, 0.02, xo + sx * 0.012, 0.36, wz, 16, 0, Math.PI / 2), new T.TorusGeometry(0.235, 0.014, 6, 32).rotateY(Math.PI / 2).translate(xo + sx * 0.008, 0.36, wz));
+      car.add(new T.Mesh(bx(0.52, 0.11, 0.01, 0, 0.5, ZF - 0.03), plate), new T.Mesh(bx(0.52, 0.11, 0.01, 0, 0, 0).rotateY(Math.PI).translate(0, 0.62, ZR + 0.02), plate));
+      // Räder 18" (215/55 R18 ≈ Ø 0,69 m): Reifen, Aero-Felge, Nabendeckel, Radlaufverkleidung
+      const rimM = std('#c9ced4', { p: { metalness: 0.85, roughness: 0.25 } }), tyreM = std('#1a1b1d', { p: { roughness: 0.85 } }), rr = 0.345;
+      [[zFw, 1], [zRw, 1], [zFw, -1], [zRw, -1]].forEach(([wz, sx]) => {
+        const wx = sx * (HW - 0.13), xo = wx + sx * 0.108;
+        car.add(new T.Mesh(cy(rr, 0.215, wx, rr, wz, 32, 0, Math.PI / 2), tyreM));
+        car.add(new T.Mesh(cy(0.235, 0.012, xo, rr, wz, 32, 0, Math.PI / 2), std('#3a3e44', { p: { metalness: 0.6, roughness: 0.35 } })));
+        const sp = []; for (let k = 0; k < 6; k++) { const g = bx(0.014, 0.2, 0.06, 0, 0.11, 0); g.rotateX(k * 2 * Math.PI / 6); g.translate(xo + sx * 0.008, rr, wz); sp.push(g); }
+        sp.push(cy(0.07, 0.02, xo + sx * 0.012, rr, wz, 16, 0, Math.PI / 2), new T.TorusGeometry(0.222, 0.013, 6, 32).rotateY(Math.PI / 2).translate(xo + sx * 0.008, rr, wz));
         car.add(new T.Mesh(merge(sp), rimM));
-        car.add(new T.Mesh(bx(0.03, 0.12, 0.09, xo - sx * 0.035, 0.42, wz - 0.12), std('#9aa1a8', { p: { metalness: 0.5, roughness: 0.4 } })));   // Bremssattel
-        car.add(new T.Mesh(new T.TorusGeometry(0.405, 0.035, 6, 28, Math.PI).rotateY(Math.PI / 2).translate(sx * (HW - 0.015), 0.37, wz), black));
+        car.add(new T.Mesh(bx(0.03, 0.11, 0.085, xo - sx * 0.035, rr + 0.06, wz - 0.11), std('#9aa1a8', { p: { metalness: 0.5, roughness: 0.4 } })));
+        car.add(new T.Mesh(new T.TorusGeometry(0.39, 0.032, 6, 28, Math.PI).rotateY(Math.PI / 2).translate(sx * (HW - 0.012), rr + 0.01, wz), black));
       });
       car.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      car.userData.port = port;
       return car;
     }
     const mfhUnits = () => (G && G.type === 'MFH') ? Math.min(3, Math.max(2, Math.round((B.units || 6) / 3))) : 1;
@@ -6140,16 +6369,49 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     function buildUnitower(c, tech) {
       const { L, zf, yKF, yKC, tW } = c, xr = L / 2 - (tW || 0.36), W = 0.62, Dd = 0.72, H = 1.9, tx = xr - Dd / 2 - 0.12, tz = zf - 1.35, yb = yKF;
       const hp = tech.items.hp, Pn = tech.plan;
-      // Gehäuse (zweiteilig), Bedienfeld, Revisionsblende
-      mesh(bx(Dd, H * 0.55, W, tx, yb + H * 0.275, tz), std('#f2f3f2', { p: { roughness: 0.4 } }), groups.cas);
-      mesh(bx(Dd, H * 0.45, W, tx, yb + H * 0.775, tz), std('#e6e8e8', { p: { roughness: 0.4 } }), groups.cas);
+      // Gehäuse (zweiteilig) – v1.8 durchscheinend wie die anderen Geräte (Real 0,28, Wärmebild/Röntgen 0,08), Innenleben sichtbar
+      const shell = std('#f2f3f2', { opacity: 0.28, casing: true, p: { roughness: 0.4 } }), shell2 = std('#e6e8e8', { opacity: 0.28, casing: true, p: { roughness: 0.4 } });
+      mesh(bx(Dd, H * 0.55, W, tx, yb + H * 0.275, tz), shell, groups.cas); mesh(bx(Dd, H * 0.45, W, tx, yb + H * 0.775, tz), shell2, groups.cas);
       mesh(bx(0.012, 0.16, 0.24, tx - Dd / 2 - 0.006, yb + H * 0.82, tz), std('#1f2428', { p: { roughness: 0.3 } }), groups.fit);
       mesh(bx(0.004, 0.06, 0.16, tx - Dd / 2 - 0.013, yb + H * 0.83, tz), M.lcd || M.dark, groups.fit);
-      // Temperaturbild: Speicher unten (TWW geschichtet), Verdichter/Verflüssiger oben
+      /* v1.8: Innenleben mit Temperaturbild (gleiche Logik wie Monoblock/Speicher):
+       *  Kältekreis oben: Verdichter → Heißgas → Plattenverflüssiger (Gegenstrom: Wasser ↑, Kältemittel ↓) → Flüssigkeit → EEV →
+       *  Lamellenverdampfer (Luft aus dem Zuluftkanal) → Sauggas → Abscheider → Verdichter.
+       *  Wasser: RL → Hocheffizienzpumpe → Verflüssiger → 3-Wege-Umschaltventil → Heizung (oben hinaus) oder TWW-Wendel im Speicher.
+       *  Unten: TWW-Speicher (≈ 190 l) mit Schichtung und Glattrohr-Wendel (Ladetemperatur → Rücklauf). */
+      const inner = (pts, r, fnU, info, mat) => { const tb = tube(pts, r, 0.03); if (!tb) return; tmesh(tb.geo, mat || TM.heatS, tb.u, 1, fnU, groups.sys, info); flowPath(pts, r, fnU, info + 'Flow'); };
+      const yT = yb + H * 0.55, run = () => S.hpRun, dhwC = () => S.hpRun && S.dhw < (B.dhwTemp || 55) - 3;
       tpos(cy(0.26, H * 0.5, tx, yb + H * 0.27, tz, 20), TM.tank, (px, py) => strat(py, S.dhw, S.cold + 4, 0.55, 0.08), groups.sys, 'dhwTank');
+      { const pts = [], n = 7, r0 = 0.17, y0 = yb + 0.12, y1 = yb + H * 0.3; for (let k = 0; k <= n * 12; k++) { const a = k / 12 * Math.PI * 2, y = y0 + (y1 - y0) * k / (n * 12); pts.push(V(tx + Math.cos(a) * r0, y, tz + Math.sin(a) * r0)); }
+        const top = V(tx + r0, y1, tz); pts.reverse();                                                                           // Ladewasser oben ein, unten aus (Gegenstrom zur Schichtung)
+        inner(pts, 0.012, u => dhwC() ? lerp(S.coilIn, S.coilOut, u) : strat(1 - u * 0.9, S.dhw, S.cold + 4, 0.55, 0.08), 'utCoil'); void top; }
       tconst(cy(0.1, 0.28, tx + 0.1, yb + H * 0.68, tz - 0.12, 16), TM.solid, () => S.hpRun ? S.compHot : S.ti, groups.sys, 'compressor');
-      tpos(bx(0.25, 0.32, 0.06, tx - 0.12, yb + H * 0.72, tz + 0.18), TM.solid, (px, py) => S.hpRun ? lerp(S.hpRet, S.hpOut, py) : S.ti, groups.sys, 'hpCond');
-      tpos(bx(0.5, 0.36, 0.5, tx + 0.02, yb + H * 0.9, tz), TM.solid, (px, py) => S.hpRun ? lerp(S.airOut, S.te, py) : S.cellar, groups.sys, 'evaporator');
+      const hxX = tx - 0.12, hxZ = tz + 0.18, hy0 = yb + H * 0.62, hy1 = yb + H * 0.82;
+      tpos(bx(0.08, hy1 - hy0, 0.2, hxX, (hy0 + hy1) / 2, hxZ), TM.solid, (px, py) => S.hpRun ? lerp(S.hpRet, S.hpOut, py) : S.ti, groups.sys, 'hpCond');
+      // Verdampfer (Lamellenblock oben) mit Kältemittelweg
+      const evX = tx + 0.02, evY = yb + H * 0.9;
+      tpos(bx(0.5, 0.3, 0.5, evX, evY, tz), TM.solid, (px, py) => S.hpRun ? lerp(S.airOut, S.te, py) : S.cellar, groups.sys, 'evaporator');
+      { const pts = []; for (let k = 0; k < 6; k++) { const yy = evY + 0.12 - k * 0.048; pts.push(V(evX - 0.22, yy, k % 2 ? tz + 0.2 : tz - 0.2), V(evX + 0.22, yy, k % 2 ? tz + 0.2 : tz - 0.2)); }
+        inner(pts, 0.006, u => run() ? lerp(S.te - 8, S.te - 3, u) : S.te, 'utEvap', TM.heatR); }
+      // Kältemittelleitungen
+      const cX = tx + 0.1, cZ = tz - 0.12, eev = V(tx + 0.22, yb + H * 0.78, tz + 0.12);
+      inner([V(cX, yb + H * 0.68 + 0.14, cZ), V(cX, hy1 + 0.04, cZ), V(hxX, hy1 + 0.04, cZ), V(hxX, hy1 + 0.04, hxZ - 0.06), V(hxX, hy1 - 0.02, hxZ - 0.06)], 0.006, u => run() ? lerp(S.compHot, S.compHot - 12, u) : S.ti, 'utHot');
+      inner([V(hxX, hy0 + 0.02, hxZ + 0.06), V(hxX, hy0 - 0.04, hxZ + 0.06), V(eev.x, hy0 - 0.04, hxZ + 0.06), V(eev.x, hy0 - 0.04, eev.z), V(eev.x, eev.y - 0.03, eev.z)], 0.005, u => run() ? S.hpRet + 3 : S.ti, 'utLiq', TM.heatR);
+      inner([V(eev.x, eev.y + 0.03, eev.z), V(eev.x, evY + 0.12, eev.z), V(evX + 0.22, evY + 0.12, eev.z)], 0.005, u => run() ? S.te - 8 : S.ti, 'utTwo', TM.heatR);
+      inner([V(evX - 0.22, evY - 0.12, tz + 0.2), V(tx - 0.24, evY - 0.12, tz + 0.2), V(tx - 0.24, yb + H * 0.66, tz + 0.2), V(tx - 0.24, yb + H * 0.66, cZ), V(cX - 0.08, yb + H * 0.66, cZ)], 0.007, u => run() ? S.te - 3 : S.ti, 'utSuc', TM.heatR);
+      mesh(merge([cy(0.016, 0.07, eev.x, eev.y, eev.z, 10), cy(0.024, 0.035, eev.x, eev.y + 0.02, eev.z, 12)]), M.dark, groups.fit);
+      tconst(cy(0.035, 0.16, tx - 0.24, yb + H * 0.72, tz + 0.2, 12), TM.solid, () => run() ? S.te - 3 : S.ti, groups.sys, 'accumulator');
+      // Wasserweg: RL (oben hinten) → Pumpe → Verflüssiger unten ein, oben aus → 3-Wege-Ventil → VL oben bzw. TWW-Wendel
+      const pumpP = V(tx - 0.24, yT + 0.12, tz + 0.05), vlv = V(tx - 0.12, yT + 0.06, tz - 0.05);
+      inner([V(tx - 0.24, yb + H, tz + 0.05), pumpP, V(hxX, pumpP.y, tz + 0.05), V(hxX, hy0 - 0.06, hxZ - 0.06)], 0.012, u => run() ? S.hpRet : S.ti, 'utRet', TM.heatR);
+      inner([V(hxX - 0.03, hy1 + 0.02, hxZ), V(hxX - 0.03, hy1 + 0.1, hxZ), V(hxX - 0.03, hy1 + 0.1, tz - 0.05), V(vlv.x, yb + H, tz - 0.05)], 0.012, u => run() ? S.hpOut : S.ti, 'utFlow');
+      inner([V(hxX - 0.03, hy0 + 0.1, hxZ - 0.1), V(vlv.x, vlv.y, vlv.z), V(tx + 0.17, vlv.y, vlv.z), V(tx + 0.17, yb + H * 0.3 + 0.02, tz)], 0.01, u => dhwC() ? S.coilIn : S.ti, 'utChg');
+      tconst(cy(0.045, 0.08, pumpP.x, pumpP.y, pumpP.z, 14), TM.solid, () => run() ? S.hpRet : S.ti, groups.sys, 'pump');
+      mesh(merge([bx(0.06, 0.05, 0.06, vlv.x, vlv.y, vlv.z), cy(0.02, 0.06, vlv.x, vlv.y + 0.05, vlv.z, 10)]), M.brass, groups.fit);   // 3-Wege-Umschaltventil
+      // Lüfter (EC-Radialventilator) am Zuluftkanal
+      { const fan = new T.Group(); fan.position.set(tx + Dd / 2 - 0.12, yb + H * 0.9, tz - 0.17); for (let k = 0; k < 7; k++) { const b0 = new T.Mesh(new T.BoxGeometry(0.01, 0.12, 0.05), M.dark); b0.rotation.x = k * Math.PI * 2 / 7; b0.position.set(0, Math.cos(k * Math.PI * 2 / 7) * 0.06, Math.sin(k * Math.PI * 2 / 7) * 0.06); fan.add(b0); }
+        groups.cas.add(fan); fan.userData.rate = 6; fan.userData.axis = 'x'; spinners.push(fan); }
+      label(V(tx - Dd / 2 - 0.1, yb + H * 0.72, tz + 0.2), () => [tr('l3.utIn'), S.hpRun ? degC(S.hpRet) + ' → ' + degC(S.hpOut) + ' · ' + tr('l3.compressor') + ' ' + degC(S.compHot) : tr('l3.off')], groups.lab, { prio: 0, key: 'utIn' });
       // Luftkanäle DN 400 (gedämmt) durch die Außenwand, Lichtschächte mit Rost und Wetterschutzgitter
       const yD = Math.min(-0.5, yb + H - 0.3), ducts = [[tz - 0.17, 'in'], [tz + 0.17, 'out']];   // Kanäle unter Gelände (Lichtschacht), seitlich aus dem Gerät
       ducts.forEach(([dz, kind], i) => {
@@ -7267,15 +7529,16 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         const place = roofPlacer(c, 1);
         // Solarthermie: obere Reihe links (Kollektoren ebenfalls auf Dachhaken/Schienen)
         if (stOn) {
-          const x0 = -c.L / 2 + 0.6, uC = 0.55 + ch / 2;
-          const cols = Math.min(stCols, Math.floor((c.L - 1.2) / (cw + 0.03)));
-          let m0 = null;
-          for (let k = 0; k < cols; k++) { const mk = place(x0 + cw / 2 + k * (cw + 0.03), uC, 0.13); if (!k) m0 = mk; collector(mk, cw, ch); }
-          railRow(place, x0, x0 + cols * (cw + 0.03), uC, ch, rails, hooks);
-          stBox = { x0, x1: x0 + cols * (cw + 0.03), s0: 0.5, s1: 0.6 + ch };
-          const top = V(-cw / 2 + 0.06, 0.06, -ch / 2 + 0.05).applyMatrix4(m0), bot = V(-cw / 2 + 0.06, 0.06, ch / 2 - 0.05).applyMatrix4(m0);
-          solarLines(c, tech, top, bot);
-          anchors.solar = { target: V(x0 + cols * (cw + 0.03) / 2, G.ridge - uC * Math.sin(pr), uC * Math.cos(pr)), dist: 6.5, dir: V(0.2, 0.75, 0.65) };
+          // v1.9: Zeilen von der Firstseite nach unten, je Zeile max. so viele Kollektoren wie die Dachlänge zulässt; Feld in Zeile 0 (unten) beginnend
+          const x0 = -c.L / 2 + 0.6, perRow = Math.max(1, Math.floor((c.L - 1.2) / (cw + 0.03))), nC = Math.min(stCols, perRow * 2), rows = Math.ceil(nC / perRow);
+          const ms = [];
+          for (let rr = 0; rr < rows; rr++) { const uC = 0.55 + ch / 2 + (rows - 1 - rr) * (ch + 0.1), nR = Math.min(perRow, nC - rr * perRow), row = [];
+            for (let k = 0; k < nR; k++) row.push(place(x0 + cw / 2 + k * (cw + 0.03), uC, 0.13));
+            railRow(place, x0, x0 + nR * (cw + 0.03), uC, ch, rails, hooks); ms.push(row); }
+          stBox = { x0, x1: x0 + Math.min(nC, perRow) * (cw + 0.03), s0: 0.5, s1: 0.6 + rows * (ch + 0.1) };
+          const fld = collectorField(ms, cw, ch);
+          solarLines(c, tech, fld.pOut, fld.pIn);
+          anchors.solar = { target: V(x0 + Math.min(nC, perRow) * (cw + 0.03) / 2, G.ridge - (0.55 + rows * ch / 2) * Math.sin(pr), (0.55 + rows * ch / 2) * Math.cos(pr)), dist: 6.5 + rows, dir: V(0.2, 0.75, 0.65) };
         }
         // PV: Belegung aus WPV.engine.pvLayout (maximal mit Randabstand zu Ortgang/First/Traufe/Aufbauten, Hoch- oder Querformat);
         // Modulfeld je Reihe auf zwei Alu-Schienen, Dachhaken im Sparrenraster
@@ -7293,10 +7556,15 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         let zRow = -c.D / 2 + 1.0;
         if (stOn) {
           const tS = 0.78;
-          for (let k = 0; k < stCols; k++) { const xk = -c.L / 2 + 1.6 + k * (cw + 0.05); collector(new T.Matrix4().makeRotationX(tS).setPosition(xk, yR + 0.25 + ch / 2 * Math.sin(tS), zRow + ch / 2 * Math.cos(tS)), cw, ch); rackLegs(xk, cw, yR, zRow, ch, tS, rails, ballast); }
-          solarLines(c, tech, V(-c.L / 2 + 1.1, yR + 0.3, zRow + 0.2), V(-c.L / 2 + 1.3, yR + 0.3, zRow + 0.4));
-          anchors.solar = { target: V(-c.L / 2 + 1 + stCols * 0.6, yR, zRow + 1), dist: 7, dir: V(0.3, 0.8, 0.5) };
-          zRow += 2.6;
+          const perRow = Math.max(1, Math.floor((c.L - 3.2) / (cw + 0.05))), nC = Math.min(stCols, perRow * 2), rows = Math.ceil(nC / perRow), ms = [];
+          // Zeile 0 = vorderste (Süd) Reihe; dahinter Reihenabstand 2,6 m (Verschattung)
+          for (let rr = 0; rr < rows; rr++) { const nR = Math.min(perRow, nC - rr * perRow), row = [], zr = zRow + (rows - 1 - rr) * 2.6;
+            for (let k = 0; k < nR; k++) { const xk = -c.L / 2 + 1.6 + k * (cw + 0.05); row.push(new T.Matrix4().makeRotationX(tS).setPosition(xk, yR + 0.25 + ch / 2 * Math.sin(tS), zr + ch / 2 * Math.cos(tS))); rackLegs(xk, cw, yR, zr, ch, tS, rails, ballast); }
+            ms.push(row); }
+          const fld = collectorField(ms, cw, ch);
+          solarLines(c, tech, fld.pOut, fld.pIn);
+          anchors.solar = { target: V(-c.L / 2 + 1 + Math.min(nC, perRow) * 0.6, yR, zRow + 1), dist: 7, dir: V(0.3, 0.8, 0.5) };
+          zRow += 2.6 * rows;
         }
         if (!ew) {
           const tilt = 15 * Math.PI / 180;
@@ -7361,22 +7629,78 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       pvPos.push({ p: V(0, 0, 0).setFromMatrixPosition(m), n: V(0, 1, 0).transformDirection(m), u: V(1, 0, 0).transformDirection(m), w: mw, h: mh });
       const fr = merge([bx(mw + 0.03, 0.045, 0.03, 0, 0, mh / 2), bx(mw + 0.03, 0.045, 0.03, 0, 0, -mh / 2), bx(0.03, 0.045, mh, mw / 2, 0, 0), bx(0.03, 0.045, mh, -mw / 2, 0, 0)]); fr.applyMatrix4(m); frames.push(fr);
     }
-    /** Ein Flachkollektor (Absorber, Rahmen) an Platzierung m. */
-    function collector(m, cw, ch) {
-      // Rahmen, Glas, Absorber (Flach) bzw. Röhren + Sammler (Vakuumröhre); lokales z: +z = Traufseite (unten)
-      const tube = SC.st.type === 'tube';
-      const frame = merge([bx(cw, 0.09, 0.04, 0, 0, ch / 2), bx(cw, 0.09, 0.04, 0, 0, -ch / 2), bx(0.04, 0.09, ch, cw / 2, 0, 0), bx(0.04, 0.09, ch, -cw / 2, 0, 0), tube ? bx(cw, 0.12, 0.14, 0, 0.02, -ch / 2 + 0.07) : bx(cw, 0.02, ch, 0, -0.04, 0)]);
-      frame.applyMatrix4(m); mesh(frame, M.pvFrame, groups.cas);
-      if (tube) {
-        const parts = []; const n = 14;
-        for (let i = 0; i < n; i++) parts.push(cy(0.032, ch - 0.2, -cw / 2 + 0.06 + i * (cw - 0.12) / (n - 1), 0.03, 0.05, 10, Math.PI / 2));
-        const g = merge(parts); const pr = normParams(g); g.applyMatrix4(m);
-        tmesh(g, TM.solid, pr, 3, (nx, ny, nz) => S.stOn ? lerp(S.tColOut, S.tColIn, nz) : S.te + 3, groups.sys, 'collector');
-      } else {
-        const ab = new T.BoxGeometry(cw - 0.08, 0.008, ch - 0.08), pr = normParams(ab); ab.applyMatrix4(m);
-        tmesh(ab, TM.solid, pr, 3, (nx, ny, nz) => S.stOn ? lerp(S.tColOut, S.tColIn, nz) + 2 * Math.sin(nx * 40) : S.te + 3, groups.sys, 'collector');
-        const gl = new T.BoxGeometry(cw - 0.06, 0.006, ch - 0.06); gl.translate(0, 0.045, 0); gl.applyMatrix4(m); mesh(gl, M.glass, groups.cas);
+    /** v1.9: Kollektorfeld mit praxisgerechter Hydraulik.
+     *  Feld = Zeilen (r = 0 traufseitig/unten) × Spalten; ms[r][k] = Platzierungsmatrix, lokales KS: x entlang Zeile, y = Flächennormale,
+     *  z = Gefällerichtung (−z = oben/Firstseite). Durchströmung als Mäander: Zeile 0 von links nach rechts, Zeile 1 zurück usw.
+     *  • Flachkollektor (Harfenabsorber): je Kollektor zwei Sammelrohre Cu 22 (oben/unten, beidseitig herausgeführt) und 10 Steigrohre Cu 8.
+     *    Innerhalb einer Zeile parallel durchströmt (Sammelrohre über Edelstahl-Wellrohrverbinder gekoppelt); Anschluss DIAGONAL:
+     *    kalter Rücklauf unten am Zeilenanfang, warmer Vorlauf oben am Zeilenende → gleich lange Wege durch alle Harfen (Tichelmann-Prinzip
+     *    im Feld). Nicht genutzte Anschlüsse mit Verschlusskappen; Folgezeile über kurzen Verbinder in Reihe.
+     *  • Vakuumröhrenkollektor (Heatpipe): Röhren hängen unter dem gedämmten Sammelkasten oben; das Wärmeträgermedium fließt NUR durch das
+     *    Sammelrohr im Kasten (Kondensatoren der Heatpipes stecken in Tauchhülsen). Beide Anschlüsse oben am Kasten (Eintritt Zeilenanfang,
+     *    Austritt Zeilenende); Kollektoren einer Zeile in Reihe, Folgezeile ebenfalls in Reihe.
+     *  Am Feldaustritt: Kollektorfühler (PT1000 in Tauchhülse) und Entlüfter am höchsten Punkt. */
+    function collectorField(ms, cw, ch) {
+      const tubeT = SC.st.type === 'tube', R = ms.length, nAll = ms.reduce((x, r) => x + r.length, 0);
+      const tI = () => S.stOn ? S.tColIn : S.te + 3, tO = () => S.stOn ? S.tColOut : S.te + 3;
+      const stage = f => tI() + (tO() - tI()) * f;                               // Temperatur nach Anteil f des Durchflusswegs
+      const frames = [], glass = [], sleeves = [], caps = [], brass = [], boxes = [];
+      const hx = cw / 2 + 0.035, zT = -ch / 2 + (tubeT ? 0.07 : 0.06), zB = ch / 2 - 0.06, yH = tubeT ? 0.02 : -0.012;
+      let j = 0, pIn = null, pOut = null, prevOut = null;
+      const W = (m, x, y, z) => V(x, y, z).applyMatrix4(m), up = m => V(0, 1, 0).transformDirection(m);
+      for (let r = 0; r < R; r++) {
+        const row = ms[r], n = row.length, ltr = r % 2 === 0, order = ltr ? row : row.slice().reverse(), sIn = ltr ? -1 : 1, sOut = -sIn;
+        order.forEach((m, q) => {
+          // Rahmen (Alu), bei Röhren: Sammelkasten oben + Fußschiene unten
+          frames.push(merge([bx(cw, 0.09, 0.04, 0, 0, ch / 2), bx(cw, 0.09, 0.04, 0, 0, -ch / 2), bx(0.04, 0.09, ch, cw / 2, 0, 0), bx(0.04, 0.09, ch, -cw / 2, 0, 0)].concat(tubeT ? [] : [bx(cw, 0.02, ch, 0, -0.04, 0)])).applyMatrix4(m));
+          if (tubeT) {
+            boxes.push(bx(cw, 0.13, 0.15, 0, 0.02, -ch / 2 + 0.075).applyMatrix4(m));
+            const nt = 14, xs = i => -cw / 2 + 0.06 + i * (cw - 0.12) / (nt - 1), jj = j;
+            // Glasröhren (Absorber innen): Temperatur ≈ Sammelrohr an dieser Stelle + 6 K (Kondensator)
+            const parts = []; for (let i = 0; i < nt; i++) parts.push(cy(0.029, ch - 0.24, xs(i), 0.03, 0.06, 10, Math.PI / 2));
+            const g = merge(parts), pr = normParams(g); g.applyMatrix4(m);
+            tmesh(g, TM.solid, pr, 3, nx => stage((jj + (sIn < 0 ? nx : 1 - nx)) / nAll) + (S.stOn ? 6 : 0), groups.sys, 'collector');
+            const gl = []; for (let i = 0; i < nt; i++) gl.push(cy(0.034, ch - 0.22, xs(i), 0.03, 0.065, 12, Math.PI / 2)); const gg = merge(gl); gg.applyMatrix4(m); mesh(gg, M.glass, groups.cas);
+            // Sammelrohr mit Kondensator-Tauchhülsen (durchströmt)
+            const hp = [cy(0.011, 2 * hx, 0, yH, zT, 12, 0, Math.PI / 2)]; for (let i = 0; i < nt; i++) hp.push(cy(0.012, 0.07, xs(i), yH, zT + 0.03, 10, Math.PI / 2));
+            const hg = merge(hp), hpr = normParams(hg); hg.applyMatrix4(m);
+            tmesh(hg, TM.solid, hpr, 3, nx => stage((jj + (sIn < 0 ? nx : 1 - nx)) / nAll), groups.sys, 'stHeader');
+          } else {
+            // Harfenabsorber: Sammelrohre oben/unten + 10 Steigrohre; Absorberblech dahinter
+            const hp = [cy(0.011, 2 * hx, 0, yH, zT, 12, 0, Math.PI / 2), cy(0.011, 2 * hx, 0, yH, zB, 12, 0, Math.PI / 2)];
+            for (let i = 0; i < 10; i++) hp.push(cy(0.0045, zB - zT, -cw / 2 + 0.1 + i * (cw - 0.2) / 9, yH + 0.004, (zT + zB) / 2, 8, Math.PI / 2));
+            const hg = merge(hp), hpr = normParams(hg), r0 = r; hg.applyMatrix4(m);
+            tmesh(hg, TM.solid, hpr, 3, (nx, ny, nz) => lerp(stage((r0 + 1) / R), stage(r0 / R), nz), groups.sys, 'stHarp');
+            const ab = new T.BoxGeometry(cw - 0.08, 0.004, ch - 0.08); ab.translate(0, -0.022, 0); const pr = normParams(ab); ab.applyMatrix4(m);
+            tmesh(ab, TM.solid, pr, 3, (nx, ny, nz) => lerp(stage((r0 + 1) / R), stage(r0 / R), nz) - (S.stOn ? 2 : 0), groups.sys, 'collector');
+            glass.push(new T.BoxGeometry(cw - 0.06, 0.006, ch - 0.06).translate(0, 0.045, 0).applyMatrix4(m));
+          }
+          // Verbinder zum Nachbarkollektor (Wellrohr Edelstahl) – Flach: oben + unten, Röhre: nur Sammelrohr
+          if (q < n - 1) [zT].concat(tubeT ? [] : [zB]).forEach(zz => sleeves.push(cy(0.015, 0.1, sOut * (cw / 2 + 0.03), yH, zz, 10, 0, Math.PI / 2).applyMatrix4(m)));
+          // Eintritt/Austritt/Kappen
+          const first = q === 0, last = q === n - 1;
+          if (first) { const p = W(m, sIn * (hx + 0.03), yH, tubeT ? zT : zB); if (r === 0) pIn = p; else if (prevOut) {
+              const u = up(m), a = prevOut, bq = p; pipe(dd([a, a.clone().addScaledVector(u, 0.08), bq.clone().addScaledVector(u, 0.08), bq]), 0.011, TM.solar, () => stage(r / R), groups.sys, 'solarSField'); } }
+          if (last) pOut = W(m, sOut * (hx + 0.03), yH, zT);
+          if (!tubeT) { if (first) caps.push(cy(0.014, 0.03, sIn * (hx + 0.005), yH, zT, 10, 0, Math.PI / 2).applyMatrix4(m)); if (last) caps.push(cy(0.014, 0.03, sOut * (hx + 0.005), yH, zB, 10, 0, Math.PI / 2).applyMatrix4(m)); }
+          // Stummel nach außen (Anschlussverschraubung, Messing)
+          if (first) brass.push(cy(0.015, 0.035, sIn * (hx + 0.015), yH, tubeT ? zT : zB, 6, 0, Math.PI / 2).applyMatrix4(m));
+          if (last) { brass.push(cy(0.015, 0.035, sOut * (hx + 0.015), yH, zT, 6, 0, Math.PI / 2).applyMatrix4(m));
+            if (r === R - 1) { // Feldaustritt: Fühlerhülse + Entlüfter (höchster Punkt)
+              brass.push(cy(0.007, 0.09, sOut * (hx + 0.02), yH + 0.055, zT, 8).applyMatrix4(m), cy(0.016, 0.03, sOut * (hx + 0.02), yH + 0.11, zT, 10).applyMatrix4(m));
+              caps.push(cy(0.006, 0.11, sOut * (hx + 0.06), yH, zT + 0.035, 8, Math.PI / 2).applyMatrix4(m)); } }
+          if (last) prevOut = W(m, sOut * (hx + 0.03), yH, zT);
+          j++;
+        });
       }
+      mesh(merge(frames), M.pvFrame, groups.cas);
+      if (glass.length) mesh(merge(glass), M.glass, groups.cas);
+      if (boxes.length) mesh(merge(boxes), M.casingDark, groups.cas);
+      if (sleeves.length) mesh(merge(sleeves), M.metal, groups.fit);
+      if (caps.length) mesh(merge(caps), M.dark, groups.fit);
+      if (brass.length) mesh(merge(brass), M.brass, groups.fit);
+      if (pOut) label(pOut.clone().add(V(0, 0.45, 0)), () => [tr('l3.stField'), tr(tubeT ? 'l3.stTube' : 'l3.stFlat') + ' · ' + nAll + '× · ' + fmt(nAll * cw * ch, 1) + ' m²', S.stOn ? degC(S.tColIn) + ' → ' + degC(S.tColOut) : tr('l3.off')], groups.lab, { scale: 1.2, key: 'stField' });
+      return { pIn, pOut };
     }
     /** Solarleitungen vom Kollektorfeld zum Speicher. */
     function solarLines(c, tech, pOut, pIn) {
@@ -7404,6 +7728,49 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       label(V(st.x, st.y + 0.6, st.z + 0.1), () => [tr('l3.solarStation'), S.stOn ? fmt(S.qSt, 1) + ' kW · ' + degC(S.tColOut) : tr('l3.off')], groups.lab, { scale: 1.3 });
     }
     /** Kompassrose + Wetterstation (Windfahne zeigt IN den Wind, Schalenkreuz dreht mit der Windgeschwindigkeit) – gleiche Himmelsrichtungen wie Gebäude, PV und Wind */
+    /** v1.9: Kleinstwindanlagen (Horizontalläufer, 3 Blätter, ≤ 500 W) an den Dachkanten.
+     *  Satteldach: an beiden Giebelspitzen (Mast an der Giebelwand, zwei Wandschellen, Oberkante über First) und an den Traufecken der
+     *  Rückseite (Mast an der Giebelwand), weitere Paare entlang des Firsts bei langen Dächern. Flachdach: Ecken der Attika.
+     *  Mast Stahlrohr verzinkt Ø 48 mm mit Gummi-Schwingungsdämpfern (Körperschall!), Gondel mit Generator, Windfahne – richtet sich nach dem Wind aus.
+     *  Rotor-Ø nach Nennleistung (300 W ≈ 1,1 m … 500 W ≈ 1,4 m). Leistung aus engine.windPower (Kennlinie, Nabenhöhe, Abschlag Dachkante). */
+    let windTurb = [];
+    function buildWindTurbines(c) {
+      windTurb = []; const E = WPV.engine; if (!E.windOn || !E.windOn(SC)) return;
+      const n = Math.min(SC.wind.n, E.windMaxUnits(ST)), wp = SC.wind.wp, Dr = 1.1 + 0.3 * clamp01((wp - 300) / 200), Rr = Dr / 2, L = c.L, D = c.D, gable = G.roof === 'gable';
+      const spots = [];
+      if (gable) { [-1, 1].forEach(sx => spots.push({ x: sx * (L / 2 + 0.16), z: 0, y0: G.ridge - 1.2, top: G.ridge + 0.45 + Rr + 0.3, wall: sx }));
+        [-1, 1].forEach(sx => spots.push({ x: sx * (L / 2 + 0.16), z: -(D / 2 - 0.45), y0: G.eaves - 1.4, top: G.eaves + 0.35 + Rr + 0.6, wall: sx }));
+        for (let k = 1; spots.length < 8; k++) { const x = L / 2 - 5 * k; if (x < 1) break; [-1, 1].forEach(sx => spots.push({ x: sx * x, z: 0, y0: G.ridge + 0.3, top: G.ridge + 0.45 + Rr + 0.3, roof: true })); }
+      } else { const yT = c.yF(c.nF) + 0.78; [[-1, 1], [1, 1], [-1, -1], [1, -1]].forEach(([sx, sz]) => spots.push({ x: sx * (L / 2 - 0.4), z: sz * (D / 2 - 0.4), y0: yT, top: yT + Rr + 1.5, roof: true }));
+        for (let k = 1; spots.length < 8; k++) { const x = L / 2 - 0.4 - 6 * k; if (x < 1) break; [-1, 1].forEach(sz => spots.push({ x, z: sz * (D / 2 - 0.4), y0: yT, top: yT + Rr + 1.5, roof: true })); } }
+      const galv = M.galv, dark = M.dark, white = std('#f3f4f2', { p: { roughness: 0.35 } }), blade = std('#e9ecee', { p: { roughness: 0.4 } });
+      spots.slice(0, n).forEach((sp, i) => {
+        const parts = [], H = sp.top, yb = sp.y0;
+        parts.push(cy(0.024, H - yb, sp.x, (H + yb) / 2, sp.z, 12));
+        if (sp.wall) { const xw = sp.wall * (L / 2); [yb + 0.15, yb + 0.95].forEach(yy => { parts.push(bx(Math.abs(sp.x - xw), 0.05, 0.05, (sp.x + xw) / 2, yy, sp.z), bx(0.012, 0.28, 0.2, xw + sp.wall * 0.006, yy, sp.z)); }); }
+        else parts.push(bx(0.5, 0.02, 0.5, sp.x, yb + 0.01, sp.z), cy(0.06, 0.25, sp.x, yb + 0.13, sp.z, 10));   // Fußplatte auf Ballast-/Dachkonsole
+        mesh(merge(parts), galv, groups.cas);
+        mesh(merge([cy(0.034, 0.06, sp.x, yb + 0.15 + (sp.wall ? 0 : 0.2), sp.z, 12), cy(0.034, 0.06, sp.x, yb + 0.95, sp.z, 12)]), dark, groups.fit);   // Schwingungsdämpfer
+        const yaw = new T.Group(); yaw.position.set(sp.x, H, sp.z); groups.cas.add(yaw);
+        yaw.add(new T.Mesh(cy(0.075, 0.34, 0, 0, 0, 16, Math.PI / 2), white));                                             // Gondel/Generator (Achse z)
+        yaw.add(new T.Mesh(cy(0.015, 0.7, 0, 0, 0.5, 8, Math.PI / 2), galv));                                            // Heckausleger
+        const fin = new T.Shape(); fin.moveTo(0, -0.12); fin.lineTo(0.42, -0.2); fin.lineTo(0.42, 0.32); fin.lineTo(0, 0.12); fin.lineTo(0, -0.12);
+        const fg = new T.ShapeGeometry(fin); fg.rotateY(-Math.PI / 2); fg.translate(0, 0, 0.78); yaw.add(new T.Mesh(fg, std('#d2d6da', { side: T.DoubleSide })));
+        const rot = new T.Group(); rot.position.set(0, 0, -0.2); yaw.add(rot);
+        rot.add(new T.Mesh(new T.ConeGeometry(0.07, 0.16, 16).rotateX(-Math.PI / 2).translate(0, 0, -0.08), white));        // Nabe/Spinner
+        for (let k = 0; k < 3; k++) { const bs = new T.Shape(); bs.moveTo(-0.045, 0.06); bs.lineTo(0.05, 0.06); bs.quadraticCurveTo(0.03, Rr * 0.6, 0.012, Rr); bs.lineTo(-0.01, Rr); bs.quadraticCurveTo(-0.04, Rr * 0.5, -0.045, 0.06);
+          const bg = new T.ExtrudeGeometry(bs, { depth: 0.01, bevelEnabled: false }); bg.rotateY(0.25); bg.rotateZ(k * 2 * Math.PI / 3); rot.add(new T.Mesh(bg, blade)); }
+        windTurb.push({ yaw, rot, R: Rr });
+        if (i === 0) label(V(sp.x, H + Rr + 0.45, sp.z), () => [tr('l3.windT'), n + ' × ' + wp + ' W · Ø ' + fmt(Dr, 1) + ' m', fmt(S.vHub || 0, 1) + ' m/s ' + tr('l3.hub') + ' · ' + fmt((S.windP || 0) * 1000, 0) + ' W'], groups.lab, { scale: 1.2, key: 'windT' });
+        addObstacle('windT', sp.x - Rr, sp.x + Rr, yb, H + Rr, sp.z - Rr, sp.z + Rr, null);
+      });
+      if (windTurb.length) anchors.wind = { target: V(windTurb[0].yaw.position.x, windTurb[0].yaw.position.y - 0.5, windTurb[0].yaw.position.z), dist: 5, dir: V(-0.6, 0.35, 0.7) };
+    }
+    function tickWindTurb(dt) {
+      if (!windTurb.length) return; const wv = windVec(), a = Math.atan2(wv.x, wv.z), v = S.vHub || 0, vin = WPV.engine.P_(ST, 'windVin');
+      windTurb.forEach(w => { let d = a - w.yaw.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); w.yaw.rotation.y += d * Math.min(1, dt * 1.5);
+        const om = v < vin * 0.7 ? 0.2 * v : Math.min(14, 5 * v / w.R * 0.35); w.rot.rotation.z += om * dt; });
+    }
     let station = null;
     /** Kompass/Nordpfeil am Grundstück. */
     function buildCompass(c) {
@@ -7796,7 +8163,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (opts.fx) tickParticles(dt);
       if (opts.air && airSys.length) tickAir(dt);
       if (opts.fx && windSys && (opts.wind || 0) > 0.2) tickWind(dt);
-      tickStation(dt); if (movers.length) tickMovers(dt);
+      tickStation(dt); tickWindTurb(dt); if (movers.length) tickMovers(dt);
       tickMag(dt); tickBattery(dt); tickWallbox(); tickHAK(dt);
       if (opts.arrows !== false && groups.flow && groups.flow.visible) { if (opts.flowStyle === 'arrows') tickArrows(dt); else tickFluid(dt); }
       if (inXR) tween = null;
@@ -8587,7 +8954,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – Excel-Export
- * Autor: Alirio Jiménez Franco · Version 1.5 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.9 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * Vorlage (openpyxl, mit Formeln und Diagrammen) wird im Browser mit JSZip
  * geöffnet; nur die blauen Eingabezellen werden mit den aktuellen Werten
  * überschrieben. Excel/LibreOffice berechnen alle Formeln beim Öffnen neu.
@@ -8689,6 +9056,124 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     return v;
   }
 
+  /* ------------------------- v1.9: Zusatzblätter Wetterdaten + PV-/Wind-Rechnung (8760 h, mit Formeln) ------------------------- */
+  const TX = {
+    de: { wName: 'Wetterdaten', pName: 'PV_Wind_Rechnung', wTitle: 'Wetterdaten – Stundenwerte (8760 h), wie in der Simulation verwendet',
+      srcSyn: 'synthetisches Referenzjahr der Plattform (Jahres-/Tagesgang + AR(1)-Wetterrauschen, kalibriert auf Normaußentemperatur und Jahresmittel)', srcImp: 'importierte Zeitreihe (Zeitreihen-Vorlage)',
+      ghiSyn: 'synthetisch: Sonnenstand × Bewölkungsfaktor, normiert auf die Jahressumme GHI des Standorts; Diffusanteil aus Bewölkung', ghiImp: 'importiert; Diffusanteil importiert bzw. nach Erbs et al. (1982)',
+      windSyn: 'synthetisch: Weibull k = 1,8, AR(1) 0,96/h, Jahresgang ±20 %, Tagesgang ±15 %, Mittel = Standortwert', windImp: 'importiert (m/s in 10 m)',
+      cT: 'Temperatur', cG: 'Strahlung', cW: 'Wind', loc: 'Standort', lat: 'Breite φ [°]', tm: 'Jahresmittel θe [°C]', ghiY: 'GHI Jahressumme [kWh/m²]', vwm: 'Wind Mittel 10 m [m/s]',
+      h: ['Stunde', 'Tag', 'Monat', 'Uhrzeit [h]', 'θe [°C]', 'GHI [W/m²]', 'Diffusanteil kd [–]', 'DHI [W/m²]', 'v10 [m/s]'],
+      pTitle: 'PV- und Kleinwind-Erzeugung – Rechenweg je Stunde (Formeln, blaue Zellen änderbar)',
+      pNote: 'Modell der Plattform: Sonnenstand (Deklination, Stundenwinkel; Sonnenzeit ≈ MEZ + 0,5 h), Einfallswinkel auf die Modulebene, isotropes Himmelsmodell (Direkt × R_b + Diffus × (1+cos β)/2 + Albedo-Anteil), P_PV = kWp · G_POA/1000 · PR. Ost-West = Mittel beider Ebenen. Kleinwind: v_Nabe = v10 · ln(h/z0)/ln(10/z0) · Abschlag, Kennlinie kubisch bis v_r.',
+      pvImp: 'Hinweis: PV-Ertrag als Zeitreihe (kW/kWp) importiert – Spalte „pvSpec importiert“ wird verwendet.', pvNone: 'Kein Szenario mit PV aktiv – Beispielwerte (8 kWp Süd 35°).', pvScn: 'PV aus Szenario',
+      windNone: 'Kein Szenario mit Kleinwind aktiv – Anzahl 0 (in B11 änderbar).', windScn: 'Kleinwind aus Szenario',
+      in: ['Breite φ [°]', 'Neigung β [°]', 'Azimut γ1 [°] (0 = Süd, −90 = Ost)', 'Azimut γ2 [°] (Ost-West, sonst = γ1)', 'Albedo [–]', 'PV-Leistung [kWp]', 'PR bzw. Skalierung [–]',
+        'Windanlagen [Anzahl]', 'Nennleistung je Anlage [W]', 'v_in [m/s]', 'v_r [m/s]', 'v_out [m/s]', 'η Regler/WR [–]', 'Rauigkeit z0 [m]', 'Nabenhöhe [m]', 'Abschlag Dachkante [–]'],
+      res: ['Σ G_POA [kWh/m²·a]', 'Σ PV [kWh/a]', 'spez. Ertrag [kWh/kWp·a]', 'Σ Wind [kWh/a]', 'Σ Plattform PV [kWh/a]', 'Σ Plattform Wind [kWh/a]'],
+      ph: ['Stunde', 'Tag', 'h', 'δ [rad]', 'ω [rad]', 'sin h_s [–]', 'cos θ1 [–]', 'cos θ2 [–]', 'GHI [W/m²]', 'kd [–]', 'R_b1 [–]', 'R_b2 [–]', 'G_POA [W/m²]', 'P_PV [kW]', 'pvSpec importiert [kW/kWp]', 'v10 [m/s]', 'v_Nabe [m/s]', 'P_Wind [kW]', 'Kontrolle Plattform PV [kW]', 'Kontrolle Plattform Wind [kW]'] },
+    en: { wName: 'Weather', pName: 'PV_Wind_calc', wTitle: 'Weather data – hourly values (8760 h) as used in the simulation',
+      srcSyn: 'synthetic reference year of the platform (seasonal/daily cycle + AR(1) weather noise, calibrated to design temperature and annual mean)', srcImp: 'imported time series (time-series template)',
+      ghiSyn: 'synthetic: sun position × cloud factor, normalised to the site annual GHI; diffuse share from cloudiness', ghiImp: 'imported; diffuse share imported or per Erbs et al. (1982)',
+      windSyn: 'synthetic: Weibull k = 1.8, AR(1) 0.96/h, seasonal ±20 %, daily ±15 %, mean = site value', windImp: 'imported (m/s at 10 m)',
+      cT: 'Temperature', cG: 'Irradiance', cW: 'Wind', loc: 'Location', lat: 'Latitude φ [°]', tm: 'Annual mean θe [°C]', ghiY: 'GHI annual [kWh/m²]', vwm: 'Mean wind 10 m [m/s]',
+      h: ['Hour', 'Day', 'Month', 'Time [h]', 'θe [°C]', 'GHI [W/m²]', 'Diffuse share kd [–]', 'DHI [W/m²]', 'v10 [m/s]'],
+      pTitle: 'PV and small-wind generation – hourly calculation (formulas, blue cells editable)',
+      pNote: 'Platform model: sun position (declination, hour angle; solar time ≈ CET + 0.5 h), angle of incidence on the module plane, isotropic sky (beam × R_b + diffuse × (1+cos β)/2 + albedo part), P_PV = kWp · G_POA/1000 · PR. East-west = mean of both planes. Small wind: v_hub = v10 · ln(h/z0)/ln(10/z0) · reduction, cubic power curve up to v_r.',
+      pvImp: 'Note: PV yield imported as time series (kW/kWp) – column "pvSpec imported" is used.', pvNone: 'No scenario with PV – example values (8 kWp south 35°).', pvScn: 'PV from scenario',
+      windNone: 'No scenario with small wind – count 0 (editable in B11).', windScn: 'Small wind from scenario',
+      in: ['Latitude φ [°]', 'Tilt β [°]', 'Azimuth γ1 [°] (0 = south, −90 = east)', 'Azimuth γ2 [°] (east-west, else = γ1)', 'Albedo [–]', 'PV capacity [kWp]', 'PR or scaling [–]',
+        'Wind turbines [count]', 'Rated power per turbine [W]', 'v_in [m/s]', 'v_r [m/s]', 'v_out [m/s]', 'η controller/inverter [–]', 'Roughness z0 [m]', 'Hub height [m]', 'Roof-edge reduction [–]'],
+      res: ['Σ G_POA [kWh/m²·a]', 'Σ PV [kWh/a]', 'Specific yield [kWh/kWp·a]', 'Σ wind [kWh/a]', 'Σ platform PV [kWh/a]', 'Σ platform wind [kWh/a]'],
+      ph: ['Hour', 'Day', 'h', 'δ [rad]', 'ω [rad]', 'sin h_s [–]', 'cos θ1 [–]', 'cos θ2 [–]', 'GHI [W/m²]', 'kd [–]', 'R_b1 [–]', 'R_b2 [–]', 'G_POA [W/m²]', 'P_PV [kW]', 'pvSpec imported [kW/kWp]', 'v10 [m/s]', 'v_hub [m/s]', 'P_wind [kW]', 'Check platform PV [kW]', 'Check platform wind [kW]'] },
+    es: { wName: 'Meteo', pName: 'Calculo_FV_Viento', wTitle: 'Datos meteorológicos – valores horarios (8760 h) usados en la simulación',
+      srcSyn: 'año de referencia sintético de la plataforma (ciclo anual/diario + ruido AR(1), calibrado a la temperatura de diseño y la media anual)', srcImp: 'serie temporal importada (plantilla de series)',
+      ghiSyn: 'sintética: posición solar × factor de nubosidad, normalizada a la GHI anual del lugar; fracción difusa según nubosidad', ghiImp: 'importada; fracción difusa importada o según Erbs et al. (1982)',
+      windSyn: 'sintético: Weibull k = 1,8, AR(1) 0,96/h, ciclo anual ±20 %, diario ±15 %, media = valor del lugar', windImp: 'importado (m/s a 10 m)',
+      cT: 'Temperatura', cG: 'Radiación', cW: 'Viento', loc: 'Ubicación', lat: 'Latitud φ [°]', tm: 'Media anual θe [°C]', ghiY: 'GHI anual [kWh/m²]', vwm: 'Viento medio 10 m [m/s]',
+      h: ['Hora', 'Día', 'Mes', 'Hora del día [h]', 'θe [°C]', 'GHI [W/m²]', 'Fracción difusa kd [–]', 'DHI [W/m²]', 'v10 [m/s]'],
+      pTitle: 'Generación FV y minieólica – cálculo horario (fórmulas, celdas azules editables)',
+      pNote: 'Modelo de la plataforma: posición solar (declinación, ángulo horario; hora solar ≈ CET + 0,5 h), ángulo de incidencia sobre el plano, cielo isótropo (directa × R_b + difusa × (1+cos β)/2 + albedo), P_FV = kWp · G_POA/1000 · PR. Este-oeste = media de ambos planos. Minieólica: v_buje = v10 · ln(h/z0)/ln(10/z0) · reducción, curva cúbica hasta v_r.',
+      pvImp: 'Nota: producción FV importada como serie (kW/kWp); se usa la columna «pvSpec importado».', pvNone: 'Ningún escenario con FV: valores de ejemplo (8 kWp sur 35°).', pvScn: 'FV del escenario',
+      windNone: 'Ningún escenario con minieólica: número 0 (editable en B11).', windScn: 'Minieólica del escenario',
+      in: ['Latitud φ [°]', 'Inclinación β [°]', 'Azimut γ1 [°] (0 = sur, −90 = este)', 'Azimut γ2 [°] (este-oeste, si no = γ1)', 'Albedo [–]', 'Potencia FV [kWp]', 'PR o escalado [–]',
+        'Aerogeneradores [n.º]', 'Potencia nominal por unidad [W]', 'v_in [m/s]', 'v_r [m/s]', 'v_out [m/s]', 'η regulador/inversor [–]', 'Rugosidad z0 [m]', 'Altura de buje [m]', 'Reducción borde de tejado [–]'],
+      res: ['Σ G_POA [kWh/m²·a]', 'Σ FV [kWh/a]', 'Producción específica [kWh/kWp·a]', 'Σ viento [kWh/a]', 'Σ plataforma FV [kWh/a]', 'Σ plataforma viento [kWh/a]'],
+      ph: ['Hora', 'Día', 'h', 'δ [rad]', 'ω [rad]', 'sen h_s [–]', 'cos θ1 [–]', 'cos θ2 [–]', 'GHI [W/m²]', 'kd [–]', 'R_b1 [–]', 'R_b2 [–]', 'G_POA [W/m²]', 'P_FV [kW]', 'pvSpec importado [kW/kWp]', 'v10 [m/s]', 'v_buje [m/s]', 'P_viento [kW]', 'Control plataforma FV [kW]', 'Control plataforma viento [kW]'] }
+  };
+  const xe = v => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const colL = n => { let s = ''; n++; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+  const cS = (r, c, txt, st) => `<c r="${colL(c)}${r}" s="${st == null ? 3 : st}" t="inlineStr"><is><t xml:space="preserve">${xe(txt)}</t></is></c>`;
+  const cN = (r, c, v, st) => `<c r="${colL(c)}${r}"${st != null ? ` s="${st}"` : ''}><v>${Number.isFinite(v) ? +(+v).toPrecision(9) : 0}</v></c>`;
+  const cF = (r, c, f, st) => `<c r="${colL(c)}${r}"${st != null ? ` s="${st}"` : ''}><f>${xe(f)}</f></c>`;
+  const cFs = (r, c, f, si, ref, st) => `<c r="${colL(c)}${r}"${st != null ? ` s="${st}"` : ''}><f t="shared" ref="${ref}" si="${si}">${xe(f)}</f></c>`;
+  const cFr = (r, c, si, st) => `<c r="${colL(c)}${r}"${st != null ? ` s="${st}"` : ''}><f t="shared" si="${si}"/></c>`;
+  const sheetXml = (rows, widths, freeze) => '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + `<sheetViews><sheetView workbookViewId="0">${freeze ? `<pane ySplit="${freeze - 1}" topLeftCell="A${freeze}" activePane="bottomLeft" state="frozen"/>` : ''}</sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>`
+    + '<cols>' + widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('') + '</cols><sheetData>'
+    + rows.map(([r, cells]) => `<row r="${r}">${cells.join('')}</row>`).join('') + '</sheetData></worksheet>';
+  /** Baut die Blätter „Wetterdaten“ und „PV_Wind_Rechnung“ (Rechenweg wie engine.poaProfile / windPower). */
+  function extraSheets(state, out, E, li) {
+    const X = TX[li] || TX.de, N = 8760, c = state.climate, loc = E.LOCATIONS[c.location] || E.LOCATIONS.koeln, ts = (c.ts) || {}, has = k => Array.isArray(ts[k]) && ts[k].length >= N;
+    const T = out.building.climate.T, base = has('ghi') ? E.solarFromSeries(loc.lat, ts.ghi, has('dhi') ? ts.dhi : null) : E.solarBase(loc.lat, loc.ghi || 1030), WV = E.getWind(state).V;
+    const DM = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], monthOf = d => { let m = 0, a = 0; while (m < 11 && d >= a + DM[m]) { a += DM[m]; m++; } return m + 1; };
+    // --- Blatt 1: Wetterdaten
+    const W = [], R0 = 9;
+    W.push([1, [cS(1, 0, X.wTitle, 1)]]);
+    W.push([2, [cS(2, 0, X.cT + ': ' + (c.series && c.series.length >= N ? X.srcImp : X.srcSyn))]]);
+    W.push([3, [cS(3, 0, X.cG + ': ' + (has('ghi') ? X.ghiImp : X.ghiSyn))]]);
+    W.push([4, [cS(4, 0, X.cW + ': ' + (has('wind') ? X.windImp : X.windSyn))]]);
+    W.push([5, [cS(5, 0, X.loc, 8), cS(5, 1, loc.name), cS(5, 2, X.lat, 8), cN(5, 3, loc.lat, 20), cS(5, 4, X.tm, 8), cF(5, 5, `AVERAGE(E${R0 + 1}:E${R0 + N})`, 20), cS(5, 6, X.ghiY, 8), cF(5, 7, `SUM(F${R0 + 1}:F${R0 + N})/1000`, 21), cS(5, 8, X.vwm, 8), cF(5, 9, `AVERAGE(I${R0 + 1}:I${R0 + N})`, 20)]]);
+    W.push([R0 - 1, X.h.map((h, i) => cS(R0 - 1, i, h, 8))]);
+    for (let i = 0; i < N; i++) { const r = R0 + i, d = Math.floor(i / 24), cells = [cN(r, 0, i), cN(r, 1, d + 1), cN(r, 2, monthOf(d)), cN(r, 3, i % 24), cN(r, 4, T[i], 20), cN(r, 5, base.G[i] * 1000, 21), cN(r, 6, base.kd[i], 20)];
+      cells.push(i === 0 ? cFs(r, 7, `F${r}*G${r}`, 0, `H${R0}:H${R0 + N - 1}`, 21) : cFr(r, 7, 0, 21)); cells.push(cN(r, 8, WV[i], 20)); W.push([r, cells]); }
+    // --- Blatt 2: PV-/Wind-Rechnung
+    const pvI = state.scenarios.findIndex(s => s.pv && s.pv.on), wI = state.scenarios.findIndex(s => E.windOn(s));
+    const pvR = pvI >= 0 ? out.results[pvI] : null, pvS = pvR ? pvR.sim.scn : null, orient = pvS ? (pvS.pv.orient || 'S') : 'S', tilt = pvS ? (pvS.pv.tilt == null ? 35 : pvS.pv.tilt) : 35;
+    const kWp = pvS ? pvS.pv.kWp : 8, g1 = orient === 'EW' ? -90 : (E.ORIENT[orient] || 0), g2 = orient === 'EW' ? 90 : g1;
+    const poaSum = E.poaFor(state, orient, tilt).sum, PR = pvS && pvS.pv.yield > 0 ? pvS.pv.yield / poaSum * E.orientFactor(state, orient, tilt) : E.P_(state, 'pvPR');
+    const wS = wI >= 0 ? state.scenarios[wI] : null, wR = wI >= 0 ? out.results[wI] : null, P = k => E.P_(state, k);
+    const pvSpecImp = has('pvSpec'), D0 = 23, D1 = D0 + N - 1, Pn = pvR ? pvR.sim.hourly.pv : null, Wn = wR ? wR.sim.hourly.wind : null;
+    const A = [];
+    A.push([1, [cS(1, 0, X.pTitle, 1)]]); A.push([2, [cS(2, 0, X.pNote, 3)]]);
+    A.push([3, [cS(3, 0, (pvS ? X.pvScn + ' „' + (pvS.name || pvS.type) + '“ · ' + orient + ' ' + tilt + '°' : X.pvNone) + (pvSpecImp ? ' · ' + X.pvImp : '') + ' · ' + (wS ? X.windScn + ' „' + (wS.name || wS.type) + '“' : X.windNone))]]);
+    const inV = [loc.lat, tilt, g1, g2, 0.2, kWp, PR, wS ? wS.wind.n : 0, wS ? wS.wind.wp : 500, P('windVin'), P('windVr'), P('windVout'), P('windEta'), P('windZ0'), E.windHub(state), P('windRoofK')];
+    X.in.forEach((t, k) => { const r = 4 + k, row = [cS(r, 0, t), cN(r, 1, inV[k], 35)];
+      if (k < X.res.length) { const fr = [`SUM(M${D0}:M${D1})/1000`, `SUM(N${D0}:N${D1})`, `IF(B9>0,E5/B9,0)`, `SUM(R${D0}:R${D1})`, `SUM(S${D0}:S${D1})`, `SUM(T${D0}:T${D1})`][k]; row.push(cS(r, 3, X.res[k], 8), cF(r, 4, fr, k === 2 ? 21 : 27)); }
+      A.push([r, row]); });
+    A.push([D0 - 1, X.ph.map((h, i) => cS(D0 - 1, i, h, 8))]);
+    const ref = col => `${col}${D0}:${col}${D1}`, wN = X.wName;
+    const F = {
+      D: r => `RADIANS(23.45)*SIN(2*PI()*(284+B${r})/365)`, E: r => `RADIANS(15*(C${r}+0.5-12.5))`,
+      F: r => `SIN(RADIANS($B$4))*SIN(D${r})+COS(RADIANS($B$4))*COS(D${r})*COS(E${r})`,
+      G: (r, g) => `SIN(D${r})*SIN(RADIANS($B$4))*COS(RADIANS($B$5))-SIN(D${r})*COS(RADIANS($B$4))*SIN(RADIANS($B$5))*COS(RADIANS(${g}))+COS(D${r})*COS(RADIANS($B$4))*COS(RADIANS($B$5))*COS(E${r})+COS(D${r})*SIN(RADIANS($B$4))*SIN(RADIANS($B$5))*COS(RADIANS(${g}))*COS(E${r})+COS(D${r})*SIN(RADIANS($B$5))*SIN(RADIANS(${g}))*SIN(E${r})`,
+      I: r => `${wN}!F${r - D0 + R0}`, J: r => `${wN}!G${r - D0 + R0}`,
+      K: r => `IF(F${r}>0.03,MIN(MAX(0,G${r})/F${r},5),0)`, L: r => `IF(F${r}>0.03,MIN(MAX(0,H${r})/F${r},5),0)`,
+      M: r => `IF(I${r}>0,I${r}*(1-J${r})*(K${r}+L${r})/2+I${r}*J${r}*(1+COS(RADIANS($B$5)))/2+I${r}*$B$8*(1-COS(RADIANS($B$5)))/2,0)`,
+      N: r => pvSpecImp ? `$B$9*O${r}` : `$B$9*M${r}/1000*$B$10`,
+      P: r => `${wN}!I${r - D0 + R0}`, Q: r => `P${r}*LN($B$18/$B$17)/LN(10/$B$17)*$B$19`,
+      R: r => `$B$11*$B$16*IF(Q${r}<$B$13,0,IF(Q${r}>=$B$15,0.25*$B$12/1000,IF(Q${r}>=$B$14,$B$12/1000,$B$12/1000*(Q${r}^3-$B$13^3)/($B$14^3-$B$13^3))))`
+    };
+    const cols = [['D', 3, 23], ['E', 4, 23], ['F', 5, 23], ['G', 6, 23, '$B$6'], ['H', 7, 23, '$B$7'], ['I', 8, 21], ['J', 9, 20], ['K', 10, 20], ['L', 11, 20], ['M', 12, 21], ['N', 13, 20], ['P', 15, 20], ['Q', 16, 20], ['R', 17, 23]];
+    for (let i = 0; i < N; i++) { const r = D0 + i, cells = [cN(r, 0, i), cN(r, 1, Math.floor(i / 24) + 1), cN(r, 2, i % 24)];
+      cols.forEach(([L, ci, st, g], si) => { if (i === 0) cells.push(cFs(r, ci, g ? F.G(r, g) : F[L](r), si + 1, ref(L), st)); else cells.push(cFr(r, ci, si + 1, st)); });
+      if (pvSpecImp) cells.push(cN(r, 14, +ts.pvSpec[i] || 0, 23));
+      cells.push(cN(r, 18, Pn ? Pn[i] : 0, 23), cN(r, 19, Wn ? Wn[i] : 0, 23));
+      cells.sort((a, b) => { const ca = a.match(/r="([A-Z]+)/)[1], cb = b.match(/r="([A-Z]+)/)[1]; return ca.length - cb.length || (ca < cb ? -1 : 1); });
+      A.push([r, cells]); }
+    return [{ name: X.wName, xml: sheetXml(W, [8, 6, 7, 10, 9, 11, 12, 11, 9, 9], R0) }, { name: X.pName, xml: sheetXml(A, [38, 12, 6, 30, 12, 10, 10, 10, 10, 9, 8, 8, 8, 11, 10, 12, 9, 10, 11, 14, 14], D0) }];
+  }
+  /** Hängt Blätter an eine geöffnete Excel-Mappe (JSZip) an: Workbook, Relationen, Content-Types. */
+  async function appendSheets(zip, sheets) {
+    let wb = await zip.file('xl/workbook.xml').async('string'), rels = await zip.file('xl/_rels/workbook.xml.rels').async('string'), ct = await zip.file('[Content_Types].xml').async('string');
+    let n = (wb.match(/<sheet /g) || []).length, maxId = Math.max(0, ...[...wb.matchAll(/sheetId="(\d+)"/g)].map(m => +m[1])), maxR = Math.max(0, ...[...rels.matchAll(/Id="rId(\d+)"/g)].map(m => +m[1]));
+    sheets.forEach(sh => { n++; maxId++; maxR++; let k = n; while (zip.file('xl/worksheets/sheet' + k + '.xml')) k++;
+      zip.file('xl/worksheets/sheet' + k + '.xml', sh.xml);
+      wb = wb.replace('</sheets>', `<sheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" name="${xe(sh.name)}" sheetId="${maxId}" state="visible" r:id="rId${maxR}"/></sheets>`);
+      rels = rels.replace('</Relationships>', `<Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="/xl/worksheets/sheet${k}.xml" Id="rId${maxR}"/></Relationships>`);
+      ct = ct.replace('</Types>', `<Override PartName="/xl/worksheets/sheet${k}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`); });
+    zip.file('xl/workbook.xml', wb); zip.file('xl/_rels/workbook.xml.rels', rels); zip.file('[Content_Types].xml', ct);
+  }
   /** Base64 → Uint8Array. */
   function b64ToBytes(b64) { const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
   /** Setzt den Wert einer Zelle im Tabellenblatt-XML (Zahl oder Text). */
@@ -8720,6 +9205,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       bySheet[si].forEach(([ref, val]) => { xml = setCell(xml, ref, val); });
       zip.file(path, xml);
     }
+    try { await appendSheets(zip, extraSheets(state, out, E, li)); } catch (e) { console.warn('xlsx extra sheets', e); }   // v1.9: Wetterdaten + PV/Wind-Rechnung
     const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', compression: 'DEFLATE' });
     saveBlob(blob, fname); toast(t('xl.ok'));
   }
@@ -8732,7 +9218,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     return true;
   }
   // Maschinen-Schlüssel der Vorlage (Zeile 4) → Felder im Plattform-Zustand
-  const TS_MAP = { t_out: 'series', ghi: 'ghi', dhi: 'dhi', pv_spec: 'pvSpec', q_sh: 'qsh', q_dhw: 'qdhw', p_hh: 'pHh', price: 'price' };
+  const TS_MAP = { t_out: 'series', ghi: 'ghi', dhi: 'dhi', pv_spec: 'pvSpec', q_sh: 'qsh', q_dhw: 'qdhw', p_hh: 'pHh', price: 'price', wind: 'wind', v10: 'wind' };
   const colIdx = ref => { let n = 0; for (const ch of ref.replace(/\d+/g, '')) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; };
   const xmlUnesc = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
   /** Tabelle (Zeilen × Spalten) in Zeitreihen umsetzen: Schlüsselzeile suchen, darunter Zahlen je Stunde */
@@ -8792,7 +9278,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     throw lastErr || new Error('Keine Tabelle gefunden');
   }
 
-  const api = { collect, download, setCell, TEMPLATES, MAP, downloadTsTemplate, parseTimeseries, rowsToSeries };
+  const api = { collect, download, setCell, TEMPLATES, MAP, downloadTsTemplate, parseTimeseries, rowsToSeries, extraSheets, appendSheets };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.WPV = root.WPV || {}; root.WPV.xlsx = api; }
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -8842,7 +9328,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     btype: ['Gebäudetyp', 'Building type', 'Tipo de edificio'], pvsys: ['PV-System (WR + Batterie)', 'PV system (inverter + battery)', 'Sistema FV (inversor + batería)'], wallbox: ['Wallbox + E-Auto', 'Wallbox + EV', 'Wallbox + VE'], cut: ['Schnitt', 'Section cut', 'Corte'],
     msec: { bld: ['Gebäude & System', 'Building & system', 'Edificio y sistema'], sys: ['Anlagen', 'Equipment', 'Instalaciones'], cond: ['Bedingungen', 'Conditions', 'Condiciones'], view: ['Ansicht', 'View', 'Vista'], kel: ['Kelvin & VR', 'Kelvin & VR', 'Kelvin y RV'] },
     scrollHint: ['Stick ↕ beim Zeigen oder ▲/▼: Liste scrollen', 'Stick ↕ while pointing or ▲/▼: scroll list', 'Stick ↕ al apuntar o ▲/▼: desplazar lista'],
-    profBig: ['Diagramm groß', 'Chart large', 'Gráfica grande'], music: ['Hintergrundmusik', 'Background music', 'Música de fondo'],
+    eval: ['Auswertung Gesamtsystem', 'Whole-system evaluation', 'Evaluación del sistema'], profBig: ['Diagramm groß', 'Chart large', 'Gráfica grande'], music: ['Hintergrundmusik', 'Background music', 'Música de fondo'],
     prof: ['Tagesprofil-Diagramm', 'Daily profile chart', 'Gráfica de perfil diario'], profOp: ['Diagramm deckend', 'Chart opaque', 'Gráfica opaca'],
     info: ['Info', 'Info', 'Info'], grabHint: ['Grifftaste: Panel greifen und verschieben', 'Grip: grab and move panel', 'Agarre: tomar y mover el panel'], listenInfo: ['Erklärung hören', 'Hear explanation', 'Escuchar explicación'],
         heatOff: ['Die Heizung steht gerade still, weil die Heizgrenze erreicht ist.', 'The heating is idle right now because the heating limit has been reached.', 'La calefacción está parada porque se alcanzó la temperatura límite de calefacción.']
@@ -9697,7 +10183,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     const MENU = [SEC('bld'), { k: 'btype', sel: '[data-path="building.type"]', lbl: UI.btype }, { k: 'scn', sel: '#v3Scn' }, { k: 'cfg', sel: '#v3Cfg' }, { k: 'emit', sel: '#v3Emit' }, { k: 'std', sel: '#v3Std' },
       SEC('sys'), { k: 'pv', chk: '#v3_pv' }, { k: 'pvsys', chk: '#v3_pvsys', lbl: UI.pvsys }, { k: 'wallbox', chk: '#v3_wallbox', lbl: UI.wallbox }, { k: 'ev', chk: '#v3_ev' }, { k: 'st', chk: '#v3_st' }, { k: 'cool', sel: '#v3Cool' }, { k: 'cab', sel: '#v3Cab' }, { k: 'lps', chk: '#v3_lps' },
       SEC('cond'), { k: 'tout', rng: '#v3T', step: 1 }, { k: 'irr', rng: '#v3G', step: 50 }, { k: 'wind', rng: '#v3W', step: 1 }, { k: 'month', sel: '#v3Month' }, { k: 'hour', rng: '#v3Hour', step: 1 },
-      SEC('view'), { k: 'mode' }, { k: 'cut', chk: '#v3_cut', lbl: UI.cut }, { k: 'opq', chk: '#v3_opaque' }, { k: 'labels', chk: '#v3_labels' }, { k: 'plan', chk: '#v3_plan' }, { k: 'air', chk: '#v3_air' }, { k: 'prof' }, { k: 'profOp' }, { k: 'profBig' }, { k: 'music' }, { k: 'model' },
+      SEC('view'), { k: 'mode' }, { k: 'cut', chk: '#v3_cut', lbl: UI.cut }, { k: 'opq', chk: '#v3_opaque' }, { k: 'labels', chk: '#v3_labels' }, { k: 'plan', chk: '#v3_plan' }, { k: 'air', chk: '#v3_air' }, { k: 'prof' }, { k: 'profOp' }, { k: 'profBig' }, { k: 'eval' }, { k: 'music' }, { k: 'model' },
       SEC('kel'), { k: 'robot' }, { k: 'fxv' }, { k: 'voice' }, { k: 'lang' }, { k: 'exit' }];
     const MY0 = 150, MRH = 54, MBOT = 1440 - 40, MVIS = Math.floor((MBOT - MY0) / MRH), MSB = { x: 1024 - 34, w: 22 };
     state.mScroll = 0;
@@ -9715,6 +10201,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (it.k === 'prof') return { label: L(UI.prof), val: !!state.prof, kind: 'chk' };
       if (it.k === 'profOp') return { label: L(UI.profOp), val: !!state.profOp, kind: 'chk' };
       if (it.k === 'profBig') return { label: L(UI.profBig), val: !!state.profBig, kind: 'chk' };
+      if (it.k === 'eval') return { label: L(UI.eval), val: !!state.eval, kind: 'chk' };
       if (it.k === 'music') return { label: L(UI.music), val: !!(cfg.music && cfg.music.on()), kind: 'chk' };
       if (it.k === 'robot') return { label: L(UI.robot), val: state.robot, kind: 'chk' };
       if (it.k === 'fxv') return { label: L(UI.fxVoice), val: !!TTS.st.robot, kind: 'chk' };
@@ -9778,6 +10265,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       else if (it.k === 'prof') setProf(!state.prof);
       else if (it.k === 'profOp') { state.profOp = !state.profOp; drawPP(true); }
       else if (it.k === 'profBig') { state.profBig = !state.profBig; const s0 = rig.scale.x * pk() * (state.profBig ? 1.8 : 1); PP.mesh.scale.setScalar(s0); }
+      else if (it.k === 'eval') setEval(!state.eval);
       else if (it.k === 'music') { if (cfg.music) cfg.music.set(!cfg.music.on()); }
       else if (it.k === 'robot') setRobot(!state.robot);
       else if (it.k === 'fxv') setFxVoice(!TTS.st.robot);
@@ -10004,6 +10492,12 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       const tgt = hw.clone().addScaledVector(f, 1.35 * s * pdk()).addScaledVector(UP, 0.52 * s * pk()), to = PP.mesh.position.clone().sub(hw); to.y = 0; to.normalize();
       if (to.dot(f) < 0.8 || Math.abs(PP.mesh.position.distanceTo(hw) - tgt.distanceTo(hw)) > 0.6 * s) { PP.mesh.position.lerp(tgt, Math.min(1, dt * 2.5)); PP.mesh.scale.setScalar(s * pk() * (state.profBig ? 1.8 : 1)); PP.mesh.lookAt(hw.x, PP.mesh.position.y + (hw.y - PP.mesh.position.y) * 0.6, hw.z); }
     }
+    /* ---- v1.8: Auswertungs-Panel (Gesamtsystem Tag/Jahr) – über das Menü, greif- und verschiebbar ---- */
+    const EP = canvasPlane(900, 520, 0.85); EP.mesh.name = 'kelvinEval'; EP.mesh.renderOrder = 9; EP.mesh.visible = false; scene.add(EP.mesh); PANELS.ep = EP; state.pin.ep = false; let epKey = '';
+    function drawEP(force) { if (!EP.mesh.visible && !force) return; const c = (cfg.getCtx && cfg.getCtx()) || {}, d = c.day || {}, key = [li(), d.hour, c.cur, c.profKey || ''].join('|'); if (key === epKey && !force) return; epKey = key;
+      EP.g.clearRect(0, 0, EP.W, EP.H); if (cfg.drawEval) cfg.drawEval(EP.g, EP.W, EP.H, { opaque: true }); EP.tx.needsUpdate = true; }
+    function setEval(on) { state.eval = !!on; EP.mesh.visible = state.xr && state.eval; if (!EP.mesh.visible) return; const s = rig.scale.x, hw = headWorld(), f = headFwdFlat(), r = new T.Vector3().crossVectors(f, UP).normalize();
+      EP.mesh.position.copy(hw).addScaledVector(f, 1.1 * s * pdk()).addScaledVector(r, 0.55 * s * pk()).addScaledVector(UP, -0.05 * s * pk()); EP.mesh.scale.setScalar(s * pk()); EP.mesh.lookAt(hw); drawEP(true); }
     function setProf(on) { state.prof = !!on; try { localStorage.setItem('wpv-prof', on ? '1' : '0'); } catch (e) { /* optional */ } PP.mesh.visible = state.xr && state.prof; if (PP.mesh.visible) { state.pin.pp = false; placePP(); drawPP(true); } }
     const HUD = canvasPlane(512, 300, 0.2); HUD.mesh.material.depthTest = false; HUD.mesh.renderOrder = 20; let hudKey = '', hudT = 0;
     function drawHUD() {
@@ -10196,7 +10690,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         }
       });
       if (!anyHover && hover.panel) { const p = hover.panel; hover = { panel: null, btn: null, row: null, src: -1 }; if (p === 'vp') drawVP(); if (p === 'mp') drawMP(); if (p === 'ip') drawIP(); }
-      if ((hudT += dt) > 0.4) { hudT = 0; drawHUD(); syncInfo(); drawPP(); }
+      if ((hudT += dt) > 0.4) { hudT = 0; drawHUD(); syncInfo(); drawPP(); drawEP(); }
       tickPP(dt);
       infoG.visible = state.xr && !!X.opts.labels && X.opts.mode !== 'xray';
       if (infoG.visible) { // Info-Schilder: konstante Winkelgröße in wahrgenommenen Metern; im Modell 1:15 deutlich kleiner, damit das Modell sichtbar bleibt
@@ -10257,7 +10751,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       state.xr = false; state.menu = false; VP.mesh.visible = false; CP.mesh.visible = false; MP.mesh.visible = false; tpMark.visible = false; MS.sp.visible = false; floor.visible = false;
       if (cam.parent === rig) rig.remove(cam); scene.remove(rig);
       dimLabs.forEach(Lb => { Lb.sp.material.sizeAttenuation = false; Lb.sp.material.needsUpdate = true; Lb.sp.scale.set(Lb.baseS * Lb.cv.width / 512, Lb.baseS / 4, 1); }); dimLabs.clear();
-      cam.remove(HUD.mesh); cam.remove(fade); HUD.mesh.visible = false; fade.visible = false; IP.mesh.visible = false; PP.mesh.visible = false; ipCur = null; infoSig = 'x'; syncInfo();
+      cam.remove(HUD.mesh); cam.remove(fade); HUD.mesh.visible = false; fade.visible = false; IP.mesh.visible = false; PP.mesh.visible = false; EP.mesh.visible = false; ipCur = null; infoSig = 'x'; syncInfo();
       if (saved) { cam.position.copy(saved.pos); cam.quaternion.copy(saved.quat); cam.scale.set(1, 1, 1); cam.updateMatrixWorld(true); X.opts.isolate = saved.iso; X.opts.dims = saved.dims; saved = null; }
       X.applyMode(); if (V3.resize) setTimeout(() => V3.resize(), 60);
       if (state.active) go(state.idx); else R.visible = false;
@@ -10296,7 +10790,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
         if (state.xr) { if (VP.mesh.visible) drawVP(); } else renderDesk(); say(content(list[i])); },
       start, stop, next: () => go(state.idx + 1), prev: () => go(state.idx - 1), go, refresh, enterVR, exitVR,
       get active() { return state.active; }, get inXR() { return state.xr; }, get supported() { return xrSupported; },
-      stations: () => stations().map(s => s.id), _ms: MS, _vp: VP, _cp: CP, _mp: MP, _wp: WP, _pp: PP, _state: state, _tts: TTS,
+      stations: () => stations().map(s => s.id), _ms: MS, _vp: VP, _cp: CP, _mp: MP, _wp: WP, _pp: PP, _ep: EP, _state: state, _tts: TTS,
       _dbg: { toggleModel, stations, state, teleTarget, measure, uiHit, ray, solidMeshes, setFree, showMenu, menuAct, moverHit, followFloor, grabHit, grabStart, grabTick, syncInfo, infoSprites: () => infoSprites, openInfo, drawHUD, HUD, IP, pressUI },
       _rig: rig, _robot: R, _ctrls: ctrls, _content: () => content(stations()[state.idx])
     };
@@ -10756,7 +11250,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
 <script>
 /* =====================================================================
  * Wärmepumpen Visual – UI-Schicht (keine Physik; ruft nur WPV.engine)
- * Autor: Alirio Jiménez Franco · Version 1.5 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
+ * Autor: Alirio Jiménez Franco · Version 1.9 · Oktober 2026 · © 2026 Alirio Jiménez Franco, alle Rechte vorbehalten
  * ===================================================================== */
 (function () {
   'use strict';
@@ -10870,6 +11364,9 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     { p: 'st.use', l: 's.stUse', type: 'select', opts: ['dhw', 'combi'], ok: 'stu.', show: s => s.st && s.st.on },
     { p: 'st.orient', l: 's.stOrient', type: 'select', opts: ['S', 'SE', 'SW', 'E', 'W'], ok: 'or.', show: s => s.st && s.st.on },
     { p: 'st.tilt', l: 's.stTilt', min: 0, max: 90, step: 1, show: s => s.st && s.st.on },
+    { p: 'wind.on', l: 's.wind', type: 'check', rerender: true },
+    { p: 'wind.n', l: 's.windN', min: 1, max: 8, step: 1, show: s => s.wind && s.wind.on },
+    { p: 'wind.wp', l: 's.windWp', min: 100, max: 500, step: 50, show: s => s.wind && s.wind.on },
     { p: 'extraCapex', l: 's.extraCapex', min: 0, step: 500 },
     { p: 'subsidyOff', l: 's.subsidyOff', type: 'check', show: s => isHP(s) || s.type === 'dh' }
   ];
@@ -11052,6 +11549,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       s.pv = Object.assign({ on: false, kWp: 8, yield: 0, orient: 'S', tilt: 35 }, s.pv || {});
       s.hpConfig = s.hpConfig || 'monoblock'; s.cooling = s.cooling || 'off';
       s.st = Object.assign({ on: false, area: 6, type: 'flat', use: 'dhw', orient: 'S', tilt: 45 }, s.st || {});
+      s.wind = Object.assign({ on: false, n: 4, wp: 500 }, s.wind || {});
     });
   }
   /** Szenario-Karten mit Eingabefeldern und Kennwerten. */
@@ -11066,6 +11564,10 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       let pvWarn = '';
       if (s.pv && s.pv.on) { const cap = E.pvRoofCapacity(state, s); auto.push(t('s.pvCap') + ' ' + fmt(cap.kWp, 1) + ' kWp (' + cap.modules + ' × ' + Math.round(cap.module.wp * 1000) + ' Wp, ' + t('opt.' + cap.roof) + ')');
         if (s.pv.kWp > cap.kWp + 0.05) pvWarn = t('s.pvOver').replace('{a}', fmt(s.pv.kWp, 1)).replace('{b}', fmt(cap.kWp, 1)); }
+      if (s.st && s.st.on) { const sc2 = E.stRoofCapacity(state); auto.push(t('s.stCap') + ' ' + fmt(sc2.area, 1) + ' m² (' + sc2.max + ' × 2,5 m²)');
+        if (s.st.area > sc2.area + 0.05) pvWarn += (pvWarn ? ' · ' : '') + t('s.stOver').replace('{a}', fmt(s.st.area, 1)).replace('{b}', fmt(sc2.area, 1)); }
+      if (s.wind && s.wind.on) { const wm = E.windMaxUnits(state); auto.push(t('s.windInfo').replace('{h}', fmt(E.windHub(state), 1)).replace('{v}', fmt(E.getWind(state).mean, 1)).replace('{max}', wm));
+        if (s.wind.n > wm) pvWarn += (pvWarn ? ' · ' : '') + t('s.windOver').replace('{max}', wm); }
       if (s.type === 'dh' && !(s.dhPower > 0)) auto.push(t('s.dhPower').replace(/ \[.*/, '') + ': ' + fmt(sized.dhPower, 0) + ' kW (' + t('u.auto') + ')');
       if ((s.type === 'gas' || s.type === 'hybrid') && !(s.boilerPower > 0)) auto.push(t('s.boilerPower').replace(/ \[.*/, '') + ': ' + fmt(sized.boilerPower, 0) + ' kW (' + t('u.auto') + ')');
       return `<article class="card scn" style="--accent:${PALETTE[i]}">
@@ -11181,7 +11683,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       ['solar', 'water', s.Q_st], ['water', 'sh', s.Qsh_use], ['water', 'dhw', s.Qdhw_use], ['water', 'lossDist', s.lossDist], ['water', 'lossStor', s.lossBuf + s.lossStor], ['water', 'lossCirc', s.lossCirc]
     ].filter(l => l[2] > 5);
     const used = new Set(); L.forEach(l => { used.add(l[0]); used.add(l[1]); });
-    const nm = k => t(k === 'ambient' ? 'n.ambient' : 'n.' + k);
+    const nm = k => t(k === 'ambient' ? 'n.ambient' : k === 'pv' && s.windGen > 0 ? 'n.pvw' : 'n.' + k);
     return {
       nodes: Array.from(used).map(k => ({ name: nm(k), itemStyle: { color: NODE_COLORS[k], borderWidth: 0 } })),
       links: L.map(l => ({ source: nm(l[0]), target: nm(l[1]), value: +(l[2] / 1000).toFixed(2) }))
@@ -11226,6 +11728,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       ${row('k.hpShare', r => S(r).Q_hp > 0 ? fmt(S(r).hpShare * 100, 0) + ' %' : '–')}
       ${row('k.solarFrac', r => S(r).solarFraction ? fmt(S(r).solarFraction * 100, 0) + ' % · ' + fmt(S(r).stSpecYield, 0) + ' kWh/m²' : '–')}
       ${row('k.pvYield', r => S(r).pvSpecYield ? fmt(S(r).pvSpecYield, 0) + ' kWh/kWp' : '–')}
+      ${R.some(r => r.sim.sums.windGen > 0) ? row('k.wind', r => S(r).windGen > 0 ? fmt(S(r).windGen, 0) + ' kWh · ' + fmt(S(r).windSpec, 0) + ' kWh/kW' : '–', 'kWh/a') : ''}
       ${row('k.heater', r => fmt(S(r).Q_heater / 1000, 2), 'MWh/a')}
       ${row('k.peakEl', r => fmt(S(r).peakEl, 1), 'kW')}
       ${row('k.efficiency', r => fmt(S(r).efficiencyFinal, 2))}
@@ -11443,6 +11946,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       lang: () => lang, fmt, toast, panelHost: $('.v3view'),
       t: k => t(k),
       drawProfile: (g, W, H, o) => { try { drawProfile(g, W, H, o); } catch (e) { /* optional */ } },
+      drawEval: (g, W, H, o) => { try { drawEvalCanvas(g, W, H, o); } catch (e) { /* optional */ } },
       music: WPV.music || null,
       getCtx: () => ({ profKey: dayProf ? dayProf.key : '', cur: Math.max(0, v3Scn || 0), cool: kelvinCool(), day: v3Day, op: v3LastOp, scnName: scnName(v3Scenario(), Math.max(0, v3Scn || 0)), phiHL: out && out.building.phiHL, td: out && out.building.td,
         n: (E.EMITTERS[E.emitterKey(state.building.emitter)] || {}).n, flowDesign: state.building.flowDesign,
@@ -11501,6 +12005,40 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     $('#edItems').addEventListener('click', e => { const bt = e.target.closest('[data-k="del"]'); if (!bt) return; const i = +bt.closest('[data-i]').dataset.i; const items = E.roofItems(state).filter((_, j) => j !== i); state.building.roofItems = items; editChanged(); });
     $('#edAdd').addEventListener('click', e => { const bt = e.target.closest('[data-add]'); if (!bt) return; const items = E.roofItems(state).map(q => Object.assign({}, q)); items.push({ type: bt.dataset.add, side: bt.dataset.add === 'dormer' || bt.dataset.add === 'window' ? 1 : -1, xr: 0, ur: 0.5 }); state.building.roofItems = items; editChanged(); });
   }
+  /* v1.9: Anlagengröße PV / Solarthermie / Kleinwind direkt in der 3D-Ansicht – frei wählbar, begrenzt durch die Dachfläche */
+  function sizeLimits(sc) {
+    const pvCap = E.pvRoofCapacity(state, sc), stCap = E.stRoofCapacity(state), wMax = E.windMaxUnits(state);
+    return { pvMax: Math.max(E.PV_MOD.wp, pvCap.kWp), pvMods: pvCap.modules, stMax: Math.max(2.5, stCap.area), stN: stCap.max, wMax };
+  }
+  function syncSize() {
+    const sc = v3Scenario(); if (!sc || !$('#v3Size')) return; sc.wind = Object.assign({ on: false, n: 4, wp: 500 }, sc.wind || {});
+    const L = sizeLimits(sc), pvOn = !!(sc.pv && sc.pv.on), stOn = !!(sc.st && sc.st.on), wOn = !!sc.wind.on;
+    $('#v3_wind').checked = wOn;
+    $('#v3PvWrap').hidden = !pvOn; $('#v3StWrap').hidden = !stOn; $('#v3WindWrap').hidden = !wOn;
+    const pvK = $('#v3PvK'); pvK.max = (Math.floor(L.pvMax / E.PV_MOD.wp) * E.PV_MOD.wp).toFixed(2);
+    const kwp = pvOn ? Math.min(sc.pv.fill ? +pvK.max : (sc.pv.kWp || 0), +pvK.max) : 0; pvK.value = kwp;
+    $('#v3PvV').textContent = fmt(kwp, 2) + ' kWp · ' + Math.round(kwp / E.PV_MOD.wp) + ' / ' + L.pvMods + ' ' + t('v.mods');
+    const stA = $('#v3StA'); stA.max = L.stMax; const a = stOn ? Math.min(sc.st.area || 2.5, L.stMax) : 2.5; stA.value = a;
+    $('#v3StV').textContent = fmt(Math.round(a / 2.5) * 2.5, 1) + ' m² · ' + Math.max(1, Math.round(a / 2.5)) + ' / ' + L.stN + ' ' + t('v.colls');
+    $('#v3StT').innerHTML = ['flat', 'tube'].map(k => `<option value="${k}"${(sc.st && sc.st.type) === k ? ' selected' : ''}>${esc(t('stt.' + k))}</option>`).join('');
+    const wn = $('#v3Wn'); wn.max = L.wMax; wn.value = Math.min(sc.wind.n, L.wMax); $('#v3WnV').textContent = Math.min(sc.wind.n, L.wMax) + ' / ' + L.wMax; $('#v3Wp').value = String(sc.wind.wp);
+    const info = []; if (pvOn && sc.pv.kWp > L.pvMax + 0.05 && !sc.pv.fill) info.push('⚠ ' + t('s.pvOver').replace('{a}', fmt(sc.pv.kWp, 1)).replace('{b}', fmt(L.pvMax, 1)));
+    if (stOn && sc.st.area > L.stMax + 0.05) info.push('⚠ ' + t('s.stOver').replace('{a}', fmt(sc.st.area, 1)).replace('{b}', fmt(L.stMax, 1)));
+    if (wOn) { const R = v3Result(), S = R && R.sim.sums; info.push(t('s.windInfo').replace('{h}', fmt(E.windHub(state), 1)).replace('{v}', fmt(E.getWind(state).mean, 1)).replace('{max}', L.wMax) + (S && S.windGen ? ' · ' + fmt(S.windGen, 0) + ' kWh/a (' + fmt(S.windSpec, 0) + ' kWh/kW)' : '')); }
+    $('#v3SizeInfo').textContent = info.join(' · '); $('#v3SizeInfo').hidden = !info.length;
+  }
+  function bindSize() {
+    const apply = fn => { const sc = v3Scenario(); if (!sc) return; if (v3Scn === -1) dhPrev.out = null; fn(sc); renderScenarios(); recalc(true); };
+    $('#v3PvK').addEventListener('input', e => { const v = +e.target.value; $('#v3PvV').textContent = fmt(v, 2) + ' kWp · ' + Math.round(v / E.PV_MOD.wp) + ' ' + t('v.mods'); });
+    $('#v3PvK').addEventListener('change', e => apply(sc => { const v = +e.target.value, mx = +e.target.max; sc.pv.on = true; sc.pv.kWp = +v.toFixed(2); sc.pv.fill = v >= mx - 1e-6; }));
+    $('#v3StA').addEventListener('input', e => { $('#v3StV').textContent = fmt(+e.target.value, 1) + ' m² · ' + Math.round(+e.target.value / 2.5) + ' ' + t('v.colls'); });
+    $('#v3StA').addEventListener('change', e => apply(sc => { sc.st.on = true; sc.st.area = +e.target.value; }));
+    $('#v3StT').addEventListener('change', e => apply(sc => { sc.st.type = e.target.value; }));
+    $('#v3_wind').addEventListener('change', e => apply(sc => { sc.wind = Object.assign({ on: false, n: 4, wp: 500 }, sc.wind || {}); sc.wind.on = e.target.checked; sc.wind.n = Math.min(sc.wind.n, E.windMaxUnits(state)); }));
+    $('#v3Wn').addEventListener('input', e => { $('#v3WnV').textContent = e.target.value + ' / ' + e.target.max; });
+    $('#v3Wn').addEventListener('change', e => apply(sc => { sc.wind.n = +e.target.value; }));
+    $('#v3Wp').addEventListener('change', e => apply(sc => { sc.wind.wp = +e.target.value; }));
+  }
   /** Bedienelemente der 3D-Ansicht (Szenario, Modus, Schieberegler). */
   function render3DControls() {
     const sel = $('#v3Scn');
@@ -11515,6 +12053,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     $('#v3Cab').innerHTML = ['modern', 'classic'].map(k => `<option value="${k}"${v3Opts.cabinet === k ? ' selected' : ''}>${esc(t('v.cab.' + k))}</option>`).join('');
     $('#v3Seal').innerHTML = ['auto', 'black', 'white'].map(k => `<option value="${k}"${(state.building.basementSeal || 'auto') === k ? ' selected' : ''}>${esc(t('seal.' + k))}</option>`).join('');
     $('#v3Wdir').innerHTML = [0, 45, 90, 135, 180, 225, 270, 315].map(d => `<option value="${d}"${(v3Opts.windDir || 270) === d ? ' selected' : ''}>${esc(t('dir.' + ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][d / 45]))}</option>`).join('');
+    syncSize();
     { const sc = v3Scenario(); $('#v3_pv').checked = !!(sc.pv && sc.pv.on); $('#v3_st').checked = !!(sc.st && sc.st.on);
       const air = sc.type === 'ashp' || (sc.type === 'hybrid' && sc.hpSource !== 'ground'); $('#v3CfgWrap').style.visibility = air ? '' : 'hidden';
       $('#v3Cfg').innerHTML = ['monoblock', 'split', 'unitower'].map(k => `<option value="${k}"${(sc.hpConfig || 'monoblock') === k ? ' selected' : ''}>${esc(t('cfg.' + k))}</option>`).join('');
@@ -11615,26 +12154,29 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
   function dayBalance(op) {
     const ds = dayState(), scn = v3Scenario(); dayLast = ds;
     const pEv = evAt(ds.h), evOn = pEv > 0;
-    const pHp = Math.max(0, op.el || 0), pPv = scn.pv && scn.pv.on ? Math.max(0, op.pvP || 0) : 0, pHh = ds.hh;
-    return { ds, pHh, pHp, pEv, pPv, grid: pHh + pHp + pEv - pPv, evOn };
+    const pHp = Math.max(0, op.el || 0), pPv = scn.pv && scn.pv.on ? Math.max(0, op.pvP || 0) : 0, pHh = ds.hh, pWind = Math.max(0, op.windP || 0);
+    return { ds, pHh, pHp, pEv, pPv, pWind, grid: pHh + pHp + pEv - pPv - pWind, evOn };
   }
   /** Tagesprofil (15 min): PV, Heizlast thermisch, WP/Heizung elektrisch, E-Auto (Zeitplan), Haushalt, Batterie (falls übernommen), Netz */
   let dayProf = null;
   function dayProfile() {
-    const scn = v3Scenario(), key = JSON.stringify([v3Opts.month, v3Scn, scn && scn.type, scn && scn.cooling, scn && scn.pv, scn && scn.battery, state.building.emitter, state.climate.location, v3Opts.wallbox, evManual, out && out.building.phiHL]);
+    const scn = v3Scenario(), key = JSON.stringify([v3Opts.month, v3Scn, scn && scn.type, scn && scn.cooling, scn && scn.pv, scn && scn.battery, scn && scn.wind, state.building.emitter, state.climate.location, v3Opts.wallbox, evManual, out && out.building.phiHL]);
     if (dayProf && dayProf.key === key) return dayProf;
     // Batterie: Szenario-Speicher, sonst der in der 3D-Ansicht gezeigte Speicher (PV-System eingeblendet)
-    const P = [], bat = scn && scn.battery && scn.battery.on ? scn.battery.kWh : (v3Opts.pvsys && V3 && V3.batCap ? V3.batCap() : 0), eta = 0.96; let soc = bat * 0.5;
+    const P = [], gen = !!(scn && ((scn.pv && scn.pv.on) || E.windOn(scn))), bat = !gen ? 0 : scn && scn.battery && scn.battery.on ? scn.battery.kWh : (v3Opts.pvsys && V3 && V3.batCap ? V3.batCap() : 0), eta = 0.96; let soc = bat * 0.5;   // ohne Eigenerzeugung kein Speicherbetrieb
+    // v1.9: Kleinwind – mittlerer Tagesgang der Windgeschwindigkeit (10 m) im gewählten Monat aus der Wind-Stundenreihe
+    const wOn = E.windOn(scn), WV = wOn ? E.getWind(state).V : null, mo = (v3Opts.month || 1) - 1, dm = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], d0 = dm.slice(0, mo).reduce((a, b) => a + b, 0);
+    const vAt = h => { if (!WV) return 0; let sm = 0; for (let d = d0; d < d0 + dm[mo]; d++) sm += WV[d * 24 + Math.min(23, Math.floor(h))]; return sm / dm[mo]; };
     for (let q = 0; q < 96; q++) {
       const h = q / 4, ds = dayState(h); let op = E.operatingPoint(state, scn, ds.te, ds.G, +$('#v3W').value || 0);
       if (scn.cooling && scn.cooling !== 'off' && ds.te >= E.P_(state, 'coolStart')) { const cp = E.coolingPoint(state, scn, ds.te, ds.G); if (cp.possible) op = Object.assign({}, op, { el: cp.el, qTot: -cp.qc, pvP: op.pvP }); }
-      const pv = scn.pv && scn.pv.on ? Math.max(0, op.pvP || 0) : 0, ev = evManual === null ? evAt(h) : 0, load = ds.hh + Math.max(0, op.el || 0) + ev;
-      let net = pv - load, bf = 0;
+      const pv = scn.pv && scn.pv.on ? Math.max(0, op.pvP || 0) : 0, ev = evManual === null ? evAt(h) : 0, load = ds.hh + Math.max(0, op.el || 0) + ev, wind = wOn ? E.windPower(state, scn, vAt(h)) : 0;
+      let net = pv + wind - load, bf = 0;
       if (bat > 0) { const pm = bat * 0.5; if (net > 0) { bf = Math.min(net, pm, (bat * 0.9 - soc) / eta * 4); soc += bf * eta / 4; net -= bf; } else { bf = -Math.min(-net, pm, soc * eta * 4); soc += bf / eta / 4; net -= bf; } }
-      P.push({ h, te: ds.te, pv, heat: op.qTot || 0, el: Math.max(0, op.el || 0), ev, hh: ds.hh, grid: -net, bat: bf, soc: bat > 0 ? soc / bat * 100 : null });
+      P.push({ h, te: ds.te, pv, wind, heat: op.qTot || 0, el: Math.max(0, op.el || 0), ev, hh: ds.hh, grid: -net, bat: bf, soc: bat > 0 ? soc / bat * 100 : null });
     }
     const sum = k => P.reduce((a, r) => a + Math.max(0, r[k]) / 4, 0);
-    dayProf = { key, P, bat, E: { pv: sum('pv'), el: sum('el'), ev: sum('ev'), hh: sum('hh'), imp: P.reduce((a, r) => a + Math.max(0, r.grid) / 4, 0), exp: P.reduce((a, r) => a + Math.max(0, -r.grid) / 4, 0) } };
+    dayProf = { key, P, bat, wind: wOn, E: { pv: sum('pv'), wind: sum('wind'), el: sum('el'), ev: sum('ev'), hh: sum('hh'), imp: P.reduce((a, r) => a + Math.max(0, r.grid) / 4, 0), exp: P.reduce((a, r) => a + Math.max(0, -r.grid) / 4, 0) } };
     return dayProf;
   }
   function drawDayChart() {
@@ -11642,6 +12184,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     const o = baseOpt(), xs = D.P.map(r => r.h), h = v3Opts.hour || 0, ser = (k, name, col, extra) => Object.assign({ name: t(name), type: 'line', showSymbol: false, data: D.P.map(r => [r.h, +(+r[k]).toFixed(2)]), lineStyle: { width: 1.8, color: col }, itemStyle: { color: col } }, extra || {});
     o.legend = Object.assign({}, o.legend, { top: 0, textStyle: { fontSize: 10, color: css('--muted') }, itemWidth: 12, itemHeight: 6 }); o.grid = { left: 36, right: D.bat ? 34 : 10, top: 56, bottom: 22 };
     const series = [ser('pv', 'd.pv', '#e0b51e', { areaStyle: { color: 'rgba(224,181,30,0.25)' } }), ser('heat', 'd.heat', '#dc2626', { lineStyle: { width: 1.5, color: '#dc2626', type: 'dashed' } }), ser('el', 'd.hp', '#e8590c'), ser('ev', 'd.evc', '#0b4a8b'), ser('hh', 'd.hh', '#6b7280'), ser('grid', 'd.grid', '#111827', { lineStyle: { width: 1.2, color: '#111827' } })];
+    if (D.wind) series.splice(1, 0, ser('wind', 'd.wind', '#0ea5a4', { areaStyle: { color: 'rgba(14,165,164,0.18)' } }));
     if (D.bat) series.push(Object.assign(ser('soc', 'd.soc', '#a2c617'), { yAxisIndex: 1 }));
     series[0].markLine = { symbol: 'none', silent: true, data: [{ xAxis: h }], lineStyle: { color: '#a2c617', width: 2 }, label: { formatter: hhmm(h), fontSize: 10 } };
     chart(el).setOption(Object.assign(o, { tooltip: { trigger: 'axis', valueFormatter: v => fmt(v, 2) }, xAxis: axis(o, { type: 'value', min: 0, max: 24, interval: 3, axisLabel: { formatter: v => v + 'h', color: css('--muted'), fontSize: 10 } }),
@@ -11727,6 +12270,77 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     hd.addEventListener('pointerup', () => { if (!drag) return; drag = null; try { localStorage.setItem('wpv.profPos', JSON.stringify({ x: parseFloat(box.style.left), y: parseFloat(box.style.top) })); } catch (e) { /* optional */ } });
     hd.addEventListener('dblclick', () => { box.style.left = ''; box.style.top = ''; box.style.transform = ''; try { localStorage.removeItem('wpv.profPos'); } catch (e) { /* optional */ } });
   }
+  /* ------------------------- v1.8: Auswertung des Gesamtsystems (Tag + Jahr) ------------------------- */
+  let evalOn = (() => { try { return localStorage.getItem('wpv.eval') === '1'; } catch (e) { return false; } })(), evalCache = null;
+  /** Jahreswerte (Engine) + Tageswerte (15-min-Profil des simulierten Tages) für das 3D-Szenario */
+  function evalData() {
+    // v1.9: immer das aktuell in 3D gezeigte System bewerten – auch die Fernwärme-Vorschau (v3Scn = −1) und ohne explizite Wahl
+    if (!out) { try { out = E.runAll(state); } catch (e) { return null; } }
+    if (v3Scn == null || v3Scn >= state.scenarios.length) v3Scn = Math.max(0, state.scenarios.findIndex(isHP));
+    let st = state, idx = v3Scn, all = out;
+    if (v3Scn === -1 || !out.results[v3Scn]) { const R0 = v3Result(), sc0 = v3Scenario(); if (!R0 || !sc0) return null;
+      if (v3Scn === -1) { st = Object.assign({}, state, { scenarios: state.scenarios.concat([sc0]) }); idx = st.scenarios.length - 1; all = Object.assign({}, out, { results: out.results.concat([R0]) }); }
+      else return null; }
+    const batC = v3Opts.pvsys && V3 && V3.batCap ? V3.batCap() : 0, ev = v3Opts.wallbox ? 1 : 0, key = [v3Scn, batC, ev, all.results.length, JSON.stringify(st.scenarios[idx]), state.referenceIndex, all.results[idx] && all.results[idx].sim && all.results[idx].sim.sums.Q_hp].join('|');
+    if (!evalCache || evalCache.key !== key) { try { evalCache = { key, Y: E.systemEval(st, idx, { all, batC, ev }) }; } catch (e) { console.warn('systemEval', e); evalCache = { key, Y: null }; } }
+    const Y = evalCache.Y; if (!Y) return null;
+    const D = dayProfile(), R = all.results[idx], S = R.sim.sums, Qt = Math.max(1, S.Q_hp + S.Q_heater + S.Q_gas + S.Q_dh + (S.Q_st || 0)), etaG = S.etaGas || 0.95;
+    let pv = 0, ld = 0, imp = 0, exp = 0, heat = 0, el = 0;
+    D.P.forEach(r => { pv += (r.pv + (r.wind || 0)) / 4; ld += (r.hh + r.el + r.ev) / 4; imp += Math.max(0, r.grid) / 4; exp += Math.max(0, -r.grid) / 4; heat += Math.max(0, r.heat) / 4; el += r.el / 4; });
+    const gasD = heat * S.Q_gas / Qt / etaG, dhD = heat * S.Q_dh / Qt, shH = ld > 0 ? el / ld : 0, pHP = E.P_(state, 'elecPriceHP') / 100;
+    const pG = E.P_(state, 'gasPriceBase') / 100 + E.P_(state, 'behgFactor') / E.P_(state, 'hsHi') / 1000 * E.P_(state, 'co2Price') * (1 + E.P_(state, 'vat') / 100), pD = E.P_(state, 'dhWorkPrice') / 100;
+    const co2D = (imp * Y.efE + gasD * Y.efG + dhD * E.P_(state, 'efDh')) / 1000, co2Dref = ((ld - el) * Y.efE + heat / 0.95 * Y.efG) / 1000;   // kg
+    const costD = imp * (shH * pHP + (1 - shH) * Y.pHH) - exp * Y.pF + gasD * pG + dhD * pD, costDref = (ld - el) * Y.pHH + heat / 0.95 * pG;
+    return { Y, D: { pv, ld, imp, exp, self: pv - exp, sc: pv > 0 ? (pv - exp) / pv : null, aut: ld > 0 ? 1 - imp / ld : null, co2: co2D, co2Ref: co2Dref, cost: costD, costRef: costDref }, name: scnName(R.sim.scn, idx) };
+  }
+  function evalHtml() {
+    const X = evalData(); if (!X) return `<p class="note">${esc(t('ev.none'))}</p>`;
+    const { Y, D } = X, k = v => fmt(v, 0), pc = v => v == null ? '–' : fmt(v * 100, 0) + ' %', bar = (v, col) => v == null ? '' : `<i class="evb"><b style="width:${Math.max(0, Math.min(100, v * 100)).toFixed(0)}%;background:${col}"></b></i>`;
+    const mName = new Intl.DateTimeFormat(I.LOCALE[lang], { month: 'short' }).format(new Date(2026, (v3Opts.month || 1) - 1, 15));
+    const row = (l, d, y, cls) => `<tr${cls ? ` class="${cls}"` : ''}><th>${l}</th><td>${d}</td><td>${y}</td></tr>`;
+    return `<table class="evt"><thead><tr><th></th><th>${esc(t('ev.day'))} · 15. ${esc(mName)}</th><th>${esc(t('ev.year'))}</th></tr></thead><tbody>
+      ${row(esc(t(Y.windSum > 0 ? 'ev.pvw' : 'ev.pv')), k(D.pv) + ' kWh', fmt(Y.pvSum / 1000, 1) + ' MWh')}
+      ${row(esc(t('ev.load')), k(D.ld) + ' kWh', fmt(Y.loadSum / 1000, 1) + ' MWh')}
+      ${row(esc(t('ev.sc')), pc(D.sc) + bar(D.sc, '#e0b51e'), pc(Y.selfCons) + bar(Y.selfCons, '#e0b51e'), 'hl')}
+      ${row(esc(t('ev.aut')), pc(D.aut) + bar(D.aut, '#a2c617'), pc(Y.autarky) + bar(Y.autarky, '#a2c617'), 'hl')}
+      ${row(esc(t('ev.impExp')), k(D.imp) + ' / ' + k(D.exp) + ' kWh', fmt(Y.imp / 1000, 1) + ' / ' + fmt(Y.exp / 1000, 1) + ' MWh')}
+      ${row(esc(t('ev.co2')), fmt(D.co2, 1) + ' / ' + fmt(D.co2Ref, 1) + ' kg', fmt(Y.co2Sys, 1) + ' / ' + fmt(Y.co2Ref, 1) + ' t')}
+      ${row(esc(t('ev.co2s')), '<b>' + fmt(D.co2Ref - D.co2, 1) + ' kg</b>', '<b>' + fmt(Y.co2Saved, 1) + ' t</b> (' + pc(Y.co2Saved / Math.max(1e-9, Y.co2Ref)) + ')', 'hl')}
+      ${row(esc(t('ev.cost')), fmt(D.cost, 2) + ' / ' + fmt(D.costRef, 2) + ' €', k(Y.costSys) + ' / ' + k(Y.costRef) + ' €')}
+      ${row(esc(t('ev.save')), '<b>' + fmt(D.costRef - D.cost, 2) + ' €</b>', '<b>' + k(Y.save) + ' €/a</b>', 'hl')}
+      ${row(esc(t('ev.dcap')), '–', k(Y.dCap) + ' €' + (Y.batI ? ' <small>(' + esc(t('ev.incBat')) + ' ' + k(Y.batI) + ' €)</small>' : ''))}
+      ${row(esc(t('ev.pb')), '–', '<b>' + (Y.payback == null ? '> 30 a' : fmt(Y.payback, 1) + ' a') + '</b>' + (Y.paybackHeat != null ? ` <small>${esc(t('ev.pbHeat'))} ${fmt(Y.paybackHeat, 1)} a</small>` : ''), 'hl')}
+      </tbody></table><p class="evn">${esc(t('ev.note')).replace('{ref}', esc(Y.refName)).replace('{efE}', fmt(Y.efE, 0)).replace('{efG}', fmt(Y.efG, 0))}</p>`;
+  }
+  function drawEvalPanel() {
+    const box = $('#v3Eval'); if (!box) return; box.hidden = !evalOn || activeTab !== 'view3d'; if (box.hidden) return;
+    $('#v3EvalSub').textContent = (evalData() || {}).name || ''; $('#v3EvalBody').innerHTML = evalHtml();
+  }
+  /** Gleiche Auswertung als Leinwand für das VR-Panel */
+  function drawEvalCanvas(g, W, H, o) {
+    const X = evalData(), k = W / 900; g.clearRect(0, 0, W, H);
+    const r = 22 * k; g.beginPath(); g.moveTo(r, 2); g.arcTo(W - 2, 2, W - 2, H - 2, r); g.arcTo(W - 2, H - 2, 2, H - 2, r); g.arcTo(2, H - 2, 2, 2, r); g.arcTo(2, 2, W - 2, 2, r); g.closePath();
+    g.fillStyle = (o && o.opaque) ? 'rgba(7,22,44,0.95)' : 'rgba(7,22,44,0.82)'; g.fill(); g.lineWidth = 3 * k; g.strokeStyle = 'rgba(162,198,23,0.7)'; g.stroke();
+    g.textBaseline = 'middle'; g.fillStyle = '#a2c617'; g.font = `700 ${26 * k}px system-ui`; g.fillText(t('ev.title') + (X ? ' · ' + X.name : ''), 24 * k, 30 * k); if (!X) return;
+    const { Y, D } = X, pc = v => v == null ? '–' : fmt(v * 100, 0) + ' %';
+    const rows = [[t(Y.windSum > 0 ? 'ev.pvw' : 'ev.pv'), fmt(D.pv, 0) + ' kWh', fmt(Y.pvSum / 1000, 1) + ' MWh'], [t('ev.load'), fmt(D.ld, 0) + ' kWh', fmt(Y.loadSum / 1000, 1) + ' MWh'], [t('ev.sc'), pc(D.sc), pc(Y.selfCons), D.sc, Y.selfCons, '#e0b51e'], [t('ev.aut'), pc(D.aut), pc(Y.autarky), D.aut, Y.autarky, '#a2c617'],
+      [t('ev.co2s'), fmt(D.co2Ref - D.co2, 1) + ' kg', fmt(Y.co2Saved, 1) + ' t'], [t('ev.save'), fmt(D.costRef - D.cost, 2) + ' €', fmt(Y.save, 0) + ' €/a'], [t('ev.dcap'), '–', fmt(Y.dCap, 0) + ' €'], [t('ev.pb'), '–', Y.payback == null ? '> 30 a' : fmt(Y.payback, 1) + ' a']];
+    g.font = `600 ${19 * k}px system-ui`; g.fillStyle = '#94a3b8'; g.fillText(t('ev.day'), 470 * k, 72 * k); g.fillText(t('ev.year'), 690 * k, 72 * k);
+    rows.forEach((rw, i) => { const y = 108 * k + i * 44 * k; if (i % 2 === 0) { g.fillStyle = 'rgba(148,163,184,0.08)'; g.fillRect(14 * k, y - 20 * k, W - 28 * k, 40 * k); }
+      g.fillStyle = '#e2e8f0'; g.font = `500 ${21 * k}px system-ui`; g.fillText(rw[0], 26 * k, y); g.fillStyle = '#fde68a'; g.font = `600 ${21 * k}px ui-monospace, monospace`; g.fillText(rw[1], 470 * k, y); g.fillText(rw[2], 690 * k, y);
+      if (rw[3] != null || rw[4] != null) [[rw[3], 470], [rw[4], 690]].forEach(([v, x]) => { if (v == null) return; g.fillStyle = 'rgba(148,163,184,0.25)'; g.fillRect(x * k + 100 * k, y - 5 * k, 90 * k, 10 * k); g.fillStyle = rw[5]; g.fillRect(x * k + 100 * k, y - 5 * k, 90 * k * Math.max(0, Math.min(1, v)), 10 * k); }); });
+    g.fillStyle = '#94a3b8'; g.font = `400 ${15 * k}px system-ui`; g.fillText(t('ev.noteShort').replace('{ref}', Y.refName), 26 * k, H - 24 * k);
+  }
+  function initEvalPanel() {
+    const box = $('#v3Eval'), hd = $('#v3EvalH'); if (!box) return;
+    const setOn = on => { evalOn = on; try { localStorage.setItem('wpv.eval', on ? '1' : '0'); } catch (e) { /* optional */ } const b = $('#v3Tools [data-fs=eval]'); if (b) b.classList.toggle('on', on); drawEvalPanel(); };
+    $('#v3EvalX').addEventListener('click', () => setOn(false)); window.__evalToggle = () => setOn(!evalOn);
+    let drag = null;
+    hd.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const r = box.getBoundingClientRect(), pr = box.offsetParent.getBoundingClientRect(); drag = { dx: e.clientX - r.left, dy: e.clientY - r.top, pr }; hd.setPointerCapture(e.pointerId); });
+    hd.addEventListener('pointermove', e => { if (!drag) return; const pr = drag.pr; box.style.left = Math.max(0, Math.min(pr.width - 80, e.clientX - pr.left - drag.dx)) + 'px'; box.style.top = Math.max(0, Math.min(pr.height - 30, e.clientY - pr.top - drag.dy)) + 'px'; box.style.right = 'auto'; });
+    hd.addEventListener('pointerup', () => { drag = null; });
+    setOn(evalOn);
+  }
   function dayCsv() {
     const D = dayProfile(), head = ['h', 'te_C', 'PV_kW', 'heat_load_kW', 'heating_el_kW', 'EV_kW', 'household_kW', 'battery_kW', 'SoC_pct', 'grid_kW'];
     const csv = [head.join(';')].concat(D.P.map(r => [r.h, r.te, r.pv, r.heat, r.el, r.ev, r.hh, r.bat, r.soc == null ? '' : r.soc, r.grid].map(v => typeof v === 'number' ? v.toFixed(3).replace('.', ',') : v).join(';'))).join('\n');
@@ -11753,7 +12367,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     $('#v3DaySrc').textContent = ds.imported ? t('src.import') : t('src.synth'); $('#v3DaySrc').classList.toggle('imp', ds.imported);
     setTimeout(() => { const lg = $('.v3legend'); if (lg && lg.offsetHeight) $('#v3dayHud').style.top = (lg.offsetTop + lg.offsetHeight + 8) + 'px'; }, 0);
     if (V3 && V3._xr && V3._xr.opts) V3._xr.opts.hhLoad = b.pHh;
-    try { drawDayChart(); } catch (e) { /* Diagramm optional */ } drawProfOverlay();
+    try { drawDayChart(); } catch (e) { /* Diagramm optional */ } drawProfOverlay(); drawEvalPanel();
     v3Day = { te, hour: ds.h, month: ds.m, mName, G: +$('#v3G').value, pHh: b.pHh, pHp: b.pHp, pEv: b.pEv, pPv: b.pPv, grid: b.grid, ev: !!v3Opts.wallbox, plug: !!v3Opts.evPlug, soc: EV.soc, synth: !ds.imported, sunAlt: sun ? sun.alt : 0 };
   }
   let v3Day = null, dayInit = false;
@@ -12167,6 +12781,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     else if (k === 'rotate' && V3) V3.setAutoRotate(!V3.autoRotate());
     else if (k === 'tour') { if (tourTimer) stopTour(); else { if (KV && KV.active) KV.stop(); startTour(); } }
     else if (k === 'shot') shot3D();
+    else if (k === 'eval' && window.__evalToggle) window.__evalToggle();
     else if (k === 'kelvin' && KV) { if (KV.active) KV.stop(); else { stopTour(); if (V3 && V3.autoRotate()) V3.setAutoRotate(false); KV.start(0); } }
     else if (k === 'vr' && KV) KV.enterVR();
     syncTools();
@@ -12179,7 +12794,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
       if (activeTab !== 'view3d' || e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.target.closest && e.target.closest('input,select,textarea,[contenteditable]')) return;
       if (e.key === 'Escape' && fsOn()) { setFs(false); return; }
-      const map = { f: 'full', m: 'menu', n: 'nav', g: 'legend', l: 'labels', a: 'rotate', t: 'tour', s: 'shot', k: 'kelvin', v: 'vr' };
+      const map = { f: 'full', m: 'menu', n: 'nav', g: 'legend', l: 'labels', a: 'rotate', t: 'tour', s: 'shot', k: 'kelvin', v: 'vr', e: 'eval' };
       const k = map[(e.key || '').toLowerCase()]; if (!k) return;
       e.preventDefault(); fsAction(k);
     });
@@ -12222,7 +12837,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     if (RM) RM.setActive(tab === 'room');
     $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
     $$('.panel').forEach(p => { p.hidden = p.id !== 'tab-' + tab; });
-    setTimeout(drawProfOverlay, 50);
+    setTimeout(() => { drawProfOverlay(); drawEvalPanel(); }, 50);
     if (tab === 'params') renderParams();
     renderTab(tab);
   }
@@ -12340,7 +12955,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     $('#v3Month').addEventListener('change', e => { v3Opts.month = +e.target.value; EV.soc = 0.35; daySync(); });
     $('#v3Play').addEventListener('click', () => dayPlay(!dayTimer));
     $('#v3_couple').addEventListener('change', daySync);
-    initProfOverlay();
+    initProfOverlay(); initEvalPanel();
     $('#v3dayHud').addEventListener('click', e => { if (!e.target.closest('[data-dcol]')) return; e.stopPropagation(); dayCol = !dayCol; try { localStorage.setItem('wpv.dayCol', dayCol ? '1' : '0'); } catch (er) { /* optional */ } daySync(); });
     $('#v3_ev').addEventListener('change', e => setEVPlug(e.target.checked));
     $('#v3canvas').addEventListener('wpv-ev', e => { v3Opts.evPlug = !!e.detail.plugged; evManual = v3Opts.evPlug; $('#v3_ev').checked = v3Opts.evPlug; apply3DOp(); });
@@ -12365,7 +12980,7 @@ void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) dis
     ['arrows', 'soilX'].forEach(k => $('#v3_' + k).addEventListener('change', e => { v3Opts[k] = e.target.checked; if (V3) V3.setOptions(v3Opts); }));
     ['pvsys', 'wallbox'].forEach(k => $('#v3_' + k).addEventListener('change', e => { v3Opts[k] = e.target.checked; if (V3) { V3.setOptions(v3Opts); v3Key = v3Key + ''; build3D(); } }));
     [['#v3Cfg', 'hpConfig'], ['#v3Cool', 'cooling']].forEach(([id, k]) => $(id).addEventListener('change', e => { const sc = v3Scenario(); if (!sc) return; if (v3Scn === -1) dhPrev.out = null; sc[k] = e.target.value; renderScenarios(); recalc(true); }));
-    bindEditor(); bindBattery();
+    bindEditor(); bindBattery(); bindSize();
     ['pv', 'st'].forEach(k => $('#v3_' + k).addEventListener('change', e => { const sc = v3Scenario(); if (!sc) return; if (v3Scn === -1) dhPrev.out = null; sc[k] = sc[k] || {}; sc[k].on = e.target.checked; if (k === 'pv' && e.target.checked && sc.pv.fill === undefined) sc.pv.fill = true; renderScenarios(); recalc(true); }));
     $('#v3Reset').addEventListener('click', () => { v3Focus = 'overview'; if (V3) V3.focus('overview'); showNavCard(null); $$('#v3Nav .chip').forEach(c => c.classList.toggle('on', c.dataset.nav === 'overview')); });
     $('#v3Nav').addEventListener('click', e => { const b = e.target.closest('[data-nav]'); if (!b || !V3) return; stopTour(); navTo(b.dataset.nav); });
@@ -12431,7 +13046,7 @@ document.getElementById('schemaV').textContent = WPV.engine.SCHEMA_VERSION;
 #wpvVer a{color:#d4f56a;text-decoration:none}#wpvVer a:hover{text-decoration:underline}#wpvVer .arc{background:#a2c617;color:#0b2a52;border-radius:3px;padding:1px 5px}
 @media print{#wpvVer{display:none}}</style>
 <script>(function(){
-  var VER='v1.7', m=location.pathname.match(/\/(v\d+\.\d+)\/(index\.html)?$/), inFolder=!!m, latest='v1.7';
+  var VER='v1.9', m=location.pathname.match(/\/(v\d+\.\d+)\/(index\.html)?$/), inFolder=!!m, latest='v1.9';
   var base=inFolder?'../':'', L={de:['Versionen','Archiv','aktuelle Version'],en:['Versions','archive','latest version'],es:['Versiones','archivo','versión actual']};
   var el=document.createElement('div'); el.id='wpvVer';
   function draw(){var l=(document.documentElement.lang||'de').slice(0,2), t=L[l]||L.de, old=VER!==latest;
